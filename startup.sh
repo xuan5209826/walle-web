@@ -6,4 +6,9 @@
 # @File Name: cel_start.sh
 # @Description:
 ###################################################################
- celery -A cel worker --loglevel=info
+
+# websocket 启动
+python ws.py
+
+# celery 启动
+celery -A cel worker --loglevel=info
