@@ -10,5 +10,8 @@
 # websocket 启动
 python ws.py
 
+# redis 启动
+redis-server
+
 # celery 启动
 celery -A cel worker --loglevel=info

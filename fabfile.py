@@ -11,7 +11,7 @@ project_name = ''
 dir_codebase = '/Users/wushuiyong/workspace/meolu/data/codebase'
 dir_release  = '/home/wushuiyong/walle/release'
 dir_webroot  = '/home/wushuiyong/walle/webroot'
-
+env.host_string = 'localhost'
 
 def prev_deploy():
     '''
@@ -145,3 +145,6 @@ def walle_deploy():
     post_release()
 
     pass
+
+if __name__ == '__main__':
+    walle_deploy()

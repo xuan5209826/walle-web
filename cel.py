@@ -5,8 +5,9 @@
 # @Description:
 from celery import Celery
 import os
+from fabric.api import *
 
-app = Celery('tasks', broker='redis://localhost')
+app = Celery('tasks', backend='redis://localhost', broker='redis://localhost')
 
 @app.task
 def add(command):
@@ -17,3 +18,10 @@ def add(command):
     output = stdOut.read()
     print output
     return output
+
+def task():
+    result = run('whoami')
+    result = run('python --version')
+    result = run('git --version')
+
+
