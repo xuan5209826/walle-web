@@ -19,9 +19,11 @@ class task_record(Base):
 
     # 表的结构:
     id = Column(Integer, primary_key=True)
-    user_id = Column(String(20))
-    task_id = Column(String(20))
-    status = Column(String(20))
-    command = Column(String(20))
-    success = Column(String(20))
-    error = Column(String(20))
+    stage = Column(String(20))
+    sequence = Column(Integer)
+    user_id = Column(Integer)
+    task_id = Column(Integer)
+    status = Column(Integer)
+    command = Column(String(200))
+    success = Column(String(2000))
+    error = Column(String(2000))

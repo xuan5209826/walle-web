@@ -3,9 +3,12 @@
 # @Author: wushuiyong
 # @Created Time : 日  1/ 1 23:43:12 2017
 # @Description:
+
 from celery import Celery
 import os
 from fabric.api import *
+import waller
+from waller import *
 
 app = Celery('tasks', backend='redis://localhost', broker='redis://localhost')
 
@@ -19,9 +22,7 @@ def add(command):
     print output
     return output
 
-def task():
-    result = run('whoami')
-    result = run('python --version')
-    result = run('git --version')
-
-
+@app.task
+def prev_deploy(SocketHandler):
+    walle = waller()
+    walle.prev_deploy(SocketHandler)
