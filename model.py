@@ -39,7 +39,7 @@ class enviroment(Base):
     status = Column(Integer)
 
 # 项目配置表
-class task_record(Base):
+class project(Base):
     # 表的名字:
     __tablename__ = 'project'
 

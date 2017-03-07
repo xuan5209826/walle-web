@@ -26,7 +26,7 @@ def save_record(stage, sequence, user_id, task_id, status, command, success, err
         status=status,
         command=command,
         success=success,
-        error=error,
+        error=error
     )
     # 添加到session:
     session.add(new_record)
