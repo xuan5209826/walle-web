@@ -31,11 +31,15 @@ class waller():
     stage_post_release = 'post_release'
 
     version = datetime.datetime.now().strftime('%Y%m%d%H%M%s')
-    project_name = ''
-    dir_codebase = '/Users/wushuiyong/workspace/meolu/data/codebase'
+    project_name = 'walle-web'
+    dir_codebase = '/Users/wushuiyong/workspace/meolu/data/codebase/' + project_name
     dir_release  = '/home/wushuiyong/walle/release'
     dir_webroot  = '/home/wushuiyong/walle/webroot'
     env.host_string = 'localhost'
+
+    # 定义远程机器
+    env.hosts = ['172.16.0.231', '172.16.0.177']
+    env.user  = 'wushuiyong'
 
     def __init__(self):
         pass
@@ -63,6 +67,7 @@ class waller():
         SocketHandler.send_to_all({
             'type': 'user',
             'id': 33,
+            'host': env.host_string,
             'command': command,
             'message': result.stdout,
         })
@@ -76,6 +81,7 @@ class waller():
         SocketHandler.send_to_all({
             'type': 'user',
             'id': 33,
+            'host': env.host_string,
             'command': command,
             'message': result.stdout,
         })
@@ -89,6 +95,7 @@ class waller():
         SocketHandler.send_to_all({
             'type': 'user',
             'id': 33,
+            'host': env.host_string,
             'command': command,
             'message': result.stdout,
         })
@@ -102,11 +109,12 @@ class waller():
         SocketHandler.send_to_all({
             'type': 'user',
             'id': 33,
+            'host': env.host_string,
             'command': command,
             'message': result.stdout,
         })
 
-    def deploy(self):
+    def deploy(self, SocketHandler):
         '''
         2.检出代码
 
@@ -114,38 +122,74 @@ class waller():
         :return:
         '''
 
-        gitUri = 'git@gitlab.renrenche.com:marketing_center/wow.git'
+        gitUri = 'git@bitbucket.org:wushuiyong/walle-web.git'
         # 如果项目底下有 .git 目录则认为项目完整,可以直接检出代码
         if (os.path.exists(self.dir_codebase + '/.git')):
             with cd(self.dir_codebase):
-                run('pwd && git pull')
+                command = 'pwd && git pull'
+                result = run(command)
+                SocketHandler.send_to_all({
+                    'type': 'user',
+                    'id': 33,
+                    'host': env.host_string,
+                    'command': command,
+                    'message': result.stdout,
+                })
         else:
             # 否则当作新项目检出完整代码
             with cd(self.dir_codebase):
-                run('pwd && git clone %s .' % (gitUri))
+                command = 'pwd && git clone %s .' % (gitUri)
+                result = run(command)
+                SocketHandler.send_to_all({
+                    'type': 'user',
+                    'id': 33,
+                    'host': env.host_string,
+                    'command': command,
+                    'message': result.stdout,
+                })
         pass
 
-    def post_deploy(self):
+    def post_deploy(self, SocketHandler):
+
         '''
         3.检出代码后要做的任务
         :return:
         '''
         pass
 
-    def prev_release(self):
+    def prev_release(self, SocketHandler):
         '''
         4.部署代码到目标机器前做的任务
         - 检查 webroot 父目录是否存在
         :return:
         '''
-        execute(self.pre_release_webroot)
+        execute(self.pre_release_webroot, SocketHandler)
         pass
 
-    def pre_release_webroot(self):
-        run('mkdir -p %s' % (self.dir_webroot))
-        run('mkdir -p %s' % (self.dir_release))
+    def pre_release_webroot(self, SocketHandler):
+        # 不用新建
+        # command = 'mkdir -p %s' % (self.dir_webroot)
+        # result = run(command)
+        # SocketHandler.send_to_all({
+        #     'type': 'user',
+        #     'id': 33,
+        #     'host': env.host_string,
+        #     'command': command,
+        #     'message': result.stdout,
+        # })
 
-    def release(self):
+        command = 'mkdir -p %s' % (self.dir_release)
+        result = run(command)
+        SocketHandler.send_to_all({
+            'type': 'user',
+            'id': 33,
+            'host': env.host_string,
+            'command': command,
+            'message': result.stdout,
+        })
+
+
+    def release(self, SocketHandler):
         '''
         5.部署代码到目标机器做的任务
         - 打包代码 local
@@ -154,22 +198,49 @@ class waller():
         :return:
         '''
         with cd(os.path.dirname(self.dir_codebase)):
-            run('tar zcvf tar.tgz %s' % (self.project_name))
-            for target_server in env.hosts:
-                run('scp tar.tgz %s:%s/tar.tgz' % (self.target_server, self.dir_release))
 
-            execute(self.release_untar)
+            command = 'tar zcvf tar.tgz %s' % (self.project_name)
+            result = run(command)
+            SocketHandler.send_to_all({
+                'type': 'user',
+                'id': 33,
+                'host': env.host_string,
+                'command': command,
+                'message': result.stdout,
+            })
+            for target_server in env.hosts:
+
+                command = 'scp tar.tgz %s:%s/tar.tgz' % (target_server, self.dir_release)
+                result = run(command)
+                SocketHandler.send_to_all({
+                    'type': 'user',
+                    'id': 33,
+                    'host': env.host_string,
+                    'command': command,
+                    'message': result.stdout,
+                })
+
+            execute(self.release_untar, SocketHandler)
         pass
 
-    def release_untar(self):
+    def release_untar(self, SocketHandler):
         '''
         解压版本包
         :return:
         '''
         with cd(self.dir_release):
-            run('tar zxvf tar.tgz')
 
-    def post_release(self):
+            command = 'tar zxvf tar.tgz'
+            result = run(command)
+            SocketHandler.send_to_all({
+                'type': 'user',
+                'id': 33,
+                'host': env.host_string,
+                'command': command,
+                'message': result.stdout,
+            })
+
+    def post_release(self, SocketHandler):
         '''
         6.部署代码到目标机器后要做的任务
         - 切换软链
@@ -177,20 +248,46 @@ class waller():
         :return:
         '''
 
-        execute(self.post_release_service)
+        execute(self.post_release_service, SocketHandler)
 
         pass
 
-    def post_release_service(self):
+    def post_release_service(self, SocketHandler):
         with cd(self.dir_webroot):
-            run('ln -s %s %s/%s.%s.tmp' % (self.dir_release, self.dir_webroot, self.project_name, self.version))
-            run('mv -fT %s.%s.tmp %s' % (self.project_name, self.version, self.project_name))
-            sudo('nginx -s reload')
+            command = 'ln -s %s %s/%s.%s.tmp' % (self.dir_release, self.dir_webroot, self.project_name, self.version)
+            result = run(command)
+            SocketHandler.send_to_all({
+                'type': 'user',
+                'id': 33,
+                'host': env.host_string,
+                'command': command,
+                'message': result.stdout,
+            })
+
+            command = 'mv -fT %s.%s.tmp %s' % (self.project_name, self.version, self.project_name)
+            result = run(command)
+            SocketHandler.send_to_all({
+                'type': 'user',
+                'id': 33,
+                'host': env.host_string,
+                'command': command,
+                'message': result.stdout,
+            })
+
+            command = 'nginx -s reload'
+            result = sudo(command)
+            SocketHandler.send_to_all({
+                'type': 'user',
+                'id': 33,
+                'host': env.host_string,
+                'command': command,
+                'message': result.stdout,
+            })
 
     def walle_deploy(self):
 
         # 定义项目名称
-        project_name = 'wow'
+        project_name = 'walle-web'
         dir_codebase = '%s/%s' % (self.dir_codebase, self.project_name)
         dir_release  = '%s/%s' % (self.dir_release, self.project_name)
 

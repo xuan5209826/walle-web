@@ -26,3 +26,28 @@ def add(command):
 def prev_deploy(SocketHandler):
     walle = waller()
     walle.prev_deploy(SocketHandler)
+
+@app.task
+def deploy(SocketHandler):
+    walle = waller()
+    walle.deploy(SocketHandler)
+
+@app.task
+def post_deploy(SocketHandler):
+    walle = waller()
+    walle.post_deploy(SocketHandler)
+
+@app.task
+def prev_release(SocketHandler):
+    walle = waller()
+    walle.prev_release(SocketHandler)
+
+@app.task
+def release(SocketHandler):
+    walle = waller()
+    walle.release(SocketHandler)
+
+@app.task
+def post_release(SocketHandler):
+    walle = waller()
+    walle.post_release(SocketHandler)

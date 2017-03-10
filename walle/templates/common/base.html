@@ -911,7 +911,7 @@
 							</form>
 						</div><!-- /.nav-search -->
 					</div>
-
+                    {% block main_content %}{% endblock %}
 				</div>
 			</div><!-- /.main-content -->
 
@@ -954,8 +954,8 @@
 		<!-- <![endif]-->
 
 		<!--[if IE]>
-<script src="{{url_for('static', filename='js/jquery-1.11.3.min.js')}}"></script>
-<![endif]-->
+        <script src="{{url_for('static', filename='js/jquery-1.11.3.min.js')}}"></script>
+        <![endif]-->
 		<script type="text/javascript">
 			var js_url = '{{url_for("static", filename="js/jquery.mobile.custom.min.js")}}'
 			if('ontouchstart' in document.documentElement) document.write("<script src=' + js_url + '>"+"<"+"/script>");
@@ -967,7 +967,7 @@
 		<!-- ace scripts -->
 		<script src="{{url_for('static', filename='js/ace-elements.min.js')}}"></script>
 		<script src="{{url_for('static', filename='js/ace.min.js')}}"></script>
-
+        {% block main_javascript %}{% endblock %}
 		<!-- inline scripts related to this page -->
 	</body>
 </html>

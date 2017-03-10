@@ -1,5 +1,5 @@
 {% extends "common/base.html" %}
-{% block content %}
+{% block main_content %}
 <div class="page-content">
     <div class="row">
         <div class="col-xs-12">
@@ -41,16 +41,21 @@
                     <div class="progress-bar progress-status progress-bar-success" style="width: 0%;"></div>
                 </div>
 
+                <div class="alert alert-block alert-success" id="console" style="display: none">
+                    <button type="button" class="close" data-dismiss="alert">
+                        <i class="ace-icon fa fa-times"></i>
+                    </button>
+                </div>
+
                 <div class="alert alert-block alert-success result-success" style="display: none">
                     <h4><i class="icon-thumbs-up"></i>上线成功: )</h4>
                     <p>辛苦了，小主：）</p>
-
                 </div>
 
                 <div class="alert alert-block alert-danger result-failed" style="display: none">
                     <h4><i class="icon-bell-alt"></i>上线出错:（</h4>
-        <span class="error-msg">
-        </span>
+                    <span class="error-msg">
+                    </span>
                     <br><br>
                     <i class="icon-bullhorn"></i><span>请联系SA或者重新部署</span>
                 </div>
@@ -60,4 +65,19 @@
         </div><!-- /.col -->
     </div><!-- /.row -->
 </div>
+{% endblock %}
+
+
+{% block main_javascript %}
+<script type="text/javascript">
+    var ws = new WebSocket('ws://localhost:8888/aso');
+    ws.onmessage = function(event) {
+        var data = eval('(' + event.data + ')');
+        $('#console').append('<div class="console-item">[' + data['host'] + '] ' + data['command'] + '<br>' + data['message'].replace(/\r\n/g,"<BR>").replace(/\r/g,"<BR>") + '</div>')
+    };
+    $('.btn-deploy').click(function() {
+        $('#console').show()
+        ws.send('pwd');
+    })
+</script>
 {% endblock %}
