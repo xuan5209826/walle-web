@@ -12,7 +12,7 @@ CREATE TABLE `project` (
   `id` int(10) NOT NULL AUTO_INCREMENT COMMENT '记录id',
   `name` varchar(100) DEFAULT 'master' COMMENT '项目名字',
   `user_id` int(10) NOT NULL COMMENT '添加项目的用户id',
-  `enviroment_id` int(1) NOT NULL COMMENT 'enviroment的id',
+  `environment_id` int(1) NOT NULL COMMENT 'environment的id',
   `status` tinyint(1) DEFAULT '1' COMMENT '状态：0无效，1有效',
   `version` varchar(40) DEFAULT '' COMMENT '线上当前版本，用于快速回滚',
   `excludes` text COMMENT '要排除的文件',
