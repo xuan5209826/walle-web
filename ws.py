@@ -6,9 +6,11 @@
 import tornado.ioloop
 import tornado.web
 import tornado.websocket
+from flask import Flask
 import json
 import os
 from StringIO import StringIO
+from waller import *
 
 import cel
 import os, datetime
@@ -18,18 +20,18 @@ from fabric import context_managers, colors
 version = datetime.datetime.now().strftime('%Y%m%d%H%M%s')
 project_name = ''
 dir_codebase = '/Users/wushuiyong/workspace/meolu/data/codebase'
-dir_release  = '/home/wushuiyong/walle/release'
-dir_webroot  = '/home/wushuiyong/walle/webroot'
+dir_release = '/home/wushuiyong/walle/release'
+dir_webroot = '/home/wushuiyong/walle/webroot'
 env.host_string = 'localhost'
+
 
 class Index(tornado.web.RequestHandler):
     def get(self):
         self.render('say.html')
 
+
 # 然后再改改, 安排每个连接者给其它连接者打个招呼.
 class SocketHandler(tornado.websocket.WebSocketHandler):
-
-
     clients = set()
 
     def check_origin(self, origin):
@@ -75,25 +77,36 @@ class SocketHandler(tornado.websocket.WebSocketHandler):
         :return:
         '''
         # result = cel.add(message)
-        result = cel.prev_deploy(SocketHandler)
-        cel.deploy(SocketHandler)
-        cel.post_deploy(SocketHandler)
-        cel.prev_release(SocketHandler)
-        cel.release(SocketHandler)
-        cel.post_release(SocketHandler)
+        # result = cel.prev_deploy(SocketHandler)
+        # cel.deploy(SocketHandler)
+        # cel.post_deploy(SocketHandler)
+        # cel.prev_release(SocketHandler)
+        # cel.release(SocketHandler)
+        # cel.post_release(SocketHandler)
+
+        wallers = waller(task_id=message)
+        # walle.task_id = message
+        wallers.prev_deploy(SocketHandler)
+        wallers.deploy(SocketHandler)
+        wallers.post_deploy(SocketHandler)
+        wallers.prev_release(SocketHandler)
+        wallers.release(SocketHandler)
+        wallers.post_release(SocketHandler)
 
 
-        # walle_deploy()
+# walle_deploy()
 
-        # out_file = '/tmp/ws_01'
-        # cmd = '%s > %s' % (message, out_file)
-        # done = os.system(cmd)
-        # stdOut = open(out_file)
-        # SocketHandler.send_to_all({
-        #     'type': 'user',
-        #     'id': id(self),
-        #     'message': result,
-        # })
+# out_file = '/tmp/ws_01'
+# cmd = '%s > %s' % (message, out_file)
+# done = os.system(cmd)
+# stdOut = open(out_file)
+# SocketHandler.send_to_all({
+#     'type': 'user',
+#     'id': id(self),
+#     'message': result,
+# })
+
+
 # class MainHandler(tornado.web.RequestHandler):
 #     def get(self):
 #         self.write("Hello, world")
@@ -103,6 +116,8 @@ def make_app():
         (r"/", Index),
         (r"/aso", SocketHandler),
     ])
+
+
 #
 # # ===================== fabric ================
 #
@@ -240,6 +255,10 @@ def make_app():
 #     pass
 
 if __name__ == "__main__":
+    app = Flask(__name__)
+    app.config.from_object('config')
+    models.db.init_app(app)
+    models.db.app = app
     app = make_app()
     app.listen(8888)
     tornado.ioloop.IOLoop.current().start()

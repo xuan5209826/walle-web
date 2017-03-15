@@ -10,11 +10,10 @@ import json
 import os
 from StringIO import StringIO
 
-import cel
 import os, datetime
 from fabric.api import run, env, local, cd, execute, sudo
 from fabric import context_managers, colors
-import sql
+from walle import models
 
 
 class waller():
@@ -23,6 +22,7 @@ class waller():
     序列号
     '''
     stage = ''
+
     sequence = 0
     stage_prev_deploy = 'prev_deploy'
     stage_post_deploy = 'post_deploy'
@@ -30,19 +30,37 @@ class waller():
     stage_prev_release = 'prev_release'
     stage_post_release = 'post_release'
 
+    task_id = ''
+    taskMdl = None
+    TaskRecord=None
+
     version = datetime.datetime.now().strftime('%Y%m%d%H%M%s')
     project_name = 'walle-web'
     dir_codebase = '/Users/wushuiyong/workspace/meolu/data/codebase/' + project_name
-    dir_release  = '/home/wushuiyong/walle/release'
-    dir_webroot  = '/home/wushuiyong/walle/webroot'
+    # dir_release  = '/home/wushuiyong/walle/release'
+    # dir_webroot  = '/home/wushuiyong/walle/webroot'
+
+    # 定义远程机器
+    # env.hosts = ['172.16.0.231', '172.16.0.177']
+    # env.user = 'wushuiyong'
+
+    dir_release  = None
+    dir_webroot  = None
     env.host_string = 'localhost'
 
     # 定义远程机器
-    env.hosts = ['172.16.0.231', '172.16.0.177']
-    env.user  = 'wushuiyong'
+    env.hosts = None
+    env.user = None
 
-    def __init__(self):
-        pass
+    def __init__(self, task_id=None):
+        self.TaskRecord = models.TaskRecord()
+        if task_id:
+            self.task_id = task_id
+            self.taskMdl = models.Task(self.task_id).one()
+            env.hosts = self.taskMdl.get('servers').split(',')
+            env.user = self.taskMdl.get('target_user')
+            self.dir_release = self.taskMdl.get('target_library')
+            self.dir_webroot = self.taskMdl.get('target_root')
 
     # ===================== fabric ================
     def prev_deploy(self, SocketHandler):
@@ -61,8 +79,8 @@ class waller():
         command = 'whoami'
         result = run(command)
 
-        sql.save_record(stage=self.stage, sequence=self.sequence, user_id=33,
-                    task_id=32, status=1, command=command,
+        self.TaskRecord.save_record(stage=self.stage, sequence=self.sequence, user_id=33,
+                    task_id=1, status=1, command=command,
                     success=result.stdout, error=result.stderr)
         SocketHandler.send_to_all({
             'type': 'user',
@@ -75,7 +93,7 @@ class waller():
         command = 'python --version'
         result = run(command)
 
-        sql.save_record(stage=self.stage, sequence=self.sequence, user_id=33,
+        self.TaskRecord.save_record(stage=self.stage, sequence=self.sequence, user_id=33,
                     task_id=32, status=1, command=command,
                     success=result.stdout, error=result.stderr)
         SocketHandler.send_to_all({
@@ -89,7 +107,7 @@ class waller():
         command = 'git --version'
         result = run(command)
 
-        sql.save_record(stage=self.stage, sequence=self.sequence, user_id=33,
+        self.TaskRecord.save_record(stage=self.stage, sequence=self.sequence, user_id=33,
                     task_id=32, status=1, command=command,
                     success=result.stdout, error=result.stderr)
         SocketHandler.send_to_all({
@@ -103,7 +121,7 @@ class waller():
         command = 'mkdir -p %s' % (self.dir_codebase)
         result = run(command)
 
-        sql.save_record(stage=self.stage, sequence=self.sequence, user_id=33,
+        self.TaskRecord.save_record(stage=self.stage, sequence=self.sequence, user_id=33,
                     task_id=32, status=1, command=command,
                     success=result.stdout, error=result.stderr)
         SocketHandler.send_to_all({
@@ -147,6 +165,17 @@ class waller():
                     'command': command,
                     'message': result.stdout,
                 })
+        # 更新到指定 commit_id
+        with cd(self.dir_codebase):
+            command = 'git reset -q --hard %s' % (self.taskMdl.get('commit_id'))
+            result = run(command)
+            SocketHandler.send_to_all({
+                'type': 'user',
+                'id': 33,
+                'host': env.host_string,
+                'command': command,
+                'message': result.stdout,
+            })
         pass
 
     def post_deploy(self, SocketHandler):

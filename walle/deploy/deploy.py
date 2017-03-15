@@ -27,10 +27,14 @@ class Deploy(Controller):
         return self.render_json(data=data, count=int(math.ceil(count / size)))
 
     def one(self):
-        task_id = int(request.args.get('task_id'))
-        data = self.taskModel.query.filter_by(id = task_id).one().to_json()
+        # task_id = int(request.args.get('task_id'))
+        # data = self.taskModel.query.filter_by(id = task_id).one().to_json()
+        #
+        # return self.render_json(data=data)
+        taskModel = models.Task(task_id=1)
+        return self.render_json(data=taskModel.one())
 
-        return self.render_json(data=data)
+
 
 
 

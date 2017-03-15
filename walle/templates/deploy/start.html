@@ -20,11 +20,11 @@
                     margin-left: 30px;
                 }
             </style>
-            <div class="box" style="height: 100%">
+            <div class="box" id="task-info" style="height: 100%">
                 <h4 class="box-title header smaller red">
-                    <i class="icon-map-marker"></i>测试环境 -
-                    营销中心 ：
-                    d （branch:feature-sem_city_hy 版本号：）
+                    <i class="icon-map-marker"></i>{测试环境} -
+                    {营销中心} ：
+                    {[ data.title ]} （branch: {[ data.branch]} 版本号：{[ data.commit_id]}）
                     <button type="submit" class="btn btn-primary btn-deploy" data-id="573">部署</button>
                     <a class="btn btn-success btn-return" href="/task/index">返回</a>
                 </h4>
@@ -70,14 +70,31 @@
 
 {% block main_javascript %}
 <script type="text/javascript">
+    var task_id = $.getUrlParam('task_id')
+    list_table = new Vue({
+        el: '#task-info',
+        delimiters: ['{[', ']}'],
+        data: {data: ""},
+        beforeCreate: function () {
+            var url = '/deploy/task?task_id=' + task_id;
+            console.log(url)
+            var _self = this;
+            $.get(url, function (data) {
+                _self.data = data.data
+            })
+        }
+    });
+
+
     var ws = new WebSocket('ws://localhost:8888/aso');
-    ws.onmessage = function(event) {
+    ws.onmessage = function (event) {
         var data = eval('(' + event.data + ')');
-        $('#console').append('<div class="console-item">[' + data['host'] + '] ' + data['command'] + '<br>' + data['message'].replace(/\r\n/g,"<BR>").replace(/\r/g,"<BR>") + '</div>')
+        $('#console').append('<div class="console-item">[' + data['host'] + '] ' + data['command'] + '<br>' + data['message'].replace(/\r\n/g, "<BR>").replace(/\r/g, "<BR>") + '</div>')
     };
-    $('.btn-deploy').click(function() {
+    $('.btn-deploy').click(function () {
         $('#console').show()
-        ws.send('pwd');
+        ws.send(task_id);
     })
 </script>
 {% endblock %}
+
