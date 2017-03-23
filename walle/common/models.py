@@ -10,8 +10,11 @@ from sqlalchemy.ext.declarative import declarative_base
 
 from flask.ext.sqlalchemy import SQLAlchemy
 from flask.ext.login import current_user
+from werkzeug.security import check_password_hash,generate_password_hash
+from flask.ext.login import UserMixin
+
 # from flask.ext.cache import Cache
-from datetime import *
+from datetime import datetime
 import time
 
 db = SQLAlchemy()
@@ -40,7 +43,7 @@ class Task(db.Model):
     created_at = db.Column(DateTime)
     updated_at = db.Column(DateTime)
 
-    taskMdl=None
+    taskMdl = None
 
     def __init__(self, task_id=None):
         if task_id:
@@ -81,13 +84,14 @@ class Task(db.Model):
         project_info = Project.query.filter_by(id=self.taskMdl.get('project_id')).one().to_json()
         return dict(project_info, **self.taskMdl)
 
+
 # 上线记录表
 class TaskRecord(db.Model):
     # 表的名字:
     __tablename__ = 'task_record'
 
     # 表的结构:
-    id = db.Column(Integer, primary_key=True)
+    id = db.Column(Integer, primary_key=True, autoincrement=True)
     stage = db.Column(String(20))
     sequence = db.Column(Integer)
     user_id = db.Column(Integer)
@@ -99,8 +103,8 @@ class TaskRecord(db.Model):
 
     def save_record(self, stage, sequence, user_id, task_id, status, command, success, error):
         record = TaskRecord(stage=stage, sequence=sequence, user_id=user_id,
-                    task_id=task_id, status=status, command=command,
-                    success=success, error=error)
+                            task_id=task_id, status=status, command=command,
+                            success=success, error=error)
         db.session.add(record)
         return db.session.commit()
 
@@ -111,9 +115,10 @@ class enviroment(db.Model):
     __tablename__ = 'enviroment'
 
     # 表的结构:
-    id = db.Column(Integer, primary_key=True)
+    id = db.Column(Integer, primary_key=True, autoincrement=True)
     name = db.Column(String(20))
     status = db.Column(Integer)
+
 
 # 项目配置表
 class Project(db.Model):
@@ -121,7 +126,7 @@ class Project(db.Model):
     __tablename__ = 'project'
 
     # 表的结构:
-    id = db.Column(Integer, primary_key=True)
+    id = db.Column(Integer, primary_key=True, autoincrement=True)
     user_id = db.Column(Integer)
     name = db.Column(String(100))
     environment_id = db.Column(Integer)
@@ -143,7 +148,6 @@ class Project(db.Model):
     repo_password = db.Column(String(50))
     repo_mode = db.Column(String(50))
     repo_type = db.Column(String(10))
-
 
     def to_json(self):
         return {
@@ -169,4 +173,93 @@ class Project(db.Model):
             'repo_password': self.repo_password,
             'repo_mode': self.repo_mode,
             'repo_type': self.repo_type,
+            'created_at': self.created_at.strftime('%Y-%m-%d %H:%M:%S'),
+            'updated_at': self.updated_at.strftime('%Y-%m-%d %H:%M:%S'),
+        }
+
+# 项目配置表
+class User(db.Model, UserMixin):
+    # 表的名字:
+    __tablename__ = 'user'
+
+    current_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+    password_hash = 'sadfsfkk'
+    # 表的结构:
+    id = db.Column(Integer, primary_key=True, autoincrement=True)
+    username = db.Column(String(50))
+    is_email_verified = db.Column(Integer, default=0)
+    email = db.Column(String(50), unique=True, nullable=False)
+    password = db.Column(String(50), nullable=False)
+    # password_hash = db.Column(String(50), nullable=False)
+    avatar = db.Column(String(100))
+    role_id = db.Column(Integer, default=0)
+    status = db.Column(Integer, default=0)
+    created_at = db.Column(DateTime, default=current_time)
+    updated_at = db.Column(DateTime, default=current_time, onupdate=current_time)
+    #
+    # def __init__(self, email=None, password=None):
+    #     from walle.common.tokens import TokenManager
+    #     tokenManage = TokenManager()
+    #     if email and password:
+    #         self.email = email
+    #         self.username = email
+    #         self.password = tokenManage.generate_token(password)
+    #         self.role_id = 0
+    #         self.is_email_verified = 0
+    #         self.status = 0
+    #
+    # @property
+    # def password(self):
+    #     """
+    #     明文密码（只读）
+    #     :return:
+    #     """
+    #     raise AttributeError(u'文明密码不可读')
+    #
+    #
+    # @password_login.setter
+    # def password_login(self, value):
+    #     """
+    #     写入密码，同时计算hash值，保存到模型中
+    #     :return:
+    #     """
+    #     self.password = generate_password_hash(value)
+
+    def verify_password(self, password):
+        """
+        检查密码是否正确
+        :param password:
+        :return:
+        """
+        if self.password is None:
+            return False
+        return check_password_hash(self.password, password)
+
+
+    def is_authenticated(self):
+        return True
+
+    def is_active(self):
+        return True
+
+    def is_anonymous(self):
+        return False
+
+    def get_id(self):
+        try:
+            return unicode(self.id)  # python 2
+        except NameError:
+            return str(self.id)  # python 3
+
+    def to_json(self):
+        return {
+            'id': self.id,
+            'username': self.username,
+            'is_email_verified': self.is_email_verified,
+            'email': self.email,
+            'avatar': self.avatar,
+            'role_id': self.role_id,
+            'status': self.status,
+            'created_at': self.created_at.strftime('%Y-%m-%d %H:%M:%S'),
+            'updated_at': self.updated_at.strftime('%Y-%m-%d %H:%M:%S'),
         }

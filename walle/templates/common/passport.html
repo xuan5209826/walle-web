@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/html">
+<head>
+    <meta charset="UTF-8">
+    <title>walle登录</title>
+    <link rel="stylesheet" href="{{url_for('static', filename='css/walle.css')}}"/>
+    <link rel="stylesheet" href="{{url_for('static', filename='css/walle.login.css')}}"/>
+</head>
+<body>
+<div id="header">
+    <a href="/" class="fn-left">
+        <!--<img src="/mkt-static/static/img/logo.png"/>-->
+        <h1>营销中心</h1>
+    </a>
+</div>
+<div id="main">
+    {% block main_content %}{% endblock %}
+</div>
+<div id="footer">
+    <div class="inline"></div>
+    Copyright &copy; 2017 walle-web.io Co.,Ltd. All rights reserved.
+</div>
+<script src="{{url_for('static', filename='js/jquery-2.1.4.min.js')}}"></script>
+<script src="{{url_for('static', filename='js/vue.min.js')}}"></script>
+{% block main_javascript %}{% endblock %}
+</body>
+</html>

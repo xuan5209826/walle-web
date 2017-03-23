@@ -1,4 +1,4 @@
-CREATE TABLE `enviroment` (
+CREATE TABLE `environment` (
   `id` int(10) NOT NULL AUTO_INCREMENT COMMENT 'id',
   `name` varchar(100) DEFAULT 'master' COMMENT '环境名称',
   `status` tinyint(1) DEFAULT '1' COMMENT '状态：0无效，1有效',
@@ -110,16 +110,15 @@ CREATE TABLE `permission` (
   `id` int(15) NOT NULL AUTO_INCREMENT,
   `name_cn` varchar(30) NOT NULL COMMENT '模块中文名称',
   `name_en` varchar(30) NOT NULL COMMENT '模块英文名称',
-  `pid` smallint(6) NOT NULL COMMENT '父模块id，顶级pid为0',
-  `type` enum('action','controller','module') COLLATE utf8_unicode_ci DEFAULT NULL COMMENT '类型',
-  `sequence` int(11) DEFAULT '' COMMENT '排序序号',
+  `pid` int(6) NOT NULL COMMENT '父模块id，顶级pid为0',
+  `type` enum('action','controller','module') DEFAULT 'action' COMMENT '类型',
+  `sequence` int(11) DEFAULT '0' COMMENT '排序序号sprintf("%2d%2d%2d", module_id, controller_id, 自增两位数)',
   `archive` tinyint(1) NOT NULL DEFAULT '0' COMMENT '归档：0有效，1无效',
   `icon` varchar(30) DEFAULT '' COMMENT '模块',
-  `open` tinyint(1) DEFAULT '',
-  `fe_url` varchar(100) DEFAULT '' COMMENT '前端url',
-  `fe_visible` tinyint(1) DEFAULT '1' COMMENT '前端是否展示该模块 0不展示，1展示',
+  `created_at` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  `updated_at` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '修改时间',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 comment='权限表';
 
 
 CREATE TABLE `role` (
@@ -136,7 +135,6 @@ CREATE TABLE `user` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `username` varchar(255) NOT NULL comment '用户昵称',
   `is_email_verified` tinyint(1) NOT NULL DEFAULT '0' comment '是否邮箱认证',
-  `email_confirmation_token` varchar(255) DEFAULT '',
   `email` varchar(100) NOT NULL comment '邮箱',
   `avatar` varchar(100) DEFAULT 'default.jpg' COMMENT '头像图片地址',
   `role_id` int(6) NOT NULL comment '角色id',

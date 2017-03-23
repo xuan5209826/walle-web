@@ -59,3 +59,24 @@ def task():
 @deploy.route('/start')
 def start():
     return render_template("deploy/start.html",)
+
+@deploy.route('/mail')
+def mail():
+    from walle.common import emails
+    user = models.User.query.filter_by(id=1).one()
+    d = Deploy()
+    # return d.render_json(data=user.username)
+    # return d.render_json(data=user.username)
+
+    ret = emails.public_send_registered_email(user)
+
+    return d.render_json(data=ret)
+
+@deploy.route('/confirm_mail')
+def confirm_mail():
+    from walle.common import emails
+    user = models.User.query.filter_by(id=1).one()
+    d = Deploy()
+    # return d.render_json(data=user.username)
+
+    emails.public_send_registered_email(user)

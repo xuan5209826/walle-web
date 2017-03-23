@@ -15,12 +15,11 @@ import datetime
 
 
 class DefaultConfig(object):
-
     # Get the app root path
     #            <_basedir>
     # ../../ -->  flaskbb/flaskbb/configs/base.py
     basedir = os.path.join(os.path.abspath(os.path.dirname(os.path.dirname(
-                           os.path.dirname(__file__)))))
+            os.path.dirname(__file__)))))
 
     # Python version
     py_version = '{0.major}{0.minor}'.format(sys.version_info)
@@ -40,7 +39,7 @@ class DefaultConfig(object):
     # Note that localhost does not support subdomains so setting this to
     # “localhost” does not help.
     # Example for the FlaskBB forums: SERVER_NAME = "forums.flaskbb.org"
-    #SERVER_NAME =
+    # SERVER_NAME =
 
     # The preferred url scheme. In a productive environment it is highly
     # recommended to use 'https'.
@@ -59,10 +58,9 @@ class DefaultConfig(object):
     # Database
     # ------------------------------
     # For PostgresSQL:
-    #SQLALCHEMY_DATABASE_URI = "postgresql://flaskbb@localhost:5432/flaskbb"
+    # SQLALCHEMY_DATABASE_URI = "postgresql://flaskbb@localhost:5432/flaskbb"
     # For SQLite:
-    SQLALCHEMY_DATABASE_URI = 'sqlite:///' + basedir + '/' + \
-                              'flaskbb.sqlite'
+    SQLALCHEMY_DATABASE_URI = "mysql://root:whoiam@localhost/walle-python"
 
     # This option will be removed as soon as Flask-SQLAlchemy removes it.
     # At the moment it is just used to suppress the super annoying warning
@@ -127,7 +125,7 @@ class DefaultConfig(object):
     # Using the redis storage requires the installation of the redis package,
     # which will be installed if you enable REDIS_ENABLE while memcached
     # relies on the pymemcache package.
-    #RATELIMIT_STORAGE_URL = "redis://localhost:6379"
+    # RATELIMIT_STORAGE_URL = "redis://localhost:6379"
 
     # Caching
     # ------------------------------
@@ -135,27 +133,30 @@ class DefaultConfig(object):
     # https://pythonhosted.org/Flask-Caching/#configuring-flask-caching
     CACHE_TYPE = "simple"
     # For redis:
-    #CACHE_TYPE = "redis"
+    # CACHE_TYPE = "redis"
     CACHE_DEFAULT_TIMEOUT = 60
 
     # Mail
     # ------------------------------
     # Google Mail Example
-    #MAIL_SERVER = "smtp.gmail.com"
-    #MAIL_PORT = 465
-    #MAIL_USE_SSL = True
-    #MAIL_USERNAME = "your_username@gmail.com"
-    #MAIL_PASSWORD = "your_password"
-    #MAIL_DEFAULT_SENDER = ("Your Name", "your_username@gmail.com")
+    # MAIL_SERVER = "smtp.gmail.com"
+    # MAIL_PORT = 465
+    # MAIL_USE_SSL = True
+    # MAIL_USERNAME = "your_username@gmail.com"
+    # MAIL_PASSWORD = "your_password"
+    # MAIL_DEFAULT_SENDER = ("Your Name", "your_username@gmail.com")
 
-    # Local SMTP Server
-    MAIL_SERVER = "localhost"
-    MAIL_PORT = 25
-    MAIL_USE_SSL = False
-    MAIL_USE_TLS = False
-    MAIL_USERNAME = "noreply@example.org"
-    MAIL_PASSWORD = ""
-    MAIL_DEFAULT_SENDER = ("Default Sender", "noreply@example.org")
+
+    # Flask-Mail settings
+    MAIL_USERNAME = os.getenv('MAIL_USERNAME',             'service@walle-web.io')
+    MAIL_PASSWORD = os.getenv('MAIL_PASSWORD',             'mu8H2QIlmkgcu7On')
+    MAIL_DEFAULT_SENDER = os.getenv('MAIL_DEFAULT_SENDER', 'service@walle-web.io')
+    MAIL_SERVER = os.getenv('MAIL_SERVER',                 'smtp.exmail.qq.com')
+    MAIL_PORT = int(os.getenv('MAIL_PORT',                 '465'))
+    MAIL_USE_SSL = int(os.getenv('MAIL_USE_SSL',           True))
+
+    # Flask-User settings
+    USER_APP_NAME = "AppName"  # Used by email templates
     # Where to logger should send the emails to
     ADMINS = ["admin@example.org"]
 
