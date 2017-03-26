@@ -3,6 +3,8 @@ from flask.ext.sqlalchemy import SQLAlchemy
 # from flask.ext.login import LoginManager
 from walle.deploy.deploy import deploy
 from walle.user.user import user_blue_print
+from walle.user.role import role_blue_print
+from walle.user.api import api_blue_bp
 from walle.user.passport import passport_blue_print
 from walle.common import models
 from flask_mail import Mail
@@ -15,8 +17,8 @@ VERSION = (0, 2)
 __version__ = ".".join(map(str, VERSION))
 __status__ = "Alpha"
 __description__ = "Simple blog system powered by Flask"
-__author__ = "defshine"
-__email__ = "crazyxin1988@gmail.com"
+__author__ = "wushuiyong"
+__email__ = "wushuiyong@walle-web.io"
 __license__ = "MIT License"
 
 app = Flask(__name__)
@@ -56,6 +58,8 @@ def register_blueprint(app):
     app.register_blueprint(deploy, url_prefix='/deploy')
     app.register_blueprint(user_blue_print, url_prefix='/user')
     app.register_blueprint(passport_blue_print, url_prefix='/passport')
+    app.register_blueprint(role_blue_print, url_prefix='/role')
+    app.register_blueprint(api_blue_bp, url_prefix='/api')
 
 #
 #

@@ -42,3 +42,8 @@ class LoginForm(Form):
         pass
     # email = StringField('Email', validators=[validators.Required(), validators.Length(1, 64)]) #, validators.Email()
     # password = PasswordField('Password', validators=[validators.Required()])
+
+class RoleAdd(Form):
+
+    name = TextField('Email Address', [validators.Length(min=6, max=35), validators.InputRequired()])
+    # password = SelectField('Password', [validators.Length(min=6, max=35))

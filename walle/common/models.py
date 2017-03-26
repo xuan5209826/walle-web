@@ -263,3 +263,50 @@ class User(db.Model, UserMixin):
             'created_at': self.created_at.strftime('%Y-%m-%d %H:%M:%S'),
             'updated_at': self.updated_at.strftime('%Y-%m-%d %H:%M:%S'),
         }
+
+# 项目配置表
+class Role(db.Model):
+    # 表的名字:
+    __tablename__ = 'role'
+
+    current_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+
+    # 表的结构:
+    id = db.Column(Integer, primary_key=True, autoincrement=True)
+    name = db.Column(String(30))
+    permission_ids = db.Column(Text, default='')
+    created_at = db.Column(DateTime, default=current_time)
+    updated_at = db.Column(DateTime, default=current_time, onupdate=current_time)
+
+
+    def list(self, page=0, size=10, kw=''):
+        """
+        获取分页列表
+        :param page:
+        :param size:
+        :return:
+        """
+        query = Role.query
+        if kw:
+            query = query.filter(Role.name.like('%' + kw + '%'))
+        data = query.order_by('id desc').offset(int(size) * int(page)).limit(size).all()
+        return [p.to_json() for p in data]
+
+    def item(self, role_id):
+        """
+        获取单条记录
+        :param role_id:
+        :return:
+        """
+        data = Role.query.filter_by(id=role_id).first()
+        return data.to_json() if data else []
+
+
+    def to_json(self):
+        return {
+            'id': self.id,
+            'name': self.name,
+            'permission_ids': self.permission_ids,
+            'created_at': self.created_at.strftime('%Y-%m-%d %H:%M:%S'),
+            'updated_at': self.updated_at.strftime('%Y-%m-%d %H:%M:%S'),
+        }

@@ -123,8 +123,8 @@ CREATE TABLE `permission` (
 
 CREATE TABLE `role` (
   `id` int(10) NOT NULL AUTO_INCREMENT,
-  `name` text NOT NULL COMMENT '角色名称',
-  `permission_id` text comment '权限id',
+  `name` varchar(30) NOT NULL COMMENT '角色名称',
+  `permission_ids` text comment '权限id列表,逗号分隔',
   `created_at` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
   `updated_at` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '修改时间',
   PRIMARY KEY (`id`)

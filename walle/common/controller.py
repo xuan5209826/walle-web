@@ -9,7 +9,15 @@
 from flask import jsonify
 
 class Controller:
-    def render_json(self, code=0, message=None, data=[], count=0):
+    def render_json(self, code=0, message='', data=[], count=0):
+        return jsonify({
+            'code': code,
+            'message': message,
+            'data': data,
+            'count': count,
+        })
+
+    def json(self, code=0, message=None, data=[], count=0):
         return jsonify({
             'code': code,
             'message': message,
