@@ -23,4 +23,5 @@ flask/bin/pip install flask-babel
 flask/bin/pip install guess_language
 flask/bin/pip install flipflop
 flask/bin/pip install coverage
+尚未完整，待整理
 ```
