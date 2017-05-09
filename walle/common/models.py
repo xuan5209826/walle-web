@@ -4,14 +4,17 @@
 # @Created Time : 日  1/ 1 23:43:12 2017
 # @Description:
 
+import json
 from sqlalchemy import Column, String, Integer, create_engine, Text, DateTime
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.ext.declarative import declarative_base
+from flask import jsonify
 
 from flask.ext.sqlalchemy import SQLAlchemy
 from flask.ext.login import current_user
 from werkzeug.security import check_password_hash,generate_password_hash
 from flask.ext.login import UserMixin
+from pickle import dump
 
 # from flask.ext.cache import Cache
 from datetime import datetime
@@ -301,6 +304,14 @@ class Role(db.Model):
         data = Role.query.filter_by(id=role_id).first()
         return data.to_json() if data else []
 
+    def remove(self, role_id):
+        """
+
+        :param role_id:
+        :return:
+        """
+        return Role.query.filter_by(id=role_id).delete()
+
 
     def to_json(self):
         return {
@@ -310,3 +321,102 @@ class Role(db.Model):
             'created_at': self.created_at.strftime('%Y-%m-%d %H:%M:%S'),
             'updated_at': self.updated_at.strftime('%Y-%m-%d %H:%M:%S'),
         }
+
+# 项目配置表
+class Tag(db.Model):
+    # 表的名字:
+    __tablename__ = 'tag'
+
+    current_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+
+    # 表的结构:
+    id = db.Column(Integer, primary_key=True, autoincrement=True)
+    name = db.Column(String(30))
+    label = db.Column(String(30))
+    created_at = db.Column(DateTime, default=current_time)
+    updated_at = db.Column(DateTime, default=current_time, onupdate=current_time)
+
+    def to_json(self):
+        return {
+            'id': self.id,
+            'name': self.name,
+            'label': self.label,
+            'created_at': self.created_at.strftime('%Y-%m-%d %H:%M:%S'),
+            'updated_at': self.updated_at.strftime('%Y-%m-%d %H:%M:%S'),
+        }
+
+
+# 项目配置表
+class Group(db.Model):
+    # 表的名字:
+    __tablename__ = 'user_group'
+
+    current_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+
+    # 表的结构:
+    id = db.Column(Integer, primary_key=True, autoincrement=True)
+    user_id = db.Column(Integer, default=0)
+    group_id = db.Column(Integer, default=0)
+    created_at = db.Column(DateTime, default=current_time)
+    updated_at = db.Column(DateTime, default=current_time, onupdate=current_time)
+
+
+
+    def list(self, page=0, size=10, kw=''):
+        """
+        获取分页列表
+        :param page:
+        :param size:
+        :return:
+        """
+        query = Tag.query
+        if kw:
+            query = query.filter(Tag.name.like('%' + kw + '%'))
+        data = query.order_by('id desc').offset(int(size) * int(page)).limit(size).all()
+        return [p.to_json() for p in data]
+
+
+    def add(self, name):
+        tag = Tag(name=name, label='user_group')
+        db.session.add(tag)
+        return db.session.commit()
+
+    def update(self, group_id, group_name):
+        data = Tag.query.filter_by(label='user_group', id=group_id).first()
+        data.name = group_name
+        return db.session.commit()
+
+
+    def item(self, group_id):
+        """
+        获取单条记录
+        :param role_id:
+        :return:
+        """
+
+        data = Group.query.join(User, User.id == Group.user_id)\
+            .add_columns(User.id, User.username, Group.id)\
+            .filter(Group.group_id == group_id).first()
+        f = open('aa.txt', 'w')
+        dump(data, f)
+        # print(data)
+        return []
+        return data.to_json() if data else []
+
+    def remove(self, role_id):
+        """
+
+        :param role_id:
+        :return:
+        """
+        return Group.query.filter_by(id=role_id).delete()
+
+
+    def to_json(self):
+        return {
+            'id': self.id,
+            'user_id': self.user_id,
+            'created_at': self.created_at.strftime('%Y-%m-%d %H:%M:%S'),
+            'updated_at': self.updated_at.strftime('%Y-%m-%d %H:%M:%S'),
+        }
+

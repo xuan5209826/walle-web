@@ -1,3 +1,4 @@
+CREATE DATABASE IF NOT EXISTS walle default charset utf8 COLLATE utf8_general_ci;
 CREATE TABLE `environment` (
   `id` int(10) NOT NULL AUTO_INCREMENT COMMENT 'id',
   `name` varchar(100) DEFAULT 'master' COMMENT '环境名称',
@@ -144,6 +145,15 @@ CREATE TABLE `user` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8  comment='用户表';
 
+drop table user_group;
+CREATE TABLE `user_group` (
+  `id` int(10) NOT NULL AUTO_INCREMENT COMMENT '记录id',
+  `user_id` int(10) DEFAULT '0' COMMENT '用户id',
+  `group_id` int(10) DEFAULT '0' COMMENT '用户组id',
+  `created_at` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间' ,
+  `updated_at` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '修改时间',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='用户组关联表';
 
 
 

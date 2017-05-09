@@ -4,7 +4,7 @@ from flask.ext.sqlalchemy import SQLAlchemy
 from walle.deploy.deploy import deploy
 from walle.user.user import user_blue_print
 from walle.user.role import role_blue_print
-from walle.user.api import api_blue_bp
+from walle.user.api import bp_api
 from walle.user.passport import passport_blue_print
 from walle.common import models
 from flask_mail import Mail
@@ -30,7 +30,6 @@ login_manager.init_app(app)
 login_manager.login_view = 'login'
 
 mail = Mail(app)
-
 def create_app():
     register_database(app)
     register_blueprint(app)
@@ -59,7 +58,7 @@ def register_blueprint(app):
     app.register_blueprint(user_blue_print, url_prefix='/user')
     app.register_blueprint(passport_blue_print, url_prefix='/passport')
     app.register_blueprint(role_blue_print, url_prefix='/role')
-    app.register_blueprint(api_blue_bp, url_prefix='/api')
+    app.register_blueprint(bp_api, url_prefix='/api')
 
 #
 #
