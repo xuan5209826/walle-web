@@ -3,6 +3,21 @@
 walle_web.egg-info/
 build/
 dist/
+env/
+bin/
+build/
+develop-eggs/
+dist/
+eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+*.egg-info/
+.installed.cfg
+*.egg
+
 
 ############################# 日志文件 #############################
 *.log
@@ -11,7 +26,9 @@ dist/
 *.idea
 *.yml
 *.DS_Strore
- 
+.project
+.pydevproject
+
 ############################# 可能的数据文件 #############################
 *.txt
  
@@ -21,6 +38,12 @@ dist/
 
 ############################# 开发文件 #############################
 flask
+.tox/
+.coverage
+.cache
+.coveralls.yml
+nosetests.xml
+coverage.xml
 
 ############################# 保留文件 #############################
 !requirements.txt
