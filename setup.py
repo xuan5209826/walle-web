@@ -27,6 +27,7 @@ from setuptools import setup, find_packages
 from setuptools.command.test import test as TestCommand
 import sys
 
+REQUIREMENTS = [i.strip() for i in open("requirements.txt").readlines()]
 
 setup(
     name='walle-web',
@@ -41,35 +42,7 @@ setup(
     include_package_data=True,
     zip_safe=False,
     platforms='any',
-    install_requires=[
-        'anyjson',
-        'Flask',
-        'flask-allows',
-        'Flask-BabelPlus',
-        'Flask-Caching',
-        'Flask-DebugToolbar',
-        'Flask-Limiter',
-        'Flask-Login',
-        'Flask-Mail',
-        'Flask-Migrate',
-        'Flask-SQLAlchemy',
-        'Flask-Themes2',
-        'flask-whooshee',
-        'Flask-WTF',
-        'Jinja2',
-        'MarkupSafe',
-        'mistune',
-        'Pillow',
-        'Pygments',
-        'python-editor',
-        'requests',
-        'simplejson',
-        'SQLAlchemy',
-        'SQLAlchemy-Utils',
-        'Unidecode',
-        'Werkzeug',
-        'WTForms'
-    ],
+    install_requires=REQUIREMENTS,
     test_suite='',
     tests_require=[
     ],
