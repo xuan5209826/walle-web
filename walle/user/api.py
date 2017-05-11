@@ -7,21 +7,22 @@
     :author: wushuiyong@walle-web.io
 """
 
-
 import math
 from flask import Blueprint, request
 
 from walle.common import models
 from walle.common.controller import Controller
-from walle.user.forms import RegistrationForm
+from walle.user.forms import RegistrationForm, UserUpdateForm, GroupForm
 from flask.ext.restful import reqparse, abort, Api, Resource
 from flask.ext.login import current_user
 from flask.ext.login import login_user
 from walle.user.forms import RegistrationForm, LoginForm
+
 bp_api = Blueprint('v2', __name__, static_folder='assets')
 controller = Controller()
 from walle.common.models import db
-from werkzeug.security import check_password_hash,generate_password_hash
+from werkzeug.security import check_password_hash, generate_password_hash
+
 
 @bp_api.route('/role/', methods=['GET'])
 def role_list():
@@ -103,7 +104,6 @@ def role_remove(role_id):
 
 @bp_api.route('/passport/signin', methods=['POST'])
 def signin():
-
     form = LoginForm(request.form, csrf_enabled=False)
     if form.validate_on_submit():
         user = models.User.query.filter_by(email=form.email.data).first()
@@ -121,14 +121,14 @@ def signup():
     if form.validate_on_submit():
         password = generate_password_hash(form.password.data)
         user = models.User(email=form.email.data,
-                    username=form.email.data,
-                    password=password)
+                           username=form.email.data,
+                           password=password)
         db.session.add(user)
         db.session.commit()
-        return controller.render_json(data={'user_id':user.id, 'oldpwd': password,'password':generate_password_hash(form.password.data)})
+        return controller.render_json(
+                data={'user_id': user.id, 'oldpwd': password, 'password': generate_password_hash(form.password.data)})
         return redirect(url_for('passport.signin'))
     return controller.render_json(code=-1, message='todo')
-
 
     user = User()
     done = user.add(email=request.form.get('email'), password=request.form.get('password'))
@@ -163,8 +163,8 @@ def group_item(group_id):
     :return:
     """
 
-    group_model = models.Group()
-    group_info = group_model.item(group_id)
+    group_model = models.Group(group_id=group_id)
+    group_info = group_model.item()
     return controller.render_json(data=group_info)
 
 
@@ -175,40 +175,122 @@ def group_create():
 
     :return:
     """
-    user_ids = request.form.get('user_ids', '')
-    group_name = request.form.get('group_name', None)
 
-    if user_ids and group_name:
-        group_model = models.Group()
+    form = GroupForm(request.form, csrf_enabled=False)
+    if form.validate_on_submit():
+        user_ids = [int(uid) for uid in form.user_ids.data.split(',')]
 
-        ret = group_model.add(group_name=group_name, user_ids=user_ids)
+        group_new = models.Group()
+        ret = group_new.add(group_name=form.group_name.data, user_ids=user_ids)
         return controller.render_json(data=ret, message=user_ids)
     else:
-        return controller.render_json(code=-1, message='group_name can not be empty')
+        return controller.render_json(code=-1, message=form.errors)
 
 
 @bp_api.route('/group/<int:group_id>', methods=['PUT'])
 def group_update(group_id):
     """
-    添加用户组
+    修改用户组
 
     :return:
     """
-    user_ids = request.form.get('user_ids', '')
-    user_ids = [int(i) for i in user_ids.split(',')]
-    group_name = request.form.get('group_name', None)
-    if user_ids and group_name:
-        group_model = models.Group()
-        group_info = group_model.update(group_id=group_id, group_name=group_name, user_ids=user_ids)
+    form = GroupForm(request.form, csrf_enabled=False)
+    if form.validate_on_submit():
+        user_ids = [int(uid) for uid in form.user_ids.data.split(',')]
+
+        group_model = models.Group(group_id=group_id)
+        group_info = group_model.update(group_id=group_id,
+                                        group_name=form.group_name.data,
+                                        user_ids=user_ids)
         return controller.render_json(data=group_info)
 
-    return controller.render_json()
+    return controller.render_json(code=-1,message=form.errors)
+
 
 @bp_api.route('/group/<int:group_id>', methods=['DELETE'])
 def group_remove(group_id):
     group_model = models.Group()
     tag_model = models.Tag()
     tag_model.remove(group_id)
+    group_model.remove(group_id)
+
+    return controller.render_json(message='')
 
 
+@bp_api.route('/user/', methods=['GET'])
+def user_list():
+    """
+    用户列表
+
+    :return:
+    """
+    page = int(request.args.get('page', 0))
+    page = page - 1 if page else 0
+    size = float(request.args.get('size', 10))
+    kw = request.values.get('kw', '')
+
+    user_model = models.User()
+    user_list = user_model.list(page=page, size=size, kw=kw)
+    return controller.render_json(data=user_list, count=13)
+
+
+@bp_api.route('/user/<int:user_id>', methods=['GET'])
+def user_item(user_id):
+    """
+    获取某个用户
+
+    :param user_id:
+    :return:
+    """
+
+    user_info = models.User(id=user_id).item()
+    return controller.render_json(data=user_info)
+
+
+@bp_api.route('/user/', methods=['POST'])
+def user_create():
+    """
+    添加用户
+
+    :return:
+    """
+    form = RegistrationForm(request.form, csrf_enabled=False)
+    if form.validate_on_submit():
+        password = generate_password_hash(form.password.data)
+        user = models.User(email=form.email.data,
+                           username=form.username.data,
+                           password=password,
+                           role_id=form.role_id.data
+                           )
+        db.session.add(user)
+        db.session.commit()
+        return controller.render_json(user.item())
+    return controller.render_json(code=-1, message=form.errors)
+
+
+@bp_api.route('/user/<int:user_id>', methods=['PUT'])
+def user_update(user_id):
+    """
+    编辑用户
+
+    :return:
+    """
+    form = UserUpdateForm(request.form, csrf_enabled=False)
+    if form.validate_on_submit():
+        user = models.User(id=user_id)
+        new = user.update(username=form.username.data, role_id=form.role_id.data, password=form.password.data)
+        return controller.render_json(data=new)
+
+    return controller.render_json(code=-1, message=form.errors)
+
+
+@bp_api.route('/user/<int:user_id>', methods=['DELETE'])
+def user_remove(user_id):
+    """
+    删除用户: 删除用户信息, 删除用户组记录
+    :param user_id:
+    :return:
+    """
+    models.User(id=user_id).remove()
+    models.Group().remove(user_id=user_id)
     return controller.render_json(message='')

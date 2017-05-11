@@ -12,7 +12,7 @@ from flask import jsonify
 
 from flask.ext.sqlalchemy import SQLAlchemy
 from flask.ext.login import current_user
-from werkzeug.security import check_password_hash,generate_password_hash
+from werkzeug.security import check_password_hash, generate_password_hash
 from flask.ext.login import UserMixin
 from pickle import dump
 
@@ -180,6 +180,7 @@ class Project(db.Model):
             'updated_at': self.updated_at.strftime('%Y-%m-%d %H:%M:%S'),
         }
 
+
 # 项目配置表
 class User(db.Model, UserMixin):
     # 表的名字:
@@ -199,6 +200,11 @@ class User(db.Model, UserMixin):
     status = db.Column(Integer, default=0)
     created_at = db.Column(DateTime, default=current_time)
     updated_at = db.Column(DateTime, default=current_time, onupdate=current_time)
+    #
+    # def __init__(self, user_id=None):
+    #     if user_id:
+    #         self.user_id = user_id
+
     #
     # def __init__(self, email=None, password=None):
     #     from walle.common.tokens import TokenManager
@@ -228,6 +234,36 @@ class User(db.Model, UserMixin):
     #     """
     #     self.password = generate_password_hash(value)
 
+    def item(self, user_id=None):
+        """
+        获取单条记录
+        :param role_id:
+        :return:
+        """
+        data = self.query.filter_by(id=self.id).first()
+        return data.to_json() if data else []
+
+    def update(self, username, role_id, password=None):
+        # todo permission_ids need to be formated and checked
+        user = self.query.filter_by(id=self.id).first()
+        user.username = username
+        user.role_id = role_id
+        if password:
+            user.password = generate_password_hash(password)
+
+        db.session.commit()
+        return user.to_json()
+
+
+    def remove(self):
+        """
+
+        :param role_id:
+        :return:
+        """
+        self.query.filter_by(id=self.id).delete()
+        return db.session.commit()
+
     def verify_password(self, password):
         """
         检查密码是否正确
@@ -237,7 +273,6 @@ class User(db.Model, UserMixin):
         if self.password is None:
             return False
         return check_password_hash(self.password, password)
-
 
     def is_authenticated(self):
         return True
@@ -254,6 +289,19 @@ class User(db.Model, UserMixin):
         except NameError:
             return str(self.id)  # python 3
 
+    def list(self, page=0, size=10, kw=''):
+        """
+        获取分页列表
+        :param page:
+        :param size:
+        :return:
+        """
+        query = User.query
+        if kw:
+            query = query.filter(Tag.name.like('%' + kw + '%'))
+        data = query.order_by('id desc').offset(int(size) * int(page)).limit(size).all()
+        return [p.to_json() for p in data]
+
     def to_json(self):
         return {
             'id': self.id,
@@ -266,6 +314,7 @@ class User(db.Model, UserMixin):
             'created_at': self.created_at.strftime('%Y-%m-%d %H:%M:%S'),
             'updated_at': self.updated_at.strftime('%Y-%m-%d %H:%M:%S'),
         }
+
 
 # 项目配置表
 class Role(db.Model):
@@ -280,7 +329,6 @@ class Role(db.Model):
     permission_ids = db.Column(Text, default='')
     created_at = db.Column(DateTime, default=current_time)
     updated_at = db.Column(DateTime, default=current_time, onupdate=current_time)
-
 
     def list(self, page=0, size=10, kw=''):
         """
@@ -314,8 +362,8 @@ class Role(db.Model):
     def update(self, id, name, permission_ids):
         # todo permission_ids need to be formated and checked
         role = Role.query.filter_by(id=id).first()
-        role.name=name
-        role.permission_ids=permission_ids
+        role.name = name
+        role.permission_ids = permission_ids
 
         return db.session.commit()
 
@@ -328,7 +376,6 @@ class Role(db.Model):
         Role.query.filter_by(id=role_id).delete()
         return db.session.commit()
 
-
     def to_json(self):
         return {
             'id': self.id,
@@ -337,6 +384,7 @@ class Role(db.Model):
             'created_at': self.created_at.strftime('%Y-%m-%d %H:%M:%S'),
             'updated_at': self.updated_at.strftime('%Y-%m-%d %H:%M:%S'),
         }
+
 
 # 项目配置表
 class Tag(db.Model):
@@ -361,7 +409,6 @@ class Tag(db.Model):
         # # print(data)
         # return []
         return data.to_json() if data else []
-
 
     def remove(self, tag_id):
         """
@@ -400,7 +447,6 @@ class Group(db.Model):
     created_at = db.Column(DateTime, default=current_time)
     updated_at = db.Column(DateTime, default=current_time, onupdate=current_time)
 
-
     def list(self, page=0, size=10, kw=''):
         """
         获取分页列表
@@ -414,13 +460,12 @@ class Group(db.Model):
         data = query.order_by('id desc').offset(int(size) * int(page)).limit(size).all()
         return [p.to_json() for p in data]
 
-
     def add(self, group_name, user_ids):
         tag = Tag(name=group_name, label='user_group')
         db.session.add(tag)
         db.session.commit()
 
-        for user_id in user_ids.split(','):
+        for user_id in user_ids:
             user_group = Group(group_id=tag.id, user_id=user_id)
             db.session.add(user_group)
 
@@ -428,59 +473,55 @@ class Group(db.Model):
         return tag.to_json()
 
     def update(self, group_id, group_name, user_ids):
-        tag_model = Tag.query.filter_by(label='user_group', id=group_id).first()
+        # 修改tag信息
+        tag_model = Tag.query.filter_by(label='user_group').filter_by(id=group_id).first()
         if tag_model.name != group_name:
             tag_model.name = group_name
-            db.session.add(tag_model)
+
+        # 修改用户组成员
         group_model = Group.query.filter_by(group_id=group_id).all()
         user_exists = []
-        f = open("aa.txt", "w")
-        f.write(str(user_ids))
         for group in group_model:
             # 用户组的用户id
             user_exists.append(group.user_id)
             # 表里的不在提交中,删除之
             if group.user_id not in user_ids:
-                f.write(str(group.user_id) + "not in \n")
 
                 Group.query.filter_by(id=group.id).delete()
 
-        f.write(str(user_exists))
         # 提交的不在表中的,添加之
         user_not_in = list(set(user_ids).difference(set(user_exists)))
-        f.write(str(user_not_in))
         for user_new in user_not_in:
             group_new = Group(group_id=group_id, user_id=user_new)
             db.session.add(group_new)
 
-        return db.session.commit()
+        db.session.commit()
+        return self.item()
 
-
-    def item(self, group_id):
+    def item(self):
         """
         获取单条记录
         :param role_id:
         :return:
         """
 
-        data = Tag.query\
-            .filter_by(id=group_id).first()
-        # f = open('aa.txt', 'w')
-        # dump(data.group.name, f)
-        # # return data.tag.count('*').to_json()
-        # # print(data)
-        # return []
+        data = Tag.query.filter_by(id=self.group_id).first()
         return data.to_json() if data else []
 
-    def remove(self, role_id):
+    def remove(self, group_id=None, user_id=None):
         """
 
         :param role_id:
         :return:
         """
-        Group.query.filter_by(id=role_id).delete()
-        return db.session.commit()
+        if group_id:
+            Group.query.filter_by(group_id=group_id).delete()
+        elif user_id:
+            Group.query.filter_by(user_id=user_id).delete()
+        elif self.group_id:
+            Group.query.filter_by(group_id=self.group_id).delete()
 
+        return db.session.commit()
 
     def to_json(self):
         return {
@@ -491,4 +532,3 @@ class Group(db.Model):
             'created_at': self.created_at.strftime('%Y-%m-%d %H:%M:%S'),
             'updated_at': self.updated_at.strftime('%Y-%m-%d %H:%M:%S'),
         }
-
