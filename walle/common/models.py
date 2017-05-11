@@ -304,13 +304,29 @@ class Role(db.Model):
         data = Role.query.filter_by(id=role_id).first()
         return data.to_json() if data else []
 
+    def add(self, name, permission_ids):
+        # todo permission_ids need to be formated and checked
+        role = Role(name=name, permission_ids=permission_ids)
+
+        db.session.add(role)
+        return db.session.commit()
+
+    def update(self, id, name, permission_ids):
+        # todo permission_ids need to be formated and checked
+        role = Role.query.filter_by(id=id).first()
+        role.name=name
+        role.permission_ids=permission_ids
+
+        return db.session.commit()
+
     def remove(self, role_id):
         """
 
         :param role_id:
         :return:
         """
-        return Role.query.filter_by(id=role_id).delete()
+        Role.query.filter_by(id=role_id).delete()
+        return db.session.commit()
 
 
     def to_json(self):
@@ -333,13 +349,37 @@ class Tag(db.Model):
     id = db.Column(Integer, primary_key=True, autoincrement=True)
     name = db.Column(String(30))
     label = db.Column(String(30))
+    users = db.relationship('Group', backref='group', lazy='dynamic')
     created_at = db.Column(DateTime, default=current_time)
     updated_at = db.Column(DateTime, default=current_time, onupdate=current_time)
 
+    def list(self):
+        data = Tag.query.filter_by(id=1).first()
+        f = open('aa.txt', 'w')
+        dump(data.users.first().to_json(), f)
+        # # return data.tag.count('*').to_json()
+        # # print(data)
+        # return []
+        return data.to_json() if data else []
+
+
+    def remove(self, tag_id):
+        """
+
+        :param role_id:
+        :return:
+        """
+        Tag.query.filter_by(id=tag_id).delete()
+        return db.session.commit()
+
     def to_json(self):
+        user_ids = []
+        for user in self.users.all():
+            user_ids.append(user.user_id)
         return {
             'id': self.id,
             'name': self.name,
+            'users': user_ids,
             'label': self.label,
             'created_at': self.created_at.strftime('%Y-%m-%d %H:%M:%S'),
             'updated_at': self.updated_at.strftime('%Y-%m-%d %H:%M:%S'),
@@ -356,10 +396,9 @@ class Group(db.Model):
     # 表的结构:
     id = db.Column(Integer, primary_key=True, autoincrement=True)
     user_id = db.Column(Integer, default=0)
-    group_id = db.Column(Integer, default=0)
+    group_id = db.Column(Integer, db.ForeignKey('tag.id'))
     created_at = db.Column(DateTime, default=current_time)
     updated_at = db.Column(DateTime, default=current_time, onupdate=current_time)
-
 
 
     def list(self, page=0, size=10, kw=''):
@@ -376,14 +415,44 @@ class Group(db.Model):
         return [p.to_json() for p in data]
 
 
-    def add(self, name):
-        tag = Tag(name=name, label='user_group')
+    def add(self, group_name, user_ids):
+        tag = Tag(name=group_name, label='user_group')
         db.session.add(tag)
-        return db.session.commit()
+        db.session.commit()
 
-    def update(self, group_id, group_name):
-        data = Tag.query.filter_by(label='user_group', id=group_id).first()
-        data.name = group_name
+        for user_id in user_ids.split(','):
+            user_group = Group(group_id=tag.id, user_id=user_id)
+            db.session.add(user_group)
+
+        db.session.commit()
+        return tag.to_json()
+
+    def update(self, group_id, group_name, user_ids):
+        tag_model = Tag.query.filter_by(label='user_group', id=group_id).first()
+        if tag_model.name != group_name:
+            tag_model.name = group_name
+            db.session.add(tag_model)
+        group_model = Group.query.filter_by(group_id=group_id).all()
+        user_exists = []
+        f = open("aa.txt", "w")
+        f.write(str(user_ids))
+        for group in group_model:
+            # 用户组的用户id
+            user_exists.append(group.user_id)
+            # 表里的不在提交中,删除之
+            if group.user_id not in user_ids:
+                f.write(str(group.user_id) + "not in \n")
+
+                Group.query.filter_by(id=group.id).delete()
+
+        f.write(str(user_exists))
+        # 提交的不在表中的,添加之
+        user_not_in = list(set(user_ids).difference(set(user_exists)))
+        f.write(str(user_not_in))
+        for user_new in user_not_in:
+            group_new = Group(group_id=group_id, user_id=user_new)
+            db.session.add(group_new)
+
         return db.session.commit()
 
 
@@ -394,13 +463,13 @@ class Group(db.Model):
         :return:
         """
 
-        data = Group.query.join(User, User.id == Group.user_id)\
-            .add_columns(User.id, User.username, Group.id)\
-            .filter(Group.group_id == group_id).first()
-        f = open('aa.txt', 'w')
-        dump(data, f)
-        # print(data)
-        return []
+        data = Tag.query\
+            .filter_by(id=group_id).first()
+        # f = open('aa.txt', 'w')
+        # dump(data.group.name, f)
+        # # return data.tag.count('*').to_json()
+        # # print(data)
+        # return []
         return data.to_json() if data else []
 
     def remove(self, role_id):
@@ -409,13 +478,16 @@ class Group(db.Model):
         :param role_id:
         :return:
         """
-        return Group.query.filter_by(id=role_id).delete()
+        Group.query.filter_by(id=role_id).delete()
+        return db.session.commit()
 
 
     def to_json(self):
         return {
             'id': self.id,
             'user_id': self.user_id,
+            'group_id': self.group_id,
+            'group_name': self.group.name,
             'created_at': self.created_at.strftime('%Y-%m-%d %H:%M:%S'),
             'updated_at': self.updated_at.strftime('%Y-%m-%d %H:%M:%S'),
         }

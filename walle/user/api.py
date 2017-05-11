@@ -23,12 +23,16 @@ controller = Controller()
 from walle.common.models import db
 from werkzeug.security import check_password_hash,generate_password_hash
 
-@bp_api.route('/role/', methods=['GET', 'POST'])
-@bp_api.route('/role/list', methods=['GET', 'POST'])
+@bp_api.route('/role/', methods=['GET'])
 def role_list():
+    """
+    获取角色列表
+
+    :return:
+    """
     page = int(request.args.get('page', 0))
     page = page - 1 if page else 0
-    size = float(request.args.get('size', 2))
+    size = float(request.args.get('size', 10))
     kw = request.values.get('kw', '')
 
     role_model = models.Role()
@@ -36,9 +40,14 @@ def role_list():
     return controller.render_json(data=role_list, count=13)
 
 
-@bp_api.route('/role/item', methods=['GET', 'POST'])
-def role_item():
-    role_id = request.args.get('role_id', 0)
+@bp_api.route('/role/<int:role_id>', methods=['GET'])
+def role_item(role_id):
+    """
+    获取某角色
+
+    :param role_id:
+    :return:
+    """
     role_model = models.Role()
     if role_id:
         role_info = role_model.item(role_id)
@@ -47,24 +56,50 @@ def role_item():
     return controller.render_json()
 
 
-@bp_api.route('/role/update', methods=['GET', 'POST'])
-def role_update():
-    role_id = request.args.get('role_id', 0)
+@bp_api.route('/role/', methods=['POST'])
+def role_create():
+    """
+    新增角色
+
+    :return:
+    """
+    role_name = request.form.get('role_name', None)
+    role_permissions_ids = request.form.get('permissions_ids', '')
     role_model = models.Role()
-    if role_id:
-        role_info = role_model.item(role_id)
-        return controller.render_json(data=role_info)
+    ret = role_model.add(name=role_name, permission_ids=role_permissions_ids)
+    return controller.render_json(code=ret)
 
-    return controller.render_json()
 
-@bp_api.route('/role/remove', methods=['GET', 'POST'])
-def role_remove():
-    role_id = request.args.get('role_id', 0)
+@bp_api.route('/role/<int:role_id>', methods=['PUT'])
+def role_update(role_id):
+    """
+    修改角色
+
+    :param role_id:
+    :return:
+    """
+    role_name = request.args.get('role_name', 0)
+    role_permissions_ids = request.args.get('permissions_ids', 0)
+
+    if not role_name:
+        return controller.render_json(code=-1, message='role_name can not be empty')
     role_model = models.Role()
-    if role_id:
-        return role_model.remove(role_id)
+    ret = role_model.update(role_id, role_name, role_permissions_ids)
+    return controller.render_json(code=ret)
 
-    return controller.render_json()
+
+@bp_api.route('/role/<int:role_id>', methods=['DELETE'])
+def role_remove(role_id):
+    """
+    删除一个角色
+
+    :return:
+    """
+    role_model = models.Role()
+    ret = role_model.remove(role_id)
+
+    return controller.render_json(code=ret)
+
 
 @bp_api.route('/passport/signin', methods=['POST'])
 def signin():
@@ -78,6 +113,7 @@ def signin():
             return controller.render_json(data={'user_info': current_user.to_json()})
 
     return controller.render_json(code=-1, data=form.errors)
+
 
 @bp_api.route('/passport/signup', methods=['POST'])
 def signup():
@@ -101,10 +137,13 @@ def signup():
     return controller.render_json(code=code, data=done)
 
 
-
-@bp_api.route('/group/', methods=['GET', 'POST'])
-@bp_api.route('/group/list', methods=['GET', 'POST'])
+@bp_api.route('/group/', methods=['GET'])
 def group_list():
+    """
+    用户组列表
+
+    :return:
+    """
     page = int(request.args.get('page', 0))
     page = page - 1 if page else 0
     size = float(request.args.get('size', 10))
@@ -115,36 +154,61 @@ def group_list():
     return controller.render_json(data=group_list, count=13)
 
 
-@bp_api.route('/group/item', methods=['GET', 'POST'])
-def group_item():
-    group_id = request.args.get('group_id', 0)
+@bp_api.route('/group/<int:group_id>', methods=['GET'])
+def group_item(group_id):
+    """
+    获取某个用户组
+
+    :param group_id:
+    :return:
+    """
+
     group_model = models.Group()
-    if group_id:
-        group_info = group_model.item(group_id)
+    group_info = group_model.item(group_id)
+    return controller.render_json(data=group_info)
+
+
+@bp_api.route('/group/', methods=['POST'])
+def group_create():
+    """
+    添加用户组
+
+    :return:
+    """
+    user_ids = request.form.get('user_ids', '')
+    group_name = request.form.get('group_name', None)
+
+    if user_ids and group_name:
+        group_model = models.Group()
+
+        ret = group_model.add(group_name=group_name, user_ids=user_ids)
+        return controller.render_json(data=ret, message=user_ids)
+    else:
+        return controller.render_json(code=-1, message='group_name can not be empty')
+
+
+@bp_api.route('/group/<int:group_id>', methods=['PUT'])
+def group_update(group_id):
+    """
+    添加用户组
+
+    :return:
+    """
+    user_ids = request.form.get('user_ids', '')
+    user_ids = [int(i) for i in user_ids.split(',')]
+    group_name = request.form.get('group_name', None)
+    if user_ids and group_name:
+        group_model = models.Group()
+        group_info = group_model.update(group_id=group_id, group_name=group_name, user_ids=user_ids)
         return controller.render_json(data=group_info)
 
     return controller.render_json()
 
-
-@bp_api.route('/group/update', methods=['GET', 'POST'])
-def group_update():
-    group_id = request.args.get('group_id', 0)
-    group_name = request.args.get('group_name', None)
+@bp_api.route('/group/<int:group_id>', methods=['DELETE'])
+def group_remove(group_id):
     group_model = models.Group()
-    if group_id and group_name:
-        group_info = group_model.update(group_id, group_name)
-        return controller.render_json(data=group_info)
-    elif group_name:
-        ret = group_model.add(group_name)
-        return controller.render_json(data=ret)
+    tag_model = models.Tag()
+    tag_model.remove(group_id)
 
-    return controller.render_json()
 
-@bp_api.route('/group/remove', methods=['GET', 'POST'])
-def group_remove():
-    group_id = request.args.get('group_id', 0)
-    group_model = models.Group()
-    if group_id:
-        return group_model.remove(group_id)
-
-    return controller.render_json()
+    return controller.render_json(message='')
