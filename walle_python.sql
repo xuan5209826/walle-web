@@ -11,7 +11,7 @@
  Target Server Version : 50704
  File Encoding         : utf-8
 
- Date: 05/09/2017 14:46:46 PM
+ Date: 05/13/2017 09:55:37 AM
 */
 
 SET NAMES utf8;
@@ -144,13 +144,13 @@ CREATE TABLE `role` (
   `created_at` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
   `updated_at` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '修改时间',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8 COMMENT='角色表';
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8 COMMENT='角色表';
 
 -- ----------------------------
 --  Records of `role`
 -- ----------------------------
 BEGIN;
-INSERT INTO `role` VALUES ('1', '技术人员', '1,2,3,5', '2017-03-24 13:52:09', '2017-03-24 13:52:09'), ('2', '测试同学', '1,3,5,7', '2017-03-26 13:23:44', '2017-03-26 13:23:44');
+INSERT INTO `role` VALUES ('1', '技术人员', '1,2,3,5', '2017-03-24 13:52:09', '2017-03-24 13:52:09'), ('2', '测试同学', '1,3,5,7', '2017-03-26 13:23:44', '2017-03-26 13:23:44'), ('5', '业务端', '', '2017-05-11 09:41:58', '2017-05-11 09:41:58');
 COMMIT;
 
 -- ----------------------------
@@ -186,13 +186,13 @@ CREATE TABLE `tag` (
   `created_at` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
   `updated_at` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '修改时间',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8 COMMENT='tag 标签表';
+) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8 COMMENT='tag 标签表';
 
 -- ----------------------------
 --  Records of `tag`
 -- ----------------------------
 BEGIN;
-INSERT INTO `tag` VALUES ('1', '用户端FE', 'user_group', '0', '2017-05-08 19:56:19', '2017-05-08 19:56:19'), ('2', '营销中心', 'user_group', '0', '2017-05-08 19:57:05', '2017-05-08 19:57:05'), ('3', '黄晓露', 'user_group', '0', '2017-05-08 20:52:55', '2017-05-08 21:06:38');
+INSERT INTO `tag` VALUES ('1', '用户端FE', 'user_group', '0', '2017-05-08 19:56:19', '2017-05-10 21:07:38'), ('2', '营销中心', 'user_group', '0', '2017-05-08 19:57:05', '2017-05-08 19:57:05'), ('3', 'xx吴水永的新组xx', 'user_group', '0', '2017-05-08 20:52:55', '2017-05-11 23:34:45'), ('11', '吴水永的新组', 'user_group', '0', '2017-05-11 22:44:46', '2017-05-11 22:44:46'), ('12', '吴水永新增用户组', 'user_group', '0', '2017-05-11 23:15:53', '2017-05-11 23:15:53');
 COMMIT;
 
 -- ----------------------------
@@ -262,20 +262,20 @@ CREATE TABLE `user` (
   `is_email_verified` tinyint(1) NOT NULL DEFAULT '0' COMMENT '是否邮箱认证',
   `email` varchar(50) NOT NULL COMMENT '邮箱',
   `password` varchar(100) NOT NULL COMMENT '密码',
-  `password_hash` varchar(50) NOT NULL COMMENT 'hash',
+  `password_hash` varchar(50) DEFAULT NULL COMMENT 'hash',
   `avatar` varchar(100) DEFAULT 'default.jpg' COMMENT '头像图片地址',
   `role_id` int(6) NOT NULL COMMENT '角色id',
   `status` tinyint(1) NOT NULL DEFAULT '1' COMMENT '状态: 0新建，1正常，2冻结',
   `created_at` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
   `updated_at` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '修改时间',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=16 DEFAULT CHARSET=utf8 COMMENT='用户表';
+) ENGINE=InnoDB AUTO_INCREMENT=20 DEFAULT CHARSET=utf8 COMMENT='用户表';
 
 -- ----------------------------
 --  Records of `user`
 -- ----------------------------
 BEGIN;
-INSERT INTO `user` VALUES ('1', 'wushuiyong', '1', 'wushuiyong@renrenche.com', '', '', 'default.jpg', '1', '1', '2017-03-17 09:03:09', '2017-03-17 09:03:09'), ('13', 'wushuiyong@local.com', '0', 'wushuiyong@walle-web.io', 'pbkdf2:sha1:1000$59T3110Q$7703684fd0bb722985b037703329c82891acd84b', '', null, '0', '0', '2017-03-20 19:05:44', '2017-04-13 14:52:06'), ('14', 'wushuiyong@walle-web.ios', '0', 'wushuiyong@walle-web.ios', 'pbkdf2:sha1:1000$KSjsIBCf$762bf8c30adc6eef288df31547dbd80fa8b81c93', '', null, '0', '0', '2017-04-13 15:03:57', '2017-04-13 15:03:57'), ('15', 'wushuiyong@walle-web.ioss', '0', 'wushuiyong@walle-web.ioss', 'pbkdf2:sha1:1000$We4EXI4O$c363470dbc91d9bf897fec3a76fdedeaf5f564b8', '', null, '0', '0', '2017-04-13 15:03:57', '2017-04-13 15:03:57');
+INSERT INTO `user` VALUES ('1', 'wushuiyong', '1', 'wushuiyong@renrenche.com', '', '', 'default.jpg', '1', '1', '2017-03-17 09:03:09', '2017-03-17 09:03:09'), ('13', 'wushuiyong@local.com', '0', 'wushuiyong@walle-web.io', 'pbkdf2:sha1:1000$59T3110Q$7703684fd0bb722985b037703329c82891acd84b', '', null, '0', '0', '2017-03-20 19:05:44', '2017-04-13 14:52:06'), ('14', 'wushuiyong@walle-web.ios', '0', 'wushuiyong@walle-web.ios', 'pbkdf2:sha1:1000$KSjsIBCf$762bf8c30adc6eef288df31547dbd80fa8b81c93', '', null, '0', '0', '2017-04-13 15:03:57', '2017-04-13 15:03:57'), ('15', 'wushuiyong@walle-web.ioss', '0', 'wushuiyong@walle-web.ioss', 'pbkdf2:sha1:1000$We4EXI4O$c363470dbc91d9bf897fec3a76fdedeaf5f564b8', '', null, '0', '0', '2017-04-13 15:03:57', '2017-04-13 15:03:57'), ('18', 'x吴水永的新组x', '0', 'demo02@walle.com', 'pbkdf2:sha1:1000$3jENzbZ3$345e44980dcf44ffab60f16b35a913dca93677ab', '', null, '1', '0', '2017-05-11 22:33:35', '2017-05-11 23:39:11'), ('19', '中文啦', '0', 'demo03@walle.com', 'pbkdf2:sha1:1000$DButSYQG$d3fe6a80e23461e565ca1a8b8f9ee8302e7a29a7', '', null, '2', '0', '2017-05-11 23:39:11', '2017-05-11 23:39:11');
 COMMIT;
 
 -- ----------------------------
@@ -289,13 +289,13 @@ CREATE TABLE `user_group` (
   `created_at` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
   `updated_at` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '修改时间',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 COMMENT='用户组关联表';
+) ENGINE=InnoDB AUTO_INCREMENT=57 DEFAULT CHARSET=utf8 COMMENT='用户组关联表';
 
 -- ----------------------------
 --  Records of `user_group`
 -- ----------------------------
 BEGIN;
-INSERT INTO `user_group` VALUES ('1', '13', '1', '2017-05-08 19:56:38', '2017-05-08 19:56:38');
+INSERT INTO `user_group` VALUES ('1', '13', '1', '2017-05-08 19:56:38', '2017-05-08 19:56:38'), ('2', '1', '1', '2017-05-10 20:53:42', '2017-05-10 20:53:42'), ('45', '8', '11', '2017-05-11 22:44:46', '2017-05-11 22:44:46'), ('46', '1', '11', '2017-05-11 22:44:46', '2017-05-11 22:44:46'), ('47', '2', '11', '2017-05-11 22:44:46', '2017-05-11 22:44:46'), ('49', '1', '12', '2017-05-11 23:15:53', '2017-05-11 23:15:53'), ('50', '13', '12', '2017-05-11 23:15:53', '2017-05-11 23:15:53'), ('51', '18', '12', '2017-05-11 23:15:53', '2017-05-11 23:15:53'), ('52', '1', '3', '2017-05-11 23:29:43', '2017-05-11 23:29:43'), ('54', '15', '3', '2017-05-11 23:32:07', '2017-05-11 23:32:07'), ('56', '13', '3', '2017-05-11 23:34:45', '2017-05-11 23:34:45');
 COMMIT;
 
 SET FOREIGN_KEY_CHECKS = 1;
