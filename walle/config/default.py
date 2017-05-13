@@ -60,7 +60,7 @@ class DefaultConfig(object):
     # For PostgresSQL:
     # SQLALCHEMY_DATABASE_URI = "postgresql://flaskbb@localhost:5432/flaskbb"
     # For SQLite:
-    SQLALCHEMY_DATABASE_URI = "mysql://root:walle-web@localhost/walle_python"
+    SQLALCHEMY_DATABASE_URI = "mysql://walle:walle-web@localhost/walle_python"
 
     # This option will be removed as soon as Flask-SQLAlchemy removes it.
     # At the moment it is just used to suppress the super annoying warning
