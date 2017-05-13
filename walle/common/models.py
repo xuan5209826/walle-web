@@ -5,7 +5,7 @@
 # @Description:
 
 import json
-from sqlalchemy import Column, String, Integer, create_engine, Text, DateTime
+from sqlalchemy import Column, String, Integer, create_engine, Text, DateTime, desc, or_
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.ext.declarative import declarative_base
 from flask import jsonify
@@ -113,14 +113,70 @@ class TaskRecord(db.Model):
 
 
 # 环境级别
-class enviroment(db.Model):
+class Environment(db.Model):
     # 表的名字:
-    __tablename__ = 'enviroment'
+    __tablename__ = 'environment'
+
+    status_open = 1
+    status_close = 2;
 
     # 表的结构:
     id = db.Column(Integer, primary_key=True, autoincrement=True)
     name = db.Column(String(20))
     status = db.Column(Integer)
+
+    def list(self, page=0, size=10, kw=None):
+        """
+        获取分页列表
+        :param page:
+        :param size:
+        :return:
+        """
+        query = self.query
+        if kw:
+            query = query.filter(Environment.name.like('%' + kw + '%'))
+        data = query.order_by('id desc').offset(int(size) * int(page)).limit(size).all()
+        return [p.to_json() for p in data]
+
+    def item(self, env_id=None):
+        """
+        获取单条记录
+        :param role_id:
+        :return:
+        """
+        data = self.query.filter_by(id=self.id).first()
+        return data.to_json() if data else []
+
+    def add(self, env_name):
+        # todo permission_ids need to be formated and checked
+        env = Environment(name=env_name, status=self.status_open)
+
+        db.session.add(env)
+        return db.session.commit()
+
+    def update(self, env_name, status, env_id=None):
+        # todo permission_ids need to be formated and checked
+        role = Environment.query.filter_by(id=self.id).first()
+        role.name = env_name
+        role.status = status
+
+        return db.session.commit()
+
+    def remove(self, env_id=None):
+        """
+
+        :param role_id:
+        :return:
+        """
+        self.query.filter_by(id=self.id).delete()
+        return db.session.commit()
+
+    def to_json(self):
+        return {
+            'id': self.id,
+            'status': self.status,
+            'name': self.name,
+        }
 
 
 # 项目配置表
@@ -200,10 +256,6 @@ class User(db.Model, UserMixin):
     status = db.Column(Integer, default=0)
     created_at = db.Column(DateTime, default=current_time)
     updated_at = db.Column(DateTime, default=current_time, onupdate=current_time)
-    #
-    # def __init__(self, user_id=None):
-    #     if user_id:
-    #         self.user_id = user_id
 
     #
     # def __init__(self, email=None, password=None):
@@ -254,7 +306,6 @@ class User(db.Model, UserMixin):
         db.session.commit()
         return user.to_json()
 
-
     def remove(self):
         """
 
@@ -289,7 +340,7 @@ class User(db.Model, UserMixin):
         except NameError:
             return str(self.id)  # python 3
 
-    def list(self, page=0, size=10, kw=''):
+    def list(self, page=0, size=10, kw=None):
         """
         获取分页列表
         :param page:
@@ -298,7 +349,7 @@ class User(db.Model, UserMixin):
         """
         query = User.query
         if kw:
-            query = query.filter(Tag.name.like('%' + kw + '%'))
+            query = query.filter(or_(User.username.like('%' + kw + '%'), User.email.like('%' + kw + '%')))
         data = query.order_by('id desc').offset(int(size) * int(page)).limit(size).all()
         return [p.to_json() for p in data]
 
@@ -330,7 +381,7 @@ class Role(db.Model):
     created_at = db.Column(DateTime, default=current_time)
     updated_at = db.Column(DateTime, default=current_time, onupdate=current_time)
 
-    def list(self, page=0, size=10, kw=''):
+    def list(self, page=0, size=10, kw=None):
         """
         获取分页列表
         :param page:
@@ -447,7 +498,7 @@ class Group(db.Model):
     created_at = db.Column(DateTime, default=current_time)
     updated_at = db.Column(DateTime, default=current_time, onupdate=current_time)
 
-    def list(self, page=0, size=10, kw=''):
+    def list(self, page=0, size=10, kw=None):
         """
         获取分页列表
         :param page:
@@ -486,7 +537,6 @@ class Group(db.Model):
             user_exists.append(group.user_id)
             # 表里的不在提交中,删除之
             if group.user_id not in user_ids:
-
                 Group.query.filter_by(id=group.id).delete()
 
         # 提交的不在表中的,添加之

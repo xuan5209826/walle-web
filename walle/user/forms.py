@@ -15,7 +15,7 @@ from flask_wtf import Form
 from wtforms import BooleanField, HiddenField, PasswordField, SubmitField, StringField, TextField
 from wtforms import validators, ValidationError
 from wtforms.validators import DataRequired, Regexp
-from walle.common.models import User, Role
+from walle.common.models import User, Role, Environment
 
 
 class UserForm(FlaskForm):
@@ -80,6 +80,25 @@ class GroupForm(Form):
         user_ids = [int(uid) for uid in field.data.split(',')]
         if User.query.filter(User.id.in_(user_ids)).count() != len(user_ids):
             raise ValidationError('存在未记录的用户添加到用户组')
+
+
+class EnvironmentForm(Form):
+    env_name = TextField('env_name', [validators.Length(min=1, max=10)])
+    env_id = None
+
+    def set_env_id(self, env_id):
+        self.env_id = env_id
+
+    def validate_env_name(self, field):
+        env = Environment.query.filter_by(name=field.data).first()
+        # 新建时,环境名不可与
+        if env and env.id != self.env_id:
+            raise ValidationError('该环境已经配置过')
+
+    def validate_status(self, field):
+        if field.data and int(field.data) not in [1, 2]:
+            raise ValidationError('非法的状态')
+
 
 
 class TagCreateForm(Form):

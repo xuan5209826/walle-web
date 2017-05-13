@@ -12,7 +12,7 @@ from flask import Blueprint, request
 
 from walle.common import models
 from walle.common.controller import Controller
-from walle.user.forms import RegistrationForm, UserUpdateForm, GroupForm
+from walle.user.forms import RegistrationForm, UserUpdateForm, GroupForm, EnvironmentForm
 from flask.ext.restful import reqparse, abort, Api, Resource
 from flask.ext.login import current_user
 from flask.ext.login import login_user
@@ -264,7 +264,7 @@ def user_create():
                            )
         db.session.add(user)
         db.session.commit()
-        return controller.render_json(user.item())
+        return controller.render_json(data=user.item())
     return controller.render_json(code=-1, message=form.errors)
 
 
@@ -293,4 +293,78 @@ def user_remove(user_id):
     """
     models.User(id=user_id).remove()
     models.Group().remove(user_id=user_id)
+    return controller.render_json(message='')
+
+
+@bp_api.route('/environment/', methods=['GET'])
+def env_list():
+    """
+    环境列表
+
+    :return:
+    """
+    page = int(request.args.get('page', 0))
+    page = page - 1 if page else 0
+    size = float(request.args.get('size', 10))
+    kw = request.values.get('kw', '')
+
+    env_model = models.Environment()
+    env_list = env_model.list(page=page, size=size, kw=kw)
+    return controller.render_json(data=env_list, count=13)
+
+
+@bp_api.route('/environment/<int:env_id>', methods=['GET'])
+def env_item(env_id):
+    """
+    获取某个用户组
+
+    :param env_id:
+    :return:
+    """
+
+    env_model = models.Environment(id=env_id)
+    env_info = env_model.item()
+    return controller.render_json(data=env_info)
+
+
+@bp_api.route('/environment/', methods=['POST'])
+def env_create():
+    """
+    添加用户组
+
+    :return:
+    """
+
+    form = EnvironmentForm(request.form, csrf_enabled=False)
+    if form.validate_on_submit():
+        env_new = models.Environment()
+        ret = env_new.add(env_name=form.env_name.data)
+        return controller.render_json(data=ret, message=env_new.to_json())
+    else:
+        return controller.render_json(code=-1, message=form.errors)
+
+
+@bp_api.route('/environment/<int:env_id>', methods=['PUT'])
+def env_update(env_id):
+    """
+    修改用户组
+
+    :return:
+    """
+
+    form = EnvironmentForm(request.form, csrf_enabled=False)
+    if form.validate_on_submit():
+        env = models.Environment(id=env_id)
+        ret = env.update(env_name=form.env_name.data, status=form.status.data)
+        return controller.render_json(data=env.to_json(), message=ret)
+    else:
+        return controller.render_json(code=-1, message=form.errors)
+
+
+
+@bp_api.route('/environment/<int:env_id>', methods=['DELETE'])
+def env_remove(env_id):
+    env_model = models.Environment(id=env_id)
+    env_model.remove(env_id)
+
     return controller.render_json(message='')
