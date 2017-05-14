@@ -579,7 +579,7 @@ class Group(db.Model):
         group = Tag.query.filter_by(id=self.group_id).first()
         group = group.to_json()
 
-        users = User.query.with_entities(User.avatar, User.username) \
+        users = User.query.with_entities(User.id, User.username, User.avatar) \
             .filter(User.id.in_(group['users'])).all()
         group['users'] = users
 
