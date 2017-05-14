@@ -56,19 +56,6 @@ def create_app():
 def register_blueprint(app):
     from walle.deploy.deploy import deploy
     app.register_blueprint(deploy, url_prefix='/deploy')
-#
-#
-# # Initialize flask-login
-# def init_login(app):
-#     login_manager = LoginManager()
-#     login_manager.init_app(app)
-#
-#     # Create user loader function
-#     @login_manager.user_loader
-#     def load_user(user_id):
-#         from app.core.models import User
-#         return db.session.query(User).get(user_id)
-
 
 
 

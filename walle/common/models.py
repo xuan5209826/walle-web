@@ -152,7 +152,11 @@ class Environment(db.Model):
         env = Environment(name=env_name, status=self.status_open)
 
         db.session.add(env)
-        return db.session.commit()
+        db.session.commit()
+        if env.id:
+            self.id = env.id
+
+        return env.id
 
     def update(self, env_name, status, env_id=None):
         # todo permission_ids need to be formated and checked
@@ -410,9 +414,9 @@ class Role(db.Model):
         db.session.add(role)
         return db.session.commit()
 
-    def update(self, id, name, permission_ids):
+    def update(self, name, permission_ids, role_id=None):
         # todo permission_ids need to be formated and checked
-        role = Role.query.filter_by(id=id).first()
+        role = Role.query.filter_by(id=self.id).first()
         role.name = name
         role.permission_ids = permission_ids
 

@@ -84,9 +84,9 @@ def role_update(role_id):
 
     if not role_name:
         return controller.render_json(code=-1, message='role_name can not be empty')
-    role_model = models.Role()
-    ret = role_model.update(role_id, role_name, role_permissions_ids)
-    return controller.render_json(code=ret)
+    role_model = models.Role(id=role_id)
+    ret = role_model.update(name=role_name, permission_ids=role_permissions_ids)
+    return controller.render_json(code=ret, data=role_model.item())
 
 
 @bp_api.route('/role/<int:role_id>', methods=['DELETE'])
@@ -199,12 +199,12 @@ def group_update(group_id):
         user_ids = [int(uid) for uid in form.user_ids.data.split(',')]
 
         group_model = models.Group(group_id=group_id)
-        group_info = group_model.update(group_id=group_id,
-                                        group_name=form.group_name.data,
-                                        user_ids=user_ids)
-        return controller.render_json(data=group_info)
+        group_model.update(group_id=group_id,
+                           group_name=form.group_name.data,
+                           user_ids=user_ids)
+        return controller.render_json(data=group_model.item())
 
-    return controller.render_json(code=-1,message=form.errors)
+    return controller.render_json(code=-1, message=form.errors)
 
 
 @bp_api.route('/group/<int:group_id>', methods=['DELETE'])
@@ -278,8 +278,8 @@ def user_update(user_id):
     form = UserUpdateForm(request.form, csrf_enabled=False)
     if form.validate_on_submit():
         user = models.User(id=user_id)
-        new = user.update(username=form.username.data, role_id=form.role_id.data, password=form.password.data)
-        return controller.render_json(data=new)
+        user.update(username=form.username.data, role_id=form.role_id.data, password=form.password.data)
+        return controller.render_json(data=user.item())
 
     return controller.render_json(code=-1, message=form.errors)
 
@@ -338,8 +338,10 @@ def env_create():
     form = EnvironmentForm(request.form, csrf_enabled=False)
     if form.validate_on_submit():
         env_new = models.Environment()
-        ret = env_new.add(env_name=form.env_name.data)
-        return controller.render_json(data=ret, message=env_new.to_json())
+        env_id = env_new.add(env_name=form.env_name.data)
+        if not env_id:
+            return controller.render_json(code=)
+        return controller.render_json(data=env_new.item(), code= 0 if ret > 0 else -1)
     else:
         return controller.render_json(code=-1, message=form.errors)
 
@@ -353,13 +355,13 @@ def env_update(env_id):
     """
 
     form = EnvironmentForm(request.form, csrf_enabled=False)
+    form.set_env_id(env_id)
     if form.validate_on_submit():
         env = models.Environment(id=env_id)
         ret = env.update(env_name=form.env_name.data, status=form.status.data)
-        return controller.render_json(data=env.to_json(), message=ret)
+        return controller.render_json(data=env.item(), message=ret)
     else:
         return controller.render_json(code=-1, message=form.errors)
-
 
 
 @bp_api.route('/environment/<int:env_id>', methods=['DELETE'])

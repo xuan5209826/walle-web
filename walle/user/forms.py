@@ -84,6 +84,7 @@ class GroupForm(Form):
 
 class EnvironmentForm(Form):
     env_name = TextField('env_name', [validators.Length(min=1, max=10)])
+    status = TextField('status', [validators.Length(min=0, max=10)])
     env_id = None
 
     def set_env_id(self, env_id):
