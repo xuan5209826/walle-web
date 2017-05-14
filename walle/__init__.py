@@ -1,5 +1,4 @@
 from flask import Flask
-from flask.ext.sqlalchemy import SQLAlchemy
 # from flask.ext.login import LoginManager
 from walle.deploy.deploy import deploy
 from walle.user.user import user_blue_print
@@ -7,10 +6,11 @@ from walle.user.role import role_blue_print
 from walle.user.api import bp_api
 from walle.user.passport import passport_blue_print
 from walle.common import models
+from walle.common import api as resource
 from flask_mail import Mail
 from flask_login import LoginManager
 from walle.common import models
-
+from flask.ext.restful import Api
 
 VERSION = (0, 2)
 
@@ -30,6 +30,8 @@ login_manager.init_app(app)
 login_manager.login_view = 'login'
 
 mail = Mail(app)
+
+
 def create_app():
     register_database(app)
     register_blueprint(app)
@@ -37,6 +39,7 @@ def create_app():
     # init_login(app)
     # create_admin(app, db)
     return app
+
 
 #
 # def register_log():
@@ -53,12 +56,15 @@ def register_database(app):
 def register_mail(app):
     mail = Mail(app)
 
+
 def register_blueprint(app):
-    app.register_blueprint(deploy, url_prefix='/deploy')
-    app.register_blueprint(user_blue_print, url_prefix='/user')
-    app.register_blueprint(passport_blue_print, url_prefix='/passport')
-    app.register_blueprint(role_blue_print, url_prefix='/role')
-    app.register_blueprint(bp_api, url_prefix='/api')
+    api = Api(app)
+    api.add_resource(resource.RoleAPI, '/api/role/', '/api/role/<int:role_id>', endpoint='role')
+    api.add_resource(resource.GroupAPI, '/api/group/', '/api/group/<int:group_id>', endpoint='group')
+    api.add_resource(resource.PassportAPI, '/api/passport/', '/api/passport/', endpoint='passport')
+    api.add_resource(resource.UserAPI, '/api/user/', '/api/user/<int:user_id>', endpoint='user')
+    api.add_resource(resource.EnvironmentAPI, '/api/environment/', '/api/environment/<int:env_id>', endpoint='environment')
+
 
 #
 #

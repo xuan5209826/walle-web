@@ -340,7 +340,7 @@ def env_create():
         env_new = models.Environment()
         env_id = env_new.add(env_name=form.env_name.data)
         if not env_id:
-            return controller.render_json(code=)
+            return controller.render_json(code=0)
         return controller.render_json(data=env_new.item(), code= 0 if ret > 0 else -1)
     else:
         return controller.render_json(code=-1, message=form.errors)

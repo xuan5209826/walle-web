@@ -135,8 +135,11 @@ class Environment(db.Model):
         query = self.query
         if kw:
             query = query.filter(Environment.name.like('%' + kw + '%'))
+        count = query.count()
+
         data = query.order_by('id desc').offset(int(size) * int(page)).limit(size).all()
-        return [p.to_json() for p in data]
+        env_list = [p.to_json() for p in data]
+        return env_list, count
 
     def item(self, env_id=None):
         """
@@ -354,8 +357,10 @@ class User(db.Model, UserMixin):
         query = User.query
         if kw:
             query = query.filter(or_(User.username.like('%' + kw + '%'), User.email.like('%' + kw + '%')))
+        count = query.count()
         data = query.order_by('id desc').offset(int(size) * int(page)).limit(size).all()
-        return [p.to_json() for p in data]
+        user_list = [p.to_json() for p in data]
+        return user_list, count
 
     def to_json(self):
         return {
@@ -395,15 +400,18 @@ class Role(db.Model):
         query = Role.query
         if kw:
             query = query.filter(Role.name.like('%' + kw + '%'))
+        count = query.count()
         data = query.order_by('id desc').offset(int(size) * int(page)).limit(size).all()
-        return [p.to_json() for p in data]
+        list = [p.to_json() for p in data]
+        return list, count
 
-    def item(self, role_id):
+    def item(self, role_id=None):
         """
         获取单条记录
         :param role_id:
         :return:
         """
+        role_id = role_id if role_id else self.id
         data = Role.query.filter_by(id=role_id).first()
         return data.to_json() if data else []
 
@@ -412,22 +420,26 @@ class Role(db.Model):
         role = Role(name=name, permission_ids=permission_ids)
 
         db.session.add(role)
-        return db.session.commit()
+        db.session.commit()
+        self.id = role.id
+        return self.id
 
     def update(self, name, permission_ids, role_id=None):
         # todo permission_ids need to be formated and checked
-        role = Role.query.filter_by(id=self.id).first()
+        role_id = role_id if role_id else self.id
+        role = Role.query.filter_by(id=role_id).first()
         role.name = name
         role.permission_ids = permission_ids
 
         return db.session.commit()
 
-    def remove(self, role_id):
+    def remove(self, role_id=None):
         """
 
         :param role_id:
         :return:
         """
+        role_id = role_id if role_id else self.id
         Role.query.filter_by(id=role_id).delete()
         return db.session.commit()
 
@@ -497,7 +509,7 @@ class Group(db.Model):
 
     # 表的结构:
     id = db.Column(Integer, primary_key=True, autoincrement=True)
-    user_id = db.Column(Integer, default=0)
+    user_id = db.Column(Integer, db.ForeignKey('user.id'))
     group_id = db.Column(Integer, db.ForeignKey('tag.id'))
     created_at = db.Column(DateTime, default=current_time)
     updated_at = db.Column(DateTime, default=current_time, onupdate=current_time)
@@ -512,8 +524,10 @@ class Group(db.Model):
         query = Tag.query
         if kw:
             query = query.filter(Tag.name.like('%' + kw + '%'))
+        count = query.count()
         data = query.order_by('id desc').offset(int(size) * int(page)).limit(size).all()
-        return [p.to_json() for p in data]
+        list = [p.to_json() for p in data]
+        return list, count
 
     def add(self, group_name, user_ids):
         tag = Tag(name=group_name, label='user_group')
@@ -525,7 +539,10 @@ class Group(db.Model):
             db.session.add(user_group)
 
         db.session.commit()
-        return tag.to_json()
+        if tag.id:
+            self.group_id = tag.id
+
+        return tag.id
 
     def update(self, group_id, group_name, user_ids):
         # 修改tag信息
@@ -552,15 +569,21 @@ class Group(db.Model):
         db.session.commit()
         return self.item()
 
-    def item(self):
+    def item(self, group_id=None):
         """
         获取单条记录
         :param role_id:
         :return:
         """
 
-        data = Tag.query.filter_by(id=self.group_id).first()
-        return data.to_json() if data else []
+        group = Tag.query.filter_by(id=self.group_id).first()
+        group = group.to_json()
+
+        users = User.query.with_entities(User.avatar, User.username) \
+            .filter(User.id.in_(group['users'])).all()
+        group['users'] = users
+
+        return group
 
     def remove(self, group_id=None, user_id=None):
         """
