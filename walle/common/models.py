@@ -4,11 +4,8 @@
 # @Created Time : 日  1/ 1 23:43:12 2017
 # @Description:
 
-import json
 from sqlalchemy import Column, String, Integer, create_engine, Text, DateTime, desc, or_
-from sqlalchemy.orm import sessionmaker
-from sqlalchemy.ext.declarative import declarative_base
-from flask import jsonify
+
 
 from flask.ext.sqlalchemy import SQLAlchemy
 from flask.ext.login import current_user
@@ -579,9 +576,9 @@ class Group(db.Model):
         group = Tag.query.filter_by(id=self.group_id).first()
         group = group.to_json()
 
-        users = User.query.with_entities(User.id, User.username, User.avatar) \
+        users = User.query \
             .filter(User.id.in_(group['users'])).all()
-        group['users'] = users
+        group['users'] = [user.to_json() for user in users]
 
         return group
 
