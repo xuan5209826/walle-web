@@ -13,9 +13,9 @@ from flask import Blueprint, request
 from walle.common import models
 from walle.common.controller import Controller
 from walle.user.forms import RegistrationForm, UserUpdateForm, GroupForm, EnvironmentForm
-from flask.ext.restful import reqparse, abort, Api, Resource
-from flask.ext.login import current_user
-from flask.ext.login import login_user
+from flask_restful import reqparse, abort, Api, Resource
+from flask_login import current_user
+from flask_login import login_user
 from walle.user.forms import RegistrationForm, LoginForm
 
 bp_api = Blueprint('v2', __name__, static_folder='assets')

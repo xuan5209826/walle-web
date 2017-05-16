@@ -7,14 +7,14 @@
 import math
 from flask import Blueprint, url_for, request, redirect
 from flask import render_template
-from flask.ext.login import login_user
+from flask_login import login_user
 from walle.common import models
 from walle.common.models import db
 from walle.common.controller import Controller
 from walle.user.user import User
 from walle.user.forms import RegistrationForm, LoginForm
 from werkzeug.security import check_password_hash,generate_password_hash
-from flask.ext.login import current_user
+from flask_login import current_user
 # from walle import login_manager
 
 passport_blue_print = Blueprint('passport', __name__, static_folder='assets')

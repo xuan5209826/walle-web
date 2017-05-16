@@ -7,13 +7,13 @@
 from sqlalchemy import Column, String, Integer, create_engine, Text, DateTime, desc, or_
 
 
-from flask.ext.sqlalchemy import SQLAlchemy
-from flask.ext.login import current_user
+from flask_sqlalchemy import SQLAlchemy
+from flask_login import current_user
 from werkzeug.security import check_password_hash, generate_password_hash
-from flask.ext.login import UserMixin
+from flask_login import UserMixin
 from pickle import dump
 
-# from flask.ext.cache import Cache
+# from flask_cache import Cache
 from datetime import datetime
 import time
 

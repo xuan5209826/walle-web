@@ -44,6 +44,7 @@ flask
 .coveralls.yml
 nosetests.xml
 coverage.xml
+venv
 
 ############################# 保留文件 #############################
 !requirements.txt

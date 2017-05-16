@@ -11,14 +11,40 @@
 from walle.common import models
 from walle.common.controller import Controller
 from walle.user.forms import UserUpdateForm, GroupForm, EnvironmentForm
-from flask.ext.login import current_user
-from flask.ext.login import login_user
+from flask_login import current_user
+from flask_login import login_user
 from walle.user.forms import RegistrationForm, LoginForm
 from flask import request
-from flask.ext.restful import Resource
+from flask_restful import Resource
 
 from walle.common.models import db
 from werkzeug.security import generate_password_hash
+
+
+class Base(Resource):
+    def get(self):
+        """
+        fetch role list or one role
+
+        :return:
+        """
+        return 'walle-web 2.0'
+
+    def post(self):
+        """
+        新增角色
+        /role/
+
+        :return:
+        """
+        role_name = request.form.get('role_name', None)
+        role_permissions_ids = request.form.get('permission_ids', '')
+        role_model = models.Role()
+        role_id = role_model.add(name=role_name, permission_ids=role_permissions_ids)
+
+        if not role_id:
+            Controller.render_json(code=-1)
+        return Controller.render_json(data=role_model.item())
 
 
 class RoleAPI(Resource):

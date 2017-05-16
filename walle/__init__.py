@@ -1,5 +1,5 @@
 from flask import Flask
-# from flask.ext.login import LoginManager
+# from flask_login import LoginManager
 from walle.deploy.deploy import deploy
 from walle.user.user import user_blue_print
 from walle.user.role import role_blue_print
@@ -10,7 +10,7 @@ from walle.common import api as resource
 from flask_mail import Mail
 from flask_login import LoginManager
 from walle.common import models
-from flask.ext.restful import Api
+from flask_restful import Api
 
 VERSION = (0, 2)
 
@@ -59,6 +59,7 @@ def register_mail(app):
 
 def register_blueprint(app):
     api = Api(app)
+    api.add_resource(resource.Base, '/', endpoint='root')
     api.add_resource(resource.RoleAPI, '/api/role/', '/api/role/<int:role_id>', endpoint='role')
     api.add_resource(resource.GroupAPI, '/api/group/', '/api/group/<int:group_id>', endpoint='group')
     api.add_resource(resource.PassportAPI, '/api/passport/', '/api/passport/', endpoint='passport')
