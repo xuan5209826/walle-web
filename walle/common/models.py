@@ -15,7 +15,6 @@ from pickle import dump
 
 # from flask_cache import Cache
 from datetime import datetime
-import time
 
 db = SQLAlchemy()
 
