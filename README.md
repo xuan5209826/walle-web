@@ -1,6 +1,4 @@
-===============================
-walle-web
-===============================
+# walle-web
 
 walle-web.io a deployment kit
 
