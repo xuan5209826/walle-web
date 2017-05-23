@@ -1,64 +1,112 @@
-# walle
+===============================
+walle-web
+===============================
 
-## 启动
-- 启动 websocket : `python ws.py`
-- 启动 redis : `redis-server`
-- 启动 celery : `celery -A cel worker --loglevel=info`
-
-
-## 安装
-```
-sudo easy_install virtualenv
+walle-web.io a deployment kit
 
 
-flask/bin/pip install flask
-flask/bin/pip install flask-login
-flask/bin/pip install flask-openid
-flask/bin/pip install flask-mail
-flask/bin/pip install flask-sqlalchemy
-flask/bin/pip install sqlalchemy-migrate
-flask/bin/pip install flask-whooshalchemy
-flask/bin/pip install flask-wtf
-flask/bin/pip install flask-babel
-flask/bin/pip install guess_language
-flask/bin/pip install flipflop
-flask/bin/pip install coverage
-尚未完整，待整理
-```
-python 2.6升级到2.7
-```
-wget https://www.python.org/ftp/python/2.7.13/Python-2.7.13.tgz
-```
-```
-./configure
-make all
-sudo make install
-sudo make clean
-sudo make distclean
-```
-把python执行软连接连接到2.7
-```
-sudo ln -s /usr/local/bin/python /usr/local/bin/python2.6
-sudo rm /usr/bin/python
-sudo ln -s /usr/local/bin/python2.7 /usr/bin/python
-```
-编辑yum命令，把路径指明为2.6，因为yum必须基于2.6版本
-```
-sudo vi /usr/bin/yum
-```
-把文件头部的#!/usr/bin/python改成#!/usr/bin/python2.6
+Quickstart
+----------
 
-安装easy_install
 ```
-wget -q http://peak.telecommunity.com/dist/ez_setup.py
-sudo python ez_setup.py
-```
-CentOS安装python包管理安装工具pip的方法如下：
-```
-wget --no-check-certificate https://github.com/pypa/pip/archive/1.5.5.tar.gz
+# 开发分支尝鲜
+git clone https://github.com/meolu/walle-web
+cd walle-web
+git checkout development # 开发分支
 
-tar zvxf 1.5.5.tar.gz
-cd pip-1.5.5/
-sudo python setup.py install
-sudo pip install --upgrade pip
+# 配置环境
+pip install virtualenv
+virtualenv venv
+pip install -r requirements/dev.txt
+
+# 数据导入
+flask db init
+flask db migrate
+flask db upgrade
+# 失败了可以直接导入walle_python.sql
+
+# 数据库连接（自己找下,小小地考验下）
+vi settings.py
+
+# 激活环境
+source venv/bin/activate
+
+# 运行（内含Flask的一些配置）
+sh run.sh
+
+# 怎么可能没有标准的单元测试呢
+python -m flask test
+
+# postman api collection 自行导入体验restful api
+walle.json.postman_collection
+
 ```
+
+.. code-block:: bash
+
+    export WALLE_SECRET='something-really-secret'
+
+Before running shell commands, set the ``FLASK_APP`` and ``FLASK_DEBUG``
+environment variables ::
+
+    export FLASK_APP=/path/to/autoapp.py
+    export FLASK_DEBUG=1
+
+Then run the following commands to bootstrap your environment ::
+
+    git clone https://github.com/meolu/walle-web
+    cd walle
+    pip install -r requirements/dev.txt
+    bower install
+    flask run
+
+You will see a pretty welcome screen.
+
+Once you have installed your DBMS, run the following to create your app's
+database tables and perform the initial migration ::
+
+    flask db init
+    flask db migrate
+    flask db upgrade
+    flask run
+
+
+Deployment
+----------
+
+In your production environment, make sure the ``FLASK_DEBUG`` environment
+variable is unset or is set to ``0``, so that ``ProdConfig`` is used.
+
+
+Shell
+-----
+
+To open the interactive shell, run ::
+
+    flask shell
+
+By default, you will have access to the flask ``app``.
+
+
+Running Tests
+-------------
+
+To run all tests, run ::
+
+    flask test
+
+
+Migrations
+----------
+
+Whenever a database migration needs to be made. Run the following commands ::
+
+    flask db migrate
+
+This will generate a new migration script. Then run ::
+
+    flask db upgrade
+
+To apply the migration.
+
+For a full migration command reference, run ``flask db --help``.
