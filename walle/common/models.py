@@ -6,7 +6,6 @@
 
 from sqlalchemy import Column, String, Integer, create_engine, Text, DateTime, desc, or_
 
-
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import current_user
 from werkzeug.security import check_password_hash, generate_password_hash
@@ -16,7 +15,9 @@ from pickle import dump
 # from flask_cache import Cache
 from datetime import datetime
 
-db = SQLAlchemy()
+from walle.database import Column, SurrogatePK, db, reference_col, relationship
+
+from walle.database import Model
 
 
 # 上线单
@@ -178,7 +179,7 @@ class Environment(db.Model):
         return {
             'id': self.id,
             'status': self.status,
-            'name': self.name,
+            'env_name': self.name,
         }
 
 
@@ -241,11 +242,11 @@ class Project(db.Model):
 
 
 # 项目配置表
-class User(db.Model, UserMixin):
+class User(UserMixin, SurrogatePK, Model):
     # 表的名字:
     __tablename__ = 'user'
 
-    current_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+    current_time = datetime.now()
     password_hash = 'sadfsfkk'
     # 表的结构:
     id = db.Column(Integer, primary_key=True, autoincrement=True)
@@ -328,6 +329,19 @@ class User(db.Model, UserMixin):
             return False
         return check_password_hash(self.password, password)
 
+    def set_password(self, password):
+        """Set password."""
+        self.password = generate_password_hash(password)
+
+    def general_password(self, password):
+        """
+        检查密码是否正确
+        :param password:
+        :return:
+        """
+        self.password = generate_password_hash(password)
+        return generate_password_hash(password)
+
     def is_authenticated(self):
         return True
 
@@ -377,7 +391,8 @@ class Role(db.Model):
     # 表的名字:
     __tablename__ = 'role'
 
-    current_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+    # current_time = datetime.now()
+    current_time = datetime.now()
 
     # 表的结构:
     id = db.Column(Integer, primary_key=True, autoincrement=True)
@@ -442,7 +457,7 @@ class Role(db.Model):
     def to_json(self):
         return {
             'id': self.id,
-            'name': self.name,
+            'role_name': self.name,
             'permission_ids': self.permission_ids,
             'created_at': self.created_at.strftime('%Y-%m-%d %H:%M:%S'),
             'updated_at': self.updated_at.strftime('%Y-%m-%d %H:%M:%S'),
@@ -450,24 +465,22 @@ class Role(db.Model):
 
 
 # 项目配置表
-class Tag(db.Model):
+class Tag(SurrogatePK, Model):
     # 表的名字:
     __tablename__ = 'tag'
 
-    current_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+    current_time = datetime.now()
 
     # 表的结构:
     id = db.Column(Integer, primary_key=True, autoincrement=True)
     name = db.Column(String(30))
     label = db.Column(String(30))
-    users = db.relationship('Group', backref='group', lazy='dynamic')
+    # users = db.relationship('Group', backref='group', lazy='dynamic')
     created_at = db.Column(DateTime, default=current_time)
     updated_at = db.Column(DateTime, default=current_time, onupdate=current_time)
 
     def list(self):
         data = Tag.query.filter_by(id=1).first()
-        f = open('aa.txt', 'w')
-        dump(data.users.first().to_json(), f)
         # # return data.tag.count('*').to_json()
         # # print(data)
         # return []
@@ -483,13 +496,15 @@ class Tag(db.Model):
         return db.session.commit()
 
     def to_json(self):
-        user_ids = []
-        for user in self.users.all():
-            user_ids.append(user.user_id)
+        # user_ids = []
+        # for user in self.users.all():
+        #     user_ids.append(user.user_id)
         return {
             'id': self.id,
-            'name': self.name,
-            'users': user_ids,
+            'group_id': self.id,
+            'group_name': self.name,
+            # 'users': user_ids,
+            # 'user_ids': user_ids,
             'label': self.label,
             'created_at': self.created_at.strftime('%Y-%m-%d %H:%M:%S'),
             'updated_at': self.updated_at.strftime('%Y-%m-%d %H:%M:%S'),
@@ -497,18 +512,19 @@ class Tag(db.Model):
 
 
 # 项目配置表
-class Group(db.Model):
-    # 表的名字:
+class Group(SurrogatePK, Model):
     __tablename__ = 'user_group'
 
-    current_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+    current_time = datetime.now()
 
     # 表的结构:
     id = db.Column(Integer, primary_key=True, autoincrement=True)
     user_id = db.Column(Integer, db.ForeignKey('user.id'))
+    user_ids = db.relationship('Tag', backref=db.backref('users'))
     group_id = db.Column(Integer, db.ForeignKey('tag.id'))
     created_at = db.Column(DateTime, default=current_time)
     updated_at = db.Column(DateTime, default=current_time, onupdate=current_time)
+    group_name = None
 
     def list(self, page=0, size=10, kw=None):
         """
@@ -517,6 +533,27 @@ class Group(db.Model):
         :param size:
         :return:
         """
+        group = Group.query
+        if kw:
+            group = group.filter_by(Tag.name.like('%' + kw + '%'))
+        group = group.offset(int(size) * int(page)).limit(size).all()
+        # f = open('run.log', 'w')
+        # f.write('==group_id==\n'+str(group_id)+'\n====\n')
+
+        list = [p.to_json() for p in group]
+        return list, 3
+
+        user_ids = []
+        group_dict = {}
+        for group_info in group:
+            user_ids.append(group_info.user_id)
+            group_dict = group_info.to_json()
+
+        group_dict['user_ids'] = user_ids
+        # del group_dict['user_id']
+        # return user_ids
+        return group_dict
+
         query = Tag.query
         if kw:
             query = query.filter(Tag.name.like('%' + kw + '%'))
@@ -571,13 +608,33 @@ class Group(db.Model):
         :param role_id:
         :return:
         """
+        #
+        group_id = group_id if group_id else self.group_id
+        tag = Tag.query.filter_by(id=group_id).first()
+        if not tag:
+            return None
+        tag = tag.to_json()
 
-        group = Tag.query.filter_by(id=self.group_id).first()
-        group = group.to_json()
+        group_id = group_id if group_id else self.group_id
+        groups = Group.query.filter_by(group_id=group_id).all()
+
+        user_ids = []
+        for group_info in groups:
+            user_ids.append(group_info.user_id)
+
+        tag['user_ids'] = user_ids
+        tag['users'] = len(user_ids)
+        return tag
+
+        del group_dict['user_id']
+        # return user_ids
+        return group_dict
+        return group.to_json()
+        # group = group.to_json()
 
         users = User.query \
             .filter(User.id.in_(group['users'])).all()
-        group['users'] = [user.to_json() for user in users]
+        group['user_ids'] = [user.to_json() for user in users]
 
         return group
 
@@ -601,7 +658,17 @@ class Group(db.Model):
             'id': self.id,
             'user_id': self.user_id,
             'group_id': self.group_id,
-            'group_name': self.group.name,
+            'group_name': self.group_name,
             'created_at': self.created_at.strftime('%Y-%m-%d %H:%M:%S'),
             'updated_at': self.updated_at.strftime('%Y-%m-%d %H:%M:%S'),
         }
+
+
+class Foo(SurrogatePK, Model):
+    __tablename__ = 'foo'
+
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(50), nullable=False, unique=True)
+    email = db.Column(db.String(100), unique=True)
+    created_at = db.Column(db.DateTime, default=datetime.now())
+    updated_at = db.Column(db.DateTime, default=datetime.now())

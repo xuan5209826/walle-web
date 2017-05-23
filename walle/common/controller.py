@@ -8,9 +8,11 @@
 """
 from flask import jsonify
 
+
 class Controller:
+
     @staticmethod
-    def render_json(code=0, message='', data=[], count=0):
+    def render_json(code=0, message='', data=[]):
         return jsonify({
             'code': code,
             'message': message,
@@ -18,7 +20,7 @@ class Controller:
         })
 
     @staticmethod
-    def json(code=0, message=None, data=[], count=0):
+    def json(code=0, message=None, data=[]):
         return jsonify({
             'code': code,
             'message': message,
@@ -26,6 +28,5 @@ class Controller:
         })
 
     @staticmethod
-    def list_json(list, count):
-        return Controller.render_json(data={'list': list, 'count': count})
-
+    def list_json(list, count, code=0, message=''):
+        return Controller.render_json(data={'list': list, 'count': count}, code=code, message=message)

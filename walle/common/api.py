@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*-
 """
+
     walle-web
 
     :copyright: © 2015-2017 walle-web.io
     :created time: 2017-03-25 11:15:01
     :author: wushuiyong@walle-web.io
 """
-
 
 from walle.common import models
 from walle.common.controller import Controller
@@ -19,6 +19,8 @@ from flask_restful import Resource
 
 from walle.common.models import db
 from werkzeug.security import generate_password_hash
+from datetime import datetime
+import time
 
 
 class Base(Resource):
@@ -37,14 +39,11 @@ class Base(Resource):
 
         :return:
         """
-        role_name = request.form.get('role_name', None)
-        role_permissions_ids = request.form.get('permission_ids', '')
-        role_model = models.Role()
-        role_id = role_model.add(name=role_name, permission_ids=role_permissions_ids)
+        foo = models.Foo()
+        ins = datetime.now()
+        ret = foo.create(username='wushuiyongddd', email='xxx@yyy.zzz', inserted_at=ins)
 
-        if not role_id:
-            Controller.render_json(code=-1)
-        return Controller.render_json(data=role_model.item())
+        return Controller.render_json(data=1)
 
 
 class RoleAPI(Resource):
@@ -82,6 +81,8 @@ class RoleAPI(Resource):
         """
         role_model = models.Role(id=role_id)
         role_info = role_model.item()
+        if not role_info:
+            return Controller.render_json(code=-1)
         return Controller.render_json(data=role_info)
 
     def post(self):
@@ -116,7 +117,7 @@ class RoleAPI(Resource):
 
         role_model = models.Role(id=role_id)
         ret = role_model.update(name=role_name, permission_ids=role_permission_ids)
-        return Controller.render_json(code=ret, data=role_model.item())
+        return Controller.render_json(data=role_model.item())
 
     def delete(self, role_id):
         """
@@ -139,13 +140,19 @@ class PassportAPI(Resource):
 
         :return:
         """
+        f = open('run.log', 'w')
         form = LoginForm(request.form, csrf_enabled=False)
         if form.validate_on_submit():
+            f.write('\n' + form.email.data + '\n')
             user = models.User.query.filter_by(email=form.email.data).first()
+            f.write('\n' + str(user) + '\n')
+            f.write('\n' + str(user) + '\n')
 
             if user is not None and user.verify_password(form.password.data):
                 login_user(user)
                 return Controller.render_json(data=current_user.to_json())
+
+        f.write('\nvalidata fail\n')
 
         return Controller.render_json(code=-1, data=form.errors)
 
@@ -167,21 +174,27 @@ class GroupAPI(Resource):
 
         :return:
         """
-        page = int(request.args.get('page', 0))
-        page = page - 1 if page else 0
+        page = int(request.args.get('page', 1))
+        page = page if page else 1
         size = float(request.args.get('size', 10))
         kw = request.values.get('kw', '')
+        filter = {'name': {'like': kw}} if kw else {}
+        # f = open('run.log', 'w')
+        # f.write(str(filter))
 
-        group_model = models.Group()
-        group_list, count = group_model.list(page=page, size=size, kw=kw)
-
+        group_model, count = models.Tag().query_paginate(page=page, limit=size, filter_name_dict=filter)
         groups = []
-        for group_item in group_list:
-            group_item['users'] = len(group_item['users'])
-            del group_item['label'], group_item['updated_at']
-            groups.append(group_item)
+        for group_info in group_model:
+            group_sub = models.Group.query \
+                .filter_by(group_id=group_info.id) \
+                .count()
 
-        return Controller.list_json(list=group_list, count=count)
+            group_info = group_info.to_dict()
+            group_info['users'] = group_sub
+            group_info['group_id'] = group_info['id']
+            group_info['group_name'] = group_info['name']
+            groups.append(group_info)
+        return Controller.list_json(list=groups, count=count)
 
     def item(self, group_id):
         """
@@ -191,10 +204,28 @@ class GroupAPI(Resource):
         :param group_id:
         :return:
         """
+        ## sqlalchemy版本
+        group_model = models.Group()
+        group = group_model.item(group_id=group_id)
+        if group:
+            return Controller.render_json(data=group)
+        return Controller.render_json(code=-1)
 
-        group_model = models.Group(group_id=group_id)
-        group_info = group_model.item()
+        ## mixin 版本
+        group_model = models.Tag().get_by_id(group_id)
+        if not group_model:
+            return Controller.render_json(code=-1)
 
+        f = open('run.log', 'w')
+        f.write(str(group_model) + '\n')
+        user_ids = []
+        for user_info in group_model.users:
+            user_ids.append(user_info.user_id)
+        group_info = group_model.to_dict()
+        group_info['user_ids'] = user_ids
+        group_info['users'] = len(user_ids)
+        group_info['group_name'] = group_info['name']
+        group_info['group_id'] = group_info['id']
         return Controller.render_json(data=group_info)
 
     def post(self):
@@ -225,6 +256,7 @@ class GroupAPI(Resource):
         :return:
         """
         form = GroupForm(request.form, csrf_enabled=False)
+        form.set_group_id(group_id)
         if form.validate_on_submit():
             user_ids = [int(uid) for uid in form.user_ids.data.split(',')]
 
@@ -284,6 +316,8 @@ class UserAPI(Resource):
         """
 
         user_info = models.User(id=user_id).item()
+        if not user_info:
+            return Controller.render_json(code=-1)
         return Controller.render_json(data=user_info)
 
     def post(self):
@@ -303,7 +337,7 @@ class UserAPI(Resource):
                                )
             db.session.add(user)
             db.session.commit()
-            return Controller.render_json(data=user.item())
+            return Controller.render_json(data=user.item(user_id=user.id))
         return Controller.render_json(code=-1, message=form.errors)
 
     def put(self, user_id):
@@ -369,6 +403,8 @@ class EnvironmentAPI(Resource):
 
         env_model = models.Environment(id=env_id)
         env_info = env_model.item()
+        if not env_info:
+            return Controller.render_json(code=-1)
         return Controller.render_json(data=env_info)
 
     def post(self):
@@ -405,6 +441,88 @@ class EnvironmentAPI(Resource):
             return Controller.render_json(data=env.item())
         else:
             return Controller.render_json(code=-1, message=form.errors)
+
+    def delete(self, env_id):
+        """
+        remove an environment
+        /environment/<int:env_id>
+
+        :return:
+        """
+        env_model = models.Environment(id=env_id)
+        env_model.remove(env_id)
+
+        return Controller.render_json(message='')
+
+
+class FooAPI(Resource):
+    def get(self, env_id=None):
+        """
+        fetch environment list or one item
+        /environment/<int:env_id>
+
+        :return:
+        """
+        return self.item(env_id) if env_id else self.list()
+
+    def list(self):
+        """
+        fetch environment list
+
+        :return:
+        """
+
+        page = int(request.args.get('page', 0))
+        page = page + 1 if page else 1
+        size = float(request.args.get('size', 10))
+        kw = request.values.get('kw', '')
+        filter = {'username': {'like': request.args.get('username')}} if kw else {}
+        foo, count = models.Foo().query_paginate(page=page, limit=size, filter_name_dict=filter)
+        # ret = foo.update(username=request.form.get('username'), email=request.form.get('email'))
+        return Controller.list_json(list=[i.to_dict() for i in foo], count=count)
+
+        page = int(request.args.get('page', 0))
+        page = page - 1 if page else 0
+        size = float(request.args.get('size', 10))
+        kw = request.values.get('kw', '')
+
+        env_model = models.Environment()
+        env_list, count = env_model.list(page=page, size=size, kw=kw)
+        return Controller.list_json(list=env_list, count=count)
+
+    def item(self, env_id):
+        """
+        获取某个用户组
+
+        :param env_id:
+        :return:
+        """
+        foo = models.Foo().get_by_id(env_id)
+        # ret = foo.update(username=request.form.get('username'), email=request.form.get('email'))
+        return Controller.render_json(data=foo.to_dict())
+
+    def post(self):
+        """
+        create a environment
+        /environment/
+
+        :return:
+        """
+        foo = models.Foo()
+        ret = foo.create(username=request.form.get('username'), email=request.form.get('email'))
+        return Controller.render_json(data=ret.to_dict())
+
+    def put(self, env_id):
+        """
+        update environment
+        /environment/<int:env_id>
+
+        :return:
+        """
+
+        foo = models.Foo(id=env_id)
+        # ret = foo.update(username=request.form.get('username'), email=request.form.get('email'))
+        return Controller.render_json(data=foo.to_dict())
 
     def delete(self, env_id):
         """

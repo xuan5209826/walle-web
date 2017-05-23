@@ -15,7 +15,7 @@ from flask_wtf import Form
 from wtforms import BooleanField, HiddenField, PasswordField, SubmitField, StringField, TextField
 from wtforms import validators, ValidationError
 from wtforms.validators import DataRequired, Regexp
-from walle.common.models import User, Role, Environment
+from walle.common.models import User, Role, Environment, Tag
 
 
 class UserForm(FlaskForm):
@@ -29,7 +29,7 @@ class RegistrationForm(Form):
                                                  message='密码强度不足')])
 
     role_id = TextField('Password', [validators.Length(min=1, max=10)])
-    username = TextField('Password', [validators.Length(min=1, max=10)])
+    username = TextField('Username', [validators.Length(min=1, max=50)])
 
     def validate_email(self, field):
         if User.query.filter_by(email=field.data).first():
@@ -42,7 +42,7 @@ class RegistrationForm(Form):
 
 class UserUpdateForm(Form):
     password = PasswordField('Password', [validators.Length(min=0, max=35)])
-    username = TextField('username', [validators.Length(min=1, max=10)])
+    username = TextField('username', [validators.Length(min=1, max=50)])
     role_id = TextField('role_id', [validators.Length(min=1, max=10)])
 
     def validate_password(self, field):
@@ -61,11 +61,6 @@ class LoginForm(Form):
                                           Regexp(r'(?=\d{0,}[a-zA-Z])(?=[a-zA-Z]{0,}\d)[a-zA-Z0-9]{6,}',
                                                  message='密码强度不足')])
 
-    def validate_email(self, field):
-        pass
-        # email = StringField('Email', validators=[validators.Required(), validators.Length(1, 64)]) #, validators.Email()
-        # password = PasswordField('Password', validators=[validators.Required()])
-
 
 class RoleAdd(Form):
     name = TextField('Email Address', [validators.Length(min=6, max=35), validators.InputRequired()])
@@ -73,8 +68,12 @@ class RoleAdd(Form):
 
 
 class GroupForm(Form):
-    group_name = TextField('group_name', [validators.Length(min=1, max=10)])
+    group_name = TextField('group_name', [validators.Length(min=1, max=100)])
     user_ids = TextField('user_ids', [validators.Length(min=1)])
+    group_id = None
+
+    def set_group_id(self, group_id):
+        self.group_id = group_id
 
     def validate_user_ids(self, field):
         user_ids = [int(uid) for uid in field.data.split(',')]
@@ -82,8 +81,15 @@ class GroupForm(Form):
             raise ValidationError('存在未记录的用户添加到用户组')
 
 
+    def validate_group_name(self, field):
+        env = Tag.query.filter_by(name=field.data).filter_by(label='user_group').first()
+        # 新建时,环境名不可与
+        if env and env.id != self.group_id:
+            raise ValidationError('该用户组已经配置过')
+
+
 class EnvironmentForm(Form):
-    env_name = TextField('env_name', [validators.Length(min=1, max=10)])
+    env_name = TextField('env_name', [validators.Length(min=1, max=100)])
     status = TextField('status', [validators.Length(min=0, max=10)])
     env_id = None
 
@@ -99,7 +105,6 @@ class EnvironmentForm(Form):
     def validate_status(self, field):
         if field.data and int(field.data) not in [1, 2]:
             raise ValidationError('非法的状态')
-
 
 
 class TagCreateForm(Form):
