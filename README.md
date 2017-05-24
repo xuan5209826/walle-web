@@ -15,7 +15,7 @@ git checkout development # 开发分支
 # 配置环境
 pip install virtualenv
 virtualenv venv
-pip install -r requirements/dev.txt
+pip install -r requirements/dev.conf
 
 # 数据导入
 flask db init
