@@ -10,10 +10,10 @@
 
 from walle.common import models
 from walle.common.controller import Controller
-from walle.user.forms import UserUpdateForm, GroupForm, EnvironmentForm
+from walle.user.forms import UserUpdateForm, GroupForm, EnvironmentForm, ServerForm
 from flask_login import current_user
 from flask_login import login_user
-from walle.user.forms import RegistrationForm, LoginForm
+from walle.user.forms import RegistrationForm, LoginForm, ProjectForm
 from flask import request
 from flask_restful import Resource
 
@@ -143,10 +143,10 @@ class PassportAPI(Resource):
         f = open('run.log', 'w')
         form = LoginForm(request.form, csrf_enabled=False)
         if form.validate_on_submit():
-            f.write('\n' + form.email.data + '\n')
+            # f.write('\n' + form.email.data + '\n')
             user = models.User.query.filter_by(email=form.email.data).first()
-            f.write('\n' + str(user) + '\n')
-            f.write('\n' + str(user) + '\n')
+            # f.write('\n' + str(user) + '\n')
+            # f.write('\n' + str(user) + '\n')
 
             if user is not None and user.verify_password(form.password.data):
                 login_user(user)
@@ -217,7 +217,7 @@ class GroupAPI(Resource):
             return Controller.render_json(code=-1)
 
         f = open('run.log', 'w')
-        f.write(str(group_model) + '\n')
+        # f.write(str(group_model) + '\n')
         user_ids = []
         for user_info in group_model.users:
             user_ids.append(user_info.user_id)
@@ -368,6 +368,92 @@ class UserAPI(Resource):
         return Controller.render_json(message='')
 
 
+class TaskAPI(Resource):
+    def get(self, task_id=None):
+        """
+        fetch user list or one user
+        /task/<int:user_id>
+
+        :return:
+        """
+        return self.item(task_id) if task_id else self.list()
+
+    def list(self):
+        """
+        fetch user list or one user
+
+        :return:
+        """
+        page = int(request.args.get('page', 0))
+        page = page - 1 if page else 0
+        size = float(request.args.get('size', 10))
+        kw = request.values.get('kw', '')
+
+        user_model = models.User()
+        user_list, count = user_model.list(page=page, size=size, kw=kw)
+        return Controller.list_json(list=user_list, count=count)
+
+    def item(self, task_id):
+        """
+        获取某个用户
+
+        :param task_id:
+        :return:
+        """
+
+        user_info = models.User(id=task_id).item()
+        if not user_info:
+            return Controller.render_json(code=-1)
+        return Controller.render_json(data=user_info)
+
+    def post(self):
+        """
+        create user
+        /user/
+
+        :return:
+        """
+        form = RegistrationForm(request.form, csrf_enabled=False)
+        if form.validate_on_submit():
+            password = generate_password_hash(form.password.data)
+            user = models.User(email=form.email.data,
+                               username=form.username.data,
+                               password=password,
+                               role_id=form.role_id.data
+                               )
+            db.session.add(user)
+            db.session.commit()
+            return Controller.render_json(data=user.item(task_id=user.id))
+        return Controller.render_json(code=-1, message=form.errors)
+
+    def put(self, task_id):
+        """
+        edit user
+        /user/<int:task_id>
+
+        :return:
+        """
+        form = UserUpdateForm(request.form, csrf_enabled=False)
+        if form.validate_on_submit():
+            user = models.User(id=task_id)
+            user.update(username=form.username.data, role_id=form.role_id.data, password=form.password.data)
+            return Controller.render_json(data=user.item())
+
+        return Controller.render_json(code=-1, message=form.errors)
+
+    def delete(self, task_id):
+        """
+        remove a user with his group relation
+        /user/<int:task_id>
+
+        :param task_id:
+        :return:
+        """
+        models.User(id=task_id).remove()
+        models.Group().remove(task_id=task_id)
+        return Controller.render_json(message='')
+
+
 class EnvironmentAPI(Resource):
     def get(self, env_id=None):
         """
@@ -451,6 +537,185 @@ class EnvironmentAPI(Resource):
         """
         env_model = models.Environment(id=env_id)
         env_model.remove(env_id)
+
+        return Controller.render_json(message='')
+
+
+class ServerAPI(Resource):
+    def get(self, id=None):
+        """
+        fetch environment list or one item
+        /environment/<int:env_id>
+
+        :return:
+        """
+        return self.item(id) if id else self.list()
+
+    def list(self):
+        """
+        fetch environment list
+
+        :return:
+        """
+        page = int(request.args.get('page', 0))
+        page = page - 1 if page else 0
+        size = float(request.args.get('size', 10))
+        kw = request.values.get('kw', '')
+
+        server_model = models.Server()
+        server_list, count = server_model.list(page=page, size=size, kw=kw)
+        return Controller.list_json(list=server_list, count=count)
+
+    def item(self, id):
+        """
+        获取某个用户组
+
+        :param id:
+        :return:
+        """
+
+        server_model = models.Server(id=id)
+        server_info = server_model.item()
+        if not server_info:
+            return Controller.render_json(code=-1)
+        return Controller.render_json(data=server_info)
+
+    def post(self):
+        """
+        create a environment
+        /environment/
+
+        :return:
+        """
+
+        form = ServerForm(request.form, csrf_enabled=False)
+        if form.validate_on_submit():
+            server_new = models.Server()
+            id = server_new.add(name=form.name.data, host=form.host.data)
+            if not id:
+                return Controller.render_json(code=-1)
+
+            return Controller.render_json(data=server_new.item())
+        else:
+            return Controller.render_json(code=-1, message=form.errors)
+
+    def put(self, id):
+        """
+        update environment
+        /environment/<int:id>
+
+        :return:
+        """
+
+        form = ServerForm(request.form, csrf_enabled=False)
+        form.set_id(id)
+        if form.validate_on_submit():
+            server = models.Server(id=id)
+            ret = server.update(name=form.name.data, host=form.host.data)
+            return Controller.render_json(data=server.item())
+        else:
+            return Controller.render_json(code=-1, message=form.errors)
+
+    def delete(self, id):
+        """
+        remove an environment
+        /environment/<int:id>
+
+        :return:
+        """
+        server_model = models.Server(id=id)
+        server_model.remove(id)
+
+        return Controller.render_json(message='')
+
+
+class ProjectAPI(Resource):
+    def get(self, project_id=None):
+        """
+        fetch project list or one item
+        /project/<int:project_id>
+
+        :return:
+        """
+        return self.item(project_id) if project_id else self.list()
+
+    def list(self):
+        """
+        fetch project list
+
+        :return:
+        """
+        page = int(request.args.get('page', 0))
+        page = page - 1 if page else 0
+        size = float(request.args.get('size', 10))
+        kw = request.values.get('kw', '')
+
+        server_model = models.Project()
+        server_list, count = server_model.list(page=page, size=size, kw=kw)
+        return Controller.list_json(list=server_list, count=count)
+
+    def item(self, project_id):
+        """
+        获取某个用户组
+
+        :param id:
+        :return:
+        """
+
+        server_model = models.Project(id=project_id)
+        server_info = server_model.item()
+        if not server_info:
+            return Controller.render_json(code=-1)
+        return Controller.render_json(data=server_info)
+
+    def post(self):
+        """
+        create a environment
+        /environment/
+
+        :return:
+        """
+        form = ProjectForm(request.form, csrf_enabled=False)
+        # return Controller.render_json(code=-1, data = form.form2dict())
+        if form.validate_on_submit():
+            server_new = models.Project()
+            data = form.form2dict()
+            id = server_new.add(data)
+            if not id:
+                return Controller.render_json(code=-1)
+
+            return Controller.render_json(data=server_new.item())
+        else:
+            return Controller.render_json(code=-1, message=form.errors)
+
+    def put(self, project_id):
+        """
+        update environment
+        /environment/<int:id>
+
+        :return:
+        """
+
+        form = ProjectForm(request.form, csrf_enabled=False)
+        form.set_id(project_id)
+        if form.validate_on_submit():
+            server = models.Project().get_by_id(project_id)
+            data = form.form2dict()
+            # a new type to update a model
+            ret = server.update(data)
+            return Controller.render_json(data=server.item())
+        else:
+            return Controller.render_json(code=-1, message=form.errors)
+
+    def delete(self, project_id):
+        """
+        remove an environment
+        /environment/<int:id>
+
+        :return:
+        """
+        server_model = models.Project(id=project_id)
+        server_model.remove(project_id)
 
         return Controller.render_json(message='')
 

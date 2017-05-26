@@ -115,18 +115,22 @@ class Environment(db.Model):
     __tablename__ = 'environment'
 
     status_open = 1
-    status_close = 2;
+    status_close = 2
+    current_time = datetime.now()
 
     # 表的结构:
     id = db.Column(Integer, primary_key=True, autoincrement=True)
     name = db.Column(String(20))
     status = db.Column(Integer)
+    created_at = db.Column(DateTime, default=current_time)
+    updated_at = db.Column(DateTime, default=current_time, onupdate=current_time)
 
     def list(self, page=0, size=10, kw=None):
         """
         获取分页列表
         :param page:
         :param size:
+        :param kw:
         :return:
         """
         query = self.query
@@ -183,10 +187,97 @@ class Environment(db.Model):
         }
 
 
+# server
+class Server(SurrogatePK, Model):
+    __tablename__ = 'server'
+
+    current_time = datetime.now()
+
+    # 表的结构:
+    id = db.Column(Integer, primary_key=True, autoincrement=True)
+    name = db.Column(String(100))
+    host = db.Column(String(100))
+    created_at = db.Column(DateTime, default=current_time)
+    updated_at = db.Column(DateTime, default=current_time, onupdate=current_time)
+
+    def list(self, page=0, size=10, kw=None):
+        """
+        获取分页列表
+        :param page:
+        :param size:
+        :param kw:
+        :return:
+        """
+        query = self.query
+        if kw:
+            query = query.filter(Server.name.like('%' + kw + '%'))
+        count = query.count()
+
+        data = query.order_by('id desc') \
+            .offset(int(size) * int(page)).limit(size) \
+            .all()
+        server_list = [p.to_json() for p in data]
+        return server_list, count
+
+    def item(self, id=None):
+        """
+        获取单条记录
+        :param role_id:
+        :return:
+        """
+        id = id if id else self.id
+        data = self.query.filter_by(id=id).first()
+        return data.to_json() if data else []
+
+    def add(self, name, host):
+        # todo permission_ids need to be formated and checked
+        server = Server(name=name, host=host)
+
+        db.session.add(server)
+        db.session.commit()
+        if server.id:
+            self.id = server.id
+
+        return server.id
+
+    def update(self, name, host, id=None):
+        # todo permission_ids need to be formated and checked
+        id = id if id else self.id
+        role = Server.query.filter_by(id=id).first()
+
+        if not role:
+            return False
+
+        role.name = name
+        role.host = host
+
+        return db.session.commit()
+
+    def remove(self, id=None):
+        """
+
+        :param role_id:
+        :return:
+        """
+        id = id if id else self.id
+        self.query.filter_by(id=id).delete()
+        return db.session.commit()
+
+    def to_json(self):
+        return {
+            'id': self.id,
+            'name': self.name,
+            'host': self.host,
+        }
+
+
 # 项目配置表
-class Project(db.Model):
+class Project(SurrogatePK, Model):
     # 表的名字:
     __tablename__ = 'project'
+    current_time = datetime.now()
+    status_close = 0
+    status_open = 1
 
     # 表的结构:
     id = db.Column(Integer, primary_key=True, autoincrement=True)
@@ -199,18 +290,92 @@ class Project(db.Model):
     target_user = db.Column(String(50))
     target_root = db.Column(String(200))
     target_library = db.Column(String(200))
-    servers = db.Column(Text)
+    server_ids = db.Column(Text)
+    task_vars = db.Column(Text)
     prev_deploy = db.Column(Text)
     post_deploy = db.Column(Text)
     prev_release = db.Column(Text)
     post_release = db.Column(Text)
-    post_release_delay = db.Column(Integer)
     keep_version_num = db.Column(Integer)
     repo_url = db.Column(String(200))
     repo_username = db.Column(String(50))
     repo_password = db.Column(String(50))
     repo_mode = db.Column(String(50))
     repo_type = db.Column(String(10))
+
+    created_at = db.Column(DateTime, default=current_time)
+    updated_at = db.Column(DateTime, default=current_time, onupdate=current_time)
+
+    def list(self, page=0, size=10, kw=None):
+        """
+        获取分页列表
+        :param page:
+        :param size:
+        :return:
+        """
+        query = self.query
+        if kw:
+            query = query.filter(Project.name.like('%' + kw + '%'))
+        count = query.count()
+        data = query.order_by('id desc').offset(int(size) * int(page)).limit(size).all()
+        list = [p.to_json() for p in data]
+        return list, count
+
+    def item(self, id=None):
+        """
+        获取单条记录
+        :param role_id:
+        :return:
+        """
+        id = id if id else self.id
+        data = self.query.filter_by(id=id).first()
+
+        if not data:
+            return []
+
+        data = data.to_json()
+
+        server_ids = data['server_ids']
+        # return map(int, server_ids.split(','))
+        # with_entities('name')
+        servers = Server().query.filter(Server.id.in_(map(int, server_ids.split(',')))).all()
+        servers_info = []
+        for server in servers:
+            servers_info.append({
+                'id': server.id,
+                'name': server.name,
+            })
+        data['server_ids'] = servers_info
+        return data
+
+    def add(self, *args, **kwargs):
+        # todo permission_ids need to be formated and checked
+        data = dict(*args)
+        f=open('run.log', 'w')
+        f.write(str(data))
+        project = Project(**data)
+
+        db.session.add(project)
+        db.session.commit()
+        self.id = project.id
+        return self.id
+
+    def update(self, *args, **kwargs):
+        # todo permission_ids need to be formated and checked
+        # a new type to update a model
+
+        update_data = dict(*args)
+        return super(Project, self).update(**update_data)
+
+    def remove(self, role_id=None):
+        """
+
+        :param role_id:
+        :return:
+        """
+        role_id = role_id if role_id else self.id
+        Project.query.filter_by(id=role_id).delete()
+        return db.session.commit()
 
     def to_json(self):
         return {
@@ -224,12 +389,12 @@ class Project(db.Model):
             'target_user': self.target_user,
             'target_root': self.target_root,
             'target_library': self.target_library,
-            'servers': self.servers,
+            'server_ids': self.server_ids,
+            'task_vars': self.task_vars,
             'prev_deploy': self.prev_deploy,
             'post_deploy': self.post_deploy,
             'prev_release': self.prev_release,
             'post_release': self.post_release,
-            'post_release_delay': self.post_release_delay,
             'keep_version_num': self.keep_version_num,
             'repo_url': self.repo_url,
             'repo_username': self.repo_username,

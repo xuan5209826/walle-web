@@ -38,8 +38,8 @@ class TestApiGroup:
         """create successful."""
         # 1.create another role
         resp = client.post('%s/' % (self.uri_prefix), data=self.group_data)
-        f = open('run.log', 'w')
-        f.write('\n==test_create==\n'+str(resp.data))
+        # f = open('run.log', 'w')
+        # f.write('\n==test_create==\n'+str(resp.data))
 
         group_data = self.get_list_ids(self.group_data)
         response_success(resp)
@@ -61,8 +61,8 @@ class TestApiGroup:
         # Goes to homepage
 
         resp = client.get('%s/%d' % (self.uri_prefix, self.group_data['group_id']))
-        f = open('run.log', 'w')
-        f.write('\n==test_one==\n'+str(resp.data))
+        # f = open('run.log', 'w')
+        # f.write('\n==test_one==\n'+str(resp.data))
         group_data = self.get_list_ids(self.group_data)
 
         response_success(resp)
@@ -81,12 +81,12 @@ class TestApiGroup:
         resp = client.get('%s/?%s' % (self.uri_prefix, urllib.urlencode(query)))
         response_success(resp)
         resp_dict = resp_json(resp)
-        f = open('run.log', 'w')
+        # f = open('run.log', 'w')
         # f.write('%s/%d' % (self.uri_prefix, self.group_data['group_id']))
         # f.write(str(self.group_data_2))
 
         res = resp_dict['data']['list'].pop()
-        f.write(str(res))
+        # f.write(str(res))
 
         # compare_in(self.group_data_2, resp_dict['data']['list'].pop())
         group_data_2 = self.get_list_ids(self.group_data_2)
