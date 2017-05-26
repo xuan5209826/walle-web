@@ -5,17 +5,26 @@
  Source Server Type    : MySQL
  Source Server Version : 50704
  Source Host           : localhost
- Source Database       : walle-python
+ Source Database       : walle_python
 
  Target Server Type    : MySQL
  Target Server Version : 50704
  File Encoding         : utf-8
 
- Date: 05/13/2017 09:55:37 AM
+ Date: 05/26/2017 22:27:01 PM
 */
 
 SET NAMES utf8;
 SET FOREIGN_KEY_CHECKS = 0;
+
+-- ----------------------------
+--  Table structure for `alembic_version`
+-- ----------------------------
+DROP TABLE IF EXISTS `alembic_version`;
+CREATE TABLE `alembic_version` (
+  `version_num` varchar(32) NOT NULL,
+  PRIMARY KEY (`version_num`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- ----------------------------
 --  Table structure for `environment`
@@ -28,14 +37,22 @@ CREATE TABLE `environment` (
   `created_at` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
   `updated_at` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '修改时间',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8 COMMENT='项目环境配置表';
+) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8 COMMENT='项目环境配置表';
 
 -- ----------------------------
---  Records of `environment`
+--  Table structure for `foo`
 -- ----------------------------
-BEGIN;
-INSERT INTO `environment` VALUES ('2', '开发环境', '1', '2017-03-08 17:26:07', '2017-03-08 17:26:07');
-COMMIT;
+DROP TABLE IF EXISTS `foo`;
+CREATE TABLE `foo` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `username` varchar(50) NOT NULL,
+  `email` varchar(100) DEFAULT NULL,
+  `created_at` datetime DEFAULT NULL,
+  `updated_at` datetime DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `username` (`username`),
+  UNIQUE KEY `email` (`email`)
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 --  Table structure for `my`
@@ -48,13 +65,6 @@ CREATE TABLE `my` (
   `updated_at` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '修改时间',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8;
-
--- ----------------------------
---  Records of `my`
--- ----------------------------
-BEGIN;
-INSERT INTO `my` VALUES ('1', '9', '2017-04-18 09:35:45', '2017-04-18 09:35:45'), ('2', '19', '2017-04-18 09:35:57', '2017-04-18 09:35:57'), ('3', '199999', '2017-04-18 09:36:54', '2017-04-18 09:36:54'), ('4', '99999999', '2017-04-18 09:37:07', '2017-04-18 09:37:07');
-COMMIT;
 
 -- ----------------------------
 --  Table structure for `permission`
@@ -89,12 +99,12 @@ CREATE TABLE `project` (
   `target_user` varchar(50) NOT NULL COMMENT '目标机器的登录用户',
   `target_root` varchar(200) NOT NULL COMMENT '目标机器的 server 目录',
   `target_library` varchar(200) NOT NULL COMMENT '目标机器的版本库',
-  `servers` text COMMENT '目标机器列表',
+  `server_ids` text COMMENT '目标机器列表',
+  `task_vars` text COMMENT '高级环境变量',
   `prev_deploy` text COMMENT '部署前置任务',
   `post_deploy` text COMMENT '同步之前任务',
   `prev_release` text COMMENT '同步之前目标机器执行的任务',
   `post_release` text COMMENT '同步之后目标机器执行的任务',
-  `post_release_delay` int(11) NOT NULL DEFAULT '0' COMMENT '每台目标机执行post_release任务间隔/延迟时间 单位:秒',
   `keep_version_num` int(3) NOT NULL DEFAULT '20' COMMENT '线上版本保留数',
   `repo_url` varchar(200) DEFAULT '' COMMENT 'git地址',
   `repo_username` varchar(50) DEFAULT '' COMMENT '版本管理系统的用户名，一般为svn的用户名',
@@ -104,14 +114,7 @@ CREATE TABLE `project` (
   `created_at` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
   `updated_at` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '修改时间',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 COMMENT='项目配置表';
-
--- ----------------------------
---  Records of `project`
--- ----------------------------
-BEGIN;
-INSERT INTO `project` VALUES ('1', '1', '瓦力自部署', '1', '1', '12121', '.log', 'wushuiyong', '/home/wushuiyong/walle/webroot', '/home/wushuiyong/walle/release', null, null, null, null, null, '0', '20', 'git@bitbucket.org:wushuiyong/walle-web.git', '', '', 'branch', 'git', '2017-03-11 23:30:53', '2017-03-11 23:31:48');
-COMMIT;
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8 COMMENT='项目配置表';
 
 -- ----------------------------
 --  Table structure for `project_server`
@@ -127,13 +130,6 @@ CREATE TABLE `project_server` (
 ) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8 COMMENT='项目与服务器关系表';
 
 -- ----------------------------
---  Records of `project_server`
--- ----------------------------
-BEGIN;
-INSERT INTO `project_server` VALUES ('1', '1', '1', '2017-03-11 23:37:50', '2017-03-11 23:37:50'), ('2', '1', '2', '2017-03-11 23:37:56', '2017-03-11 23:37:56'), ('3', '1', '3', '2017-03-11 23:38:03', '2017-03-11 23:38:03');
-COMMIT;
-
--- ----------------------------
 --  Table structure for `role`
 -- ----------------------------
 DROP TABLE IF EXISTS `role`;
@@ -144,14 +140,7 @@ CREATE TABLE `role` (
   `created_at` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
   `updated_at` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '修改时间',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8 COMMENT='角色表';
-
--- ----------------------------
---  Records of `role`
--- ----------------------------
-BEGIN;
-INSERT INTO `role` VALUES ('1', '技术人员', '1,2,3,5', '2017-03-24 13:52:09', '2017-03-24 13:52:09'), ('2', '测试同学', '1,3,5,7', '2017-03-26 13:23:44', '2017-03-26 13:23:44'), ('5', '业务端', '', '2017-05-11 09:41:58', '2017-05-11 09:41:58');
-COMMIT;
+) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8 COMMENT='角色表';
 
 -- ----------------------------
 --  Table structure for `server`
@@ -160,19 +149,12 @@ DROP TABLE IF EXISTS `server`;
 CREATE TABLE `server` (
   `id` int(10) NOT NULL AUTO_INCREMENT COMMENT '记录id',
   `name` varchar(100) DEFAULT '' COMMENT 'server name',
-  `host` varchar(30) NOT NULL COMMENT 'ip/host',
+  `host` varchar(100) NOT NULL COMMENT 'ip/host',
   `port` int(1) DEFAULT '22' COMMENT 'ssh port',
   `created_at` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
   `updated_at` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '修改时间',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8 COMMENT='服务器记录表';
-
--- ----------------------------
---  Records of `server`
--- ----------------------------
-BEGIN;
-INSERT INTO `server` VALUES ('1', 'dev-wushuiyong', '172.16.0.231', '22', '2017-03-11 23:34:27', '2017-03-11 23:34:27'), ('2', 'mkt-dev-ky', '172.16.0.194', '22', '2017-03-11 23:35:12', '2017-03-11 23:35:12'), ('3', 'mkt-dev-yindongyang', '172.16.0.177', '22', '2017-03-11 23:37:18', '2017-03-11 23:37:18');
-COMMIT;
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8 COMMENT='服务器记录表';
 
 -- ----------------------------
 --  Table structure for `tag`
@@ -182,17 +164,11 @@ CREATE TABLE `tag` (
   `id` int(10) NOT NULL AUTO_INCREMENT COMMENT '记录id',
   `name` varchar(100) DEFAULT 'master' COMMENT '标签',
   `label` varchar(20) NOT NULL COMMENT '标签类型：server, ',
+  `label_id` int(10) NOT NULL COMMENT '被打标签的实物id： 如 server.id',
   `created_at` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
   `updated_at` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '修改时间',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8 COMMENT='tag 标签表';
-
--- ----------------------------
---  Records of `tag`
--- ----------------------------
-BEGIN;
-INSERT INTO `tag` VALUES ('1', '用户端FE', 'user_group', '0', '2017-05-08 19:56:19', '2017-05-10 21:07:38'), ('2', '营销中心', 'user_group', '0', '2017-05-08 19:57:05', '2017-05-08 19:57:05'), ('3', 'xx吴水永的新组xx', 'user_group', '0', '2017-05-08 20:52:55', '2017-05-11 23:34:45'), ('11', '吴水永的新组', 'user_group', '0', '2017-05-11 22:44:46', '2017-05-11 22:44:46'), ('12', '吴水永新增用户组', 'user_group', '0', '2017-05-11 23:15:53', '2017-05-11 23:15:53');
-COMMIT;
+) ENGINE=InnoDB AUTO_INCREMENT=35 DEFAULT CHARSET=utf8 COMMENT='tag 标签表';
 
 -- ----------------------------
 --  Table structure for `task`
@@ -219,13 +195,6 @@ CREATE TABLE `task` (
 ) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8 COMMENT='上线单记录表';
 
 -- ----------------------------
---  Records of `task`
--- ----------------------------
-BEGIN;
-INSERT INTO `task` VALUES ('1', '1', '1', '0', '1', 'Demo 测试上线单', 'prev_link_id_test', 'prev_link_id_test', '172.16.0.231,172.16.0.177', '5bf82db', 'master', '1', null, '1', '2017-03-11 23:41:24', '2017-03-11 23:45:10'), ('2', '1', '1', '0', '1', '测试使用 vue 2.0', 'vue_import', 'prev_link_id_test', '172.16.0.231,172.16.0.177', '5bf82db', 'master', '1', null, '1', '2017-03-12 17:31:55', '2017-03-12 17:32:11'), ('3', '1', '1', '0', '1', '到底 vue2 与 jinja 2 会产生什么样的火花呢？', 'vue_jinja', 'vue_import', '172.16.0.231,172.16.0.177', '5bf82db', 'master', '1', null, '1', '2017-03-12 17:32:59', '2017-03-12 17:33:29');
-COMMIT;
-
--- ----------------------------
 --  Table structure for `task_record`
 -- ----------------------------
 DROP TABLE IF EXISTS `task_record`;
@@ -245,13 +214,6 @@ CREATE TABLE `task_record` (
 ) ENGINE=InnoDB AUTO_INCREMENT=122 DEFAULT CHARSET=utf8 COMMENT='任务执行记录表';
 
 -- ----------------------------
---  Records of `task_record`
--- ----------------------------
-BEGIN;
-INSERT INTO `task_record` VALUES ('98', 'prev_deploy', '1', '33', '1', '1', 'whoami', 'wushuiyong', '', '2017-03-15 18:32:51', '2017-03-15 18:32:51'), ('99', 'prev_deploy', '1', '33', '32', '1', 'python --version', 'Python 2.7.10', '', '2017-03-15 18:32:51', '2017-03-15 18:32:51'), ('100', 'prev_deploy', '1', '33', '32', '1', 'git --version', 'git version 2.2.2', '', '2017-03-15 18:32:51', '2017-03-15 18:32:51'), ('101', 'prev_deploy', '1', '33', '32', '1', 'mkdir -p None', '', '', '2017-03-15 18:32:51', '2017-03-15 18:32:51'), ('102', 'prev_deploy', '1', '33', '1', '1', 'whoami', 'wushuiyong', '', '2017-03-15 18:34:16', '2017-03-15 18:34:16'), ('103', 'prev_deploy', '1', '33', '32', '1', 'python --version', 'Python 2.7.10', '', '2017-03-15 18:34:16', '2017-03-15 18:34:16'), ('104', 'prev_deploy', '1', '33', '32', '1', 'git --version', 'git version 2.2.2', '', '2017-03-15 18:34:16', '2017-03-15 18:34:16'), ('105', 'prev_deploy', '1', '33', '32', '1', 'mkdir -p None', '', '', '2017-03-15 18:34:16', '2017-03-15 18:34:16'), ('106', 'prev_deploy', '1', '33', '1', '1', 'whoami', 'wushuiyong', '', '2017-03-15 18:34:57', '2017-03-15 18:34:57'), ('107', 'prev_deploy', '1', '33', '32', '1', 'python --version', 'Python 2.7.10', '', '2017-03-15 18:34:58', '2017-03-15 18:34:58'), ('108', 'prev_deploy', '1', '33', '32', '1', 'git --version', 'git version 2.2.2', '', '2017-03-15 18:34:58', '2017-03-15 18:34:58'), ('109', 'prev_deploy', '1', '33', '32', '1', 'mkdir -p /Users/wushuiyong/workspace/meolu/data/codebase/walle-web', '', '', '2017-03-15 18:34:58', '2017-03-15 18:34:58'), ('110', 'prev_deploy', '1', '33', '1', '1', 'whoami', 'wushuiyong', '', '2017-03-15 18:36:28', '2017-03-15 18:36:28'), ('111', 'prev_deploy', '1', '33', '32', '1', 'python --version', 'Python 2.7.10', '', '2017-03-15 18:36:28', '2017-03-15 18:36:28'), ('112', 'prev_deploy', '1', '33', '32', '1', 'git --version', 'git version 2.2.2', '', '2017-03-15 18:36:28', '2017-03-15 18:36:28'), ('113', 'prev_deploy', '1', '33', '32', '1', 'mkdir -p /Users/wushuiyong/workspace/meolu/data/codebase/walle-web', '', '', '2017-03-15 18:36:28', '2017-03-15 18:36:28'), ('114', 'prev_deploy', '1', '33', '1', '1', 'whoami', 'wushuiyong', '', '2017-03-16 11:02:28', '2017-03-16 11:02:28'), ('115', 'prev_deploy', '1', '33', '32', '1', 'python --version', 'Python 2.7.10', '', '2017-03-16 11:02:29', '2017-03-16 11:02:29'), ('116', 'prev_deploy', '1', '33', '32', '1', 'git --version', 'git version 2.2.2', '', '2017-03-16 11:02:29', '2017-03-16 11:02:29'), ('117', 'prev_deploy', '1', '33', '32', '1', 'mkdir -p /Users/wushuiyong/workspace/meolu/data/codebase/walle-web', '', '', '2017-03-16 11:02:29', '2017-03-16 11:02:29'), ('118', 'prev_deploy', '1', '33', '1', '1', 'whoami', 'wushuiyong', '', '2017-03-16 11:03:47', '2017-03-16 11:03:47'), ('119', 'prev_deploy', '1', '33', '32', '1', 'python --version', 'Python 2.7.10', '', '2017-03-16 11:03:47', '2017-03-16 11:03:47'), ('120', 'prev_deploy', '1', '33', '32', '1', 'git --version', 'git version 2.2.2', '', '2017-03-16 11:03:47', '2017-03-16 11:03:47'), ('121', 'prev_deploy', '1', '33', '32', '1', 'mkdir -p /Users/wushuiyong/workspace/meolu/data/codebase/walle-web', '', '', '2017-03-16 11:03:47', '2017-03-16 11:03:47');
-COMMIT;
-
--- ----------------------------
 --  Table structure for `user`
 -- ----------------------------
 DROP TABLE IF EXISTS `user`;
@@ -268,14 +230,7 @@ CREATE TABLE `user` (
   `created_at` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
   `updated_at` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '修改时间',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=20 DEFAULT CHARSET=utf8 COMMENT='用户表';
-
--- ----------------------------
---  Records of `user`
--- ----------------------------
-BEGIN;
-INSERT INTO `user` VALUES ('1', 'wushuiyong', '1', 'wushuiyong@renrenche.com', '', '', 'default.jpg', '1', '1', '2017-03-17 09:03:09', '2017-03-17 09:03:09'), ('13', 'wushuiyong@local.com', '0', 'wushuiyong@walle-web.io', 'pbkdf2:sha1:1000$59T3110Q$7703684fd0bb722985b037703329c82891acd84b', '', null, '0', '0', '2017-03-20 19:05:44', '2017-04-13 14:52:06'), ('14', 'wushuiyong@walle-web.ios', '0', 'wushuiyong@walle-web.ios', 'pbkdf2:sha1:1000$KSjsIBCf$762bf8c30adc6eef288df31547dbd80fa8b81c93', '', null, '0', '0', '2017-04-13 15:03:57', '2017-04-13 15:03:57'), ('15', 'wushuiyong@walle-web.ioss', '0', 'wushuiyong@walle-web.ioss', 'pbkdf2:sha1:1000$We4EXI4O$c363470dbc91d9bf897fec3a76fdedeaf5f564b8', '', null, '0', '0', '2017-04-13 15:03:57', '2017-04-13 15:03:57'), ('18', 'x吴水永的新组x', '0', 'demo02@walle.com', 'pbkdf2:sha1:1000$3jENzbZ3$345e44980dcf44ffab60f16b35a913dca93677ab', '', null, '1', '0', '2017-05-11 22:33:35', '2017-05-11 23:39:11'), ('19', '中文啦', '0', 'demo03@walle.com', 'pbkdf2:sha1:1000$DButSYQG$d3fe6a80e23461e565ca1a8b8f9ee8302e7a29a7', '', null, '2', '0', '2017-05-11 23:39:11', '2017-05-11 23:39:11');
-COMMIT;
+) ENGINE=InnoDB AUTO_INCREMENT=22 DEFAULT CHARSET=utf8 COMMENT='用户表';
 
 -- ----------------------------
 --  Table structure for `user_group`
@@ -288,13 +243,6 @@ CREATE TABLE `user_group` (
   `created_at` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
   `updated_at` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '修改时间',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=57 DEFAULT CHARSET=utf8 COMMENT='用户组关联表';
-
--- ----------------------------
---  Records of `user_group`
--- ----------------------------
-BEGIN;
-INSERT INTO `user_group` VALUES ('1', '13', '1', '2017-05-08 19:56:38', '2017-05-08 19:56:38'), ('2', '1', '1', '2017-05-10 20:53:42', '2017-05-10 20:53:42'), ('45', '8', '11', '2017-05-11 22:44:46', '2017-05-11 22:44:46'), ('46', '1', '11', '2017-05-11 22:44:46', '2017-05-11 22:44:46'), ('47', '2', '11', '2017-05-11 22:44:46', '2017-05-11 22:44:46'), ('49', '1', '12', '2017-05-11 23:15:53', '2017-05-11 23:15:53'), ('50', '13', '12', '2017-05-11 23:15:53', '2017-05-11 23:15:53'), ('51', '18', '12', '2017-05-11 23:15:53', '2017-05-11 23:15:53'), ('52', '1', '3', '2017-05-11 23:29:43', '2017-05-11 23:29:43'), ('54', '15', '3', '2017-05-11 23:32:07', '2017-05-11 23:32:07'), ('56', '13', '3', '2017-05-11 23:34:45', '2017-05-11 23:34:45');
-COMMIT;
+) ENGINE=InnoDB AUTO_INCREMENT=90 DEFAULT CHARSET=utf8 COMMENT='用户组关联表';
 
 SET FOREIGN_KEY_CHECKS = 1;
