@@ -85,13 +85,21 @@ class Task(SurrogatePK, Model):
         """
         id = id if id else self.id
         data = self.query.filter_by(id=id).first()
-        return data.to_json() if data else []
+        if not data:
+            return []
+
+        task = data.to_json()
+        f = open('run.log', 'w')
+        t = Project.get_by_id(int(task['project_id']))
+        f.write('\n====item===\n'+str(data))
+        # task['project_name'] = Project().get_by_id(task['project_id'])
+        return task
 
     def add(self, *args, **kwargs):
         # todo permission_ids need to be formated and checked
         data = dict(*args)
         f = open('run.log', 'w')
-        f.write(str(data))
+        f.write('\n====add===\n'+str(data))
         project = Task(**data)
 
         db.session.add(project)

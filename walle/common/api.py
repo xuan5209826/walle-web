@@ -788,10 +788,12 @@ class TaskAPI(Resource):
         """
 
         form = TaskForm(request.form, csrf_enabled=False)
+        f = open('run.log', 'w')
         form.set_id(task_id)
         if form.validate_on_submit():
             task = models.Task().get_by_id(task_id)
             data = form.form2dict()
+            f.write('\n====form2dict===\n'+str(data))
             # a new type to update a model
             ret = task.update(data)
             return Controller.render_json(data=task.item())

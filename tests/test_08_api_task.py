@@ -7,7 +7,6 @@ import pytest
 from utils import *
 
 
-@pytest.mark.usefixtures('db')
 class TestApiTask:
     """api role testing"""
     uri_prefix = '/api/task'
@@ -149,4 +148,3 @@ class TestApiTask:
         # 3.get it
         resp = client.get('%s/%d' % (self.uri_prefix, server_id))
         response_error(resp)
-    
