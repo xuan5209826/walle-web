@@ -10,7 +10,7 @@
 
 from walle.common import models
 from walle.common.controller import Controller
-from walle.user.forms import UserUpdateForm, GroupForm, EnvironmentForm, ServerForm
+from walle.user.forms import UserUpdateForm, GroupForm, EnvironmentForm, ServerForm, TaskForm
 from flask_login import current_user
 from flask_login import login_user
 from walle.user.forms import RegistrationForm, LoginForm, ProjectForm
@@ -650,9 +650,9 @@ class ProjectAPI(Resource):
         size = float(request.args.get('size', 10))
         kw = request.values.get('kw', '')
 
-        server_model = models.Project()
-        server_list, count = server_model.list(page=page, size=size, kw=kw)
-        return Controller.list_json(list=server_list, count=count)
+        project_model = models.Project()
+        project_list, count = project_model.list(page=page, size=size, kw=kw)
+        return Controller.list_json(list=project_list, count=count)
 
     def item(self, project_id):
         """
@@ -662,11 +662,11 @@ class ProjectAPI(Resource):
         :return:
         """
 
-        server_model = models.Project(id=project_id)
-        server_info = server_model.item()
-        if not server_info:
+        project_model = models.Project(id=project_id)
+        project_info = project_model.item()
+        if not project_info:
             return Controller.render_json(code=-1)
-        return Controller.render_json(data=server_info)
+        return Controller.render_json(data=project_info)
 
     def post(self):
         """
@@ -678,13 +678,13 @@ class ProjectAPI(Resource):
         form = ProjectForm(request.form, csrf_enabled=False)
         # return Controller.render_json(code=-1, data = form.form2dict())
         if form.validate_on_submit():
-            server_new = models.Project()
+            project_new = models.Project()
             data = form.form2dict()
-            id = server_new.add(data)
+            id = project_new.add(data)
             if not id:
                 return Controller.render_json(code=-1)
 
-            return Controller.render_json(data=server_new.item())
+            return Controller.render_json(data=project_new.item())
         else:
             return Controller.render_json(code=-1, message=form.errors)
 
@@ -714,8 +714,99 @@ class ProjectAPI(Resource):
 
         :return:
         """
-        server_model = models.Project(id=project_id)
-        server_model.remove(project_id)
+        project_model = models.Project(id=project_id)
+        project_model.remove(project_id)
+
+        return Controller.render_json(message='')
+
+
+class TaskAPI(Resource):
+    def get(self, task_id=None):
+        """
+        fetch project list or one item
+        /project/<int:project_id>
+
+        :return:
+        """
+        return self.item(task_id) if task_id else self.list()
+
+    def list(self):
+        """
+        fetch project list
+
+        :return:
+        """
+        page = int(request.args.get('page', 0))
+        page = page - 1 if page else 0
+        size = float(request.args.get('size', 10))
+        kw = request.values.get('kw', '')
+
+        task_model = models.Task()
+        task_list, count = task_model.list(page=page, size=size, kw=kw)
+        return Controller.list_json(list=task_list, count=count)
+
+    def item(self, task_id):
+        """
+        获取某个用户组
+
+        :param id:
+        :return:
+        """
+
+        task_model = models.Task(id=task_id)
+        task_info = task_model.item()
+        if not task_info:
+            return Controller.render_json(code=-1)
+        return Controller.render_json(data=task_info)
+
+    def post(self):
+        """
+        create a environment
+        /environment/
+
+        :return:
+        """
+        form = TaskForm(request.form, csrf_enabled=False)
+        # return Controller.render_json(code=-1, data = form.form2dict())
+        if form.validate_on_submit():
+            task_new = models.Task()
+            data = form.form2dict()
+            id = task_new.add(data)
+            if not id:
+                return Controller.render_json(code=-1)
+
+            return Controller.render_json(data=task_new.item())
+        else:
+            return Controller.render_json(code=-1, message=form.errors)
+
+    def put(self, task_id):
+        """
+        update environment
+        /environment/<int:id>
+
+        :return:
+        """
+
+        form = TaskForm(request.form, csrf_enabled=False)
+        form.set_id(task_id)
+        if form.validate_on_submit():
+            task = models.Task().get_by_id(task_id)
+            data = form.form2dict()
+            # a new type to update a model
+            ret = task.update(data)
+            return Controller.render_json(data=task.item())
+        else:
+            return Controller.render_json(code=-1, message=form.errors)
+
+    def delete(self, task_id):
+        """
+        remove an environment
+        /environment/<int:id>
+
+        :return:
+        """
+        task_model = models.Task(id=task_id)
+        task_model.remove(task_id)
 
         return Controller.render_json(message='')
 

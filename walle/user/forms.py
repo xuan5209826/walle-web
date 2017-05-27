@@ -12,7 +12,8 @@ except ImportError:
     from flask_wtf import Form as FlaskForm  # Fallback to Flask-WTF v0.12 or older
 from flask_wtf import Form
 
-from wtforms import BooleanField, HiddenField, PasswordField, SubmitField, StringField, TextField
+from wtforms import BooleanField, HiddenField, PasswordField, SubmitField, StringField, TextField, IntegerField, \
+    TextAreaField
 from wtforms import validators, ValidationError
 from wtforms.validators import DataRequired, Regexp
 from walle.common.models import User, Role, Environment, Tag, Server, Project
@@ -126,20 +127,6 @@ class TagCreateForm(Form):
     label = TextField('label', [validators.Length(min=1, max=30)])
 
 
-class TaskForm(Form):
-    password = PasswordField('Password', [validators.Length(min=0, max=35)])
-    username = TextField('username', [validators.Length(min=1, max=50)])
-    role_id = TextField('role_id', [validators.Length(min=1, max=10)])
-
-    def validate_password(self, field):
-        if field.data and Regexp(r'(?=\d{0,}[a-zA-Z])(?=[a-zA-Z]{0,}\d)[a-zA-Z0-9]{6,}', message='密码强度不足'):
-            raise ValidationError('密码强度不足')
-
-    def validate_role_id(self, field):
-        if not Role.query.filter_by(id=field.data).first():
-            raise ValidationError('角色id不存在')
-
-
 class ProjectForm(Form):
     name = TextField('name', [validators.Length(min=1, max=100)])
     environment_id = TextField('environment_id', [validators.Length(min=1, max=10)])
@@ -197,4 +184,39 @@ class ProjectForm(Form):
             'repo_username': self.repo_username.data if self.repo_username.data else '',
             'repo_password': self.repo_password.data if self.repo_password.data else '',
             'repo_mode': self.repo_mode.data if self.repo_mode.data else '',
+        }
+
+
+class TaskForm(Form):
+    name = TextField('name', [validators.Length(min=1)])
+    project_id = IntegerField('project_id', [validators.NumberRange(min=1)])
+    servers = TextField('servers', [validators.Length(min=1)])
+    commit_id = TextField('commit_id', [validators.Length(min=1)])
+    branch = TextField('branch', [validators.Length(min=1)])
+    file_transmission_mode = IntegerField('file_transmission_mode', [validators.NumberRange(min=0)])
+    file_list = TextField('file_list', [validators.Length(min=1)])
+
+    id = None
+
+    def set_id(self, id):
+        self.id = id
+
+    def form2dict(self):
+        return {
+            'name': self.name.data if self.name.data else '',
+            # todo
+            'user_id': 1,
+            'project_id': self.project_id.data if self.project_id.data else '',
+            # todo default value
+            'action': 0,
+            'status': 0,
+            'link_id': '',
+            'ex_link_id': '',
+            'servers': self.servers.data if self.servers.data else '',
+            'commit_id': self.commit_id.data if self.commit_id.data else '',
+            'branch': self.branch.data if self.branch.data else '',
+            'file_transmission_mode': self.file_transmission_mode.data if self.file_transmission_mode.data else 0,
+            'file_list': self.file_list.data if self.file_list.data else '',
+            'enable_rollback': 1,
+
         }

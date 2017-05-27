@@ -5,8 +5,22 @@
 	"order": [],
 	"folders": [
 		{
+			"id": "9a5e21c7-17fa-b2b7-db3a-4016c9c45bd9",
+			"name": "1-environment",
+			"description": "",
+			"order": [
+				"e6e1db3c-db4c-3ef8-1ae5-3db922e466f3",
+				"04c0a3c5-3df4-83e6-a1df-ac1b822265f5",
+				"f113e436-1586-225d-37e2-d8907d3f46a6",
+				"e1c90dcd-3a34-3e24-9b7b-81f22cc26b1c",
+				"ba583f47-cdc6-a07c-15e4-ec1ff5577657"
+			],
+			"owner": "1040245",
+			"collectionId": "0236fc42-70f7-5988-c784-eb59ad21aaed"
+		},
+		{
 			"id": "76e1cf6c-c91c-4b18-0ba4-ed21ed61c6ea",
-			"name": "1-role",
+			"name": "2-role",
 			"description": "",
 			"order": [
 				"dff0dffb-1d75-e3e5-9280-31b22eca6478",
@@ -20,7 +34,7 @@
 		},
 		{
 			"id": "5c064797-2633-6f9c-a78a-d800fe17b34e",
-			"name": "2-user",
+			"name": "3-user",
 			"description": "",
 			"order": [
 				"9d0d3407-7037-4ff2-a4db-ce184baa37bf",
@@ -33,8 +47,18 @@
 			"collectionId": "0236fc42-70f7-5988-c784-eb59ad21aaed"
 		},
 		{
+			"id": "0f987d46-fc5e-46da-531a-e4aad3e8bc98",
+			"name": "4-passport",
+			"description": "",
+			"order": [
+				"396aabef-4a7d-5f03-b9c8-9e1351463b91"
+			],
+			"owner": "1040245",
+			"collectionId": "0236fc42-70f7-5988-c784-eb59ad21aaed"
+		},
+		{
 			"id": "a1e3ae9e-686d-dce0-44fa-3c300f9ae0bb",
-			"name": "3-group",
+			"name": "5-group",
 			"description": "",
 			"order": [
 				"8afe368f-b1af-4234-db3a-2122c4ec2e85",
@@ -47,32 +71,8 @@
 			"collectionId": "0236fc42-70f7-5988-c784-eb59ad21aaed"
 		},
 		{
-			"id": "9a5e21c7-17fa-b2b7-db3a-4016c9c45bd9",
-			"name": "4-environment",
-			"description": "",
-			"order": [
-				"e6e1db3c-db4c-3ef8-1ae5-3db922e466f3",
-				"04c0a3c5-3df4-83e6-a1df-ac1b822265f5",
-				"f113e436-1586-225d-37e2-d8907d3f46a6",
-				"e1c90dcd-3a34-3e24-9b7b-81f22cc26b1c",
-				"ba583f47-cdc6-a07c-15e4-ec1ff5577657"
-			],
-			"owner": "1040245",
-			"collectionId": "0236fc42-70f7-5988-c784-eb59ad21aaed"
-		},
-		{
-			"id": "0f987d46-fc5e-46da-531a-e4aad3e8bc98",
-			"name": "5-passport",
-			"description": "",
-			"order": [
-				"396aabef-4a7d-5f03-b9c8-9e1351463b91"
-			],
-			"owner": "1040245",
-			"collectionId": "0236fc42-70f7-5988-c784-eb59ad21aaed"
-		},
-		{
 			"id": "7c0c9d7f-88b2-93d0-88fb-a684ca675011",
-			"name": "5-server",
+			"name": "6-server",
 			"description": "",
 			"order": [
 				"44fde8bd-c230-d0a7-872e-e32b83aa4d8b",
@@ -86,7 +86,7 @@
 		},
 		{
 			"id": "5667516f-6f77-8589-f588-d52ce4741c7d",
-			"name": "6-project",
+			"name": "7-project",
 			"description": "",
 			"order": [
 				"aa90b1b6-4f20-f0a4-543c-dbfc85744c5d",
@@ -94,6 +94,20 @@
 				"c2d0be7e-83bc-3730-fade-8e9273c063b9",
 				"70348d4f-70d0-8040-ba89-c02627a55bc3",
 				"9e11d2db-a796-4076-24cf-7cae30e47c45"
+			],
+			"owner": "1040245",
+			"collectionId": "0236fc42-70f7-5988-c784-eb59ad21aaed"
+		},
+		{
+			"id": "3d46b6fd-df91-e8a5-5267-d243c175581e",
+			"name": "8-task",
+			"description": "",
+			"order": [
+				"461d26b4-eca2-0441-db08-4e9b64dc9428",
+				"b4ef4174-099f-ae54-e2bd-4b2b4cdbfcc8",
+				"63145023-1c4c-06b4-2121-4406e7b106c4",
+				"d9018a83-91fd-0ed1-abf8-b8a31759910a",
+				"3c386e15-1b97-432b-a611-13c85da00031"
 			],
 			"owner": "1040245",
 			"collectionId": "0236fc42-70f7-5988-c784-eb59ad21aaed"
@@ -299,6 +313,67 @@
 			"responses": []
 		},
 		{
+			"id": "3c386e15-1b97-432b-a611-13c85da00031",
+			"headers": "",
+			"url": "http://api.walle-web.io/api/task/5",
+			"preRequestScript": null,
+			"pathVariables": {},
+			"method": "PUT",
+			"data": [
+				{
+					"key": "name",
+					"value": "walle上线单01",
+					"type": "text",
+					"enabled": true
+				},
+				{
+					"key": "project_id",
+					"value": "1",
+					"type": "text",
+					"enabled": true
+				},
+				{
+					"key": "servers",
+					"value": "127.0.0.1,192.168.0.1",
+					"type": "text",
+					"enabled": true
+				},
+				{
+					"key": "commit_id",
+					"value": "a89eb23c",
+					"type": "text",
+					"enabled": true
+				},
+				{
+					"key": "branch",
+					"value": "master",
+					"type": "text",
+					"enabled": true
+				},
+				{
+					"key": "file_transmission_mode",
+					"value": "0",
+					"type": "text",
+					"enabled": true
+				},
+				{
+					"key": "file_list",
+					"value": "*.log",
+					"type": "text",
+					"enabled": true
+				}
+			],
+			"dataMode": "params",
+			"tests": null,
+			"currentHelper": "normal",
+			"helperAttributes": {},
+			"time": 1495865872222,
+			"name": "api_task_update",
+			"description": "",
+			"collectionId": "0236fc42-70f7-5988-c784-eb59ad21aaed",
+			"responses": []
+		},
+		{
 			"id": "44fde8bd-c230-d0a7-872e-e32b83aa4d8b",
 			"headers": "",
 			"url": "http://api.walle-web.io/api/server/",
@@ -336,6 +411,67 @@
 			"responses": []
 		},
 		{
+			"id": "461d26b4-eca2-0441-db08-4e9b64dc9428",
+			"headers": "",
+			"url": "http://api.walle-web.io/api/task/",
+			"preRequestScript": null,
+			"pathVariables": {},
+			"method": "POST",
+			"data": [
+				{
+					"key": "name",
+					"value": "提交一个测试上线单",
+					"type": "text",
+					"enabled": true
+				},
+				{
+					"key": "project_id",
+					"value": "1",
+					"type": "text",
+					"enabled": true
+				},
+				{
+					"key": "servers",
+					"value": "127.0.0.1,192.168.0.1",
+					"type": "text",
+					"enabled": true
+				},
+				{
+					"key": "commit_id",
+					"value": "a89eb23c",
+					"type": "text",
+					"enabled": true
+				},
+				{
+					"key": "branch",
+					"value": "master",
+					"type": "text",
+					"enabled": true
+				},
+				{
+					"key": "file_transmission_mode",
+					"value": "0",
+					"type": "text",
+					"enabled": true
+				},
+				{
+					"key": "file_list",
+					"value": "*.log",
+					"type": "text",
+					"enabled": true
+				}
+			],
+			"dataMode": "params",
+			"tests": null,
+			"currentHelper": "normal",
+			"helperAttributes": {},
+			"time": 1495852608890,
+			"name": "api_task_create",
+			"description": "",
+			"collectionId": "0236fc42-70f7-5988-c784-eb59ad21aaed",
+			"responses": []
+		},
+		{
 			"id": "62adc958-aef5-62aa-112e-10e9fed89576",
 			"headers": "",
 			"url": "http://api.walle-web.io/api/project/",
@@ -349,6 +485,24 @@
 			"helperAttributes": {},
 			"time": 1495681098911,
 			"name": "api_project_list",
+			"description": "",
+			"collectionId": "0236fc42-70f7-5988-c784-eb59ad21aaed",
+			"responses": []
+		},
+		{
+			"id": "63145023-1c4c-06b4-2121-4406e7b106c4",
+			"headers": "",
+			"url": "http://api.walle-web.io/api/task/1",
+			"preRequestScript": null,
+			"pathVariables": {},
+			"method": "GET",
+			"data": null,
+			"dataMode": "params",
+			"tests": null,
+			"currentHelper": "normal",
+			"helperAttributes": {},
+			"time": 1495841516991,
+			"name": "api_task_get",
 			"description": "",
 			"collectionId": "0236fc42-70f7-5988-c784-eb59ad21aaed",
 			"responses": []
@@ -778,6 +932,24 @@
 			"responses": []
 		},
 		{
+			"id": "b4ef4174-099f-ae54-e2bd-4b2b4cdbfcc8",
+			"headers": "",
+			"url": "http://api.walle-web.io/api/task/",
+			"preRequestScript": null,
+			"pathVariables": {},
+			"method": "GET",
+			"data": null,
+			"dataMode": "params",
+			"tests": null,
+			"currentHelper": "normal",
+			"helperAttributes": {},
+			"time": 1495864989865,
+			"name": "api_task_list",
+			"description": "",
+			"collectionId": "0236fc42-70f7-5988-c784-eb59ad21aaed",
+			"responses": []
+		},
+		{
 			"id": "b6a4904b-b479-c9b0-fb46-53908d01f36b",
 			"headers": "",
 			"url": "http://api.walle-web.io/api/group/",
@@ -827,6 +999,24 @@
 			"helperAttributes": {},
 			"time": 1495681085320,
 			"name": "api_project_get",
+			"description": "",
+			"collectionId": "0236fc42-70f7-5988-c784-eb59ad21aaed",
+			"responses": []
+		},
+		{
+			"id": "d9018a83-91fd-0ed1-abf8-b8a31759910a",
+			"headers": "",
+			"url": "http://api.walle-web.io/api/task/5",
+			"preRequestScript": null,
+			"pathVariables": {},
+			"method": "DELETE",
+			"data": null,
+			"dataMode": "params",
+			"tests": null,
+			"currentHelper": "normal",
+			"helperAttributes": {},
+			"time": 1495865949258,
+			"name": "api_task_remove",
 			"description": "",
 			"collectionId": "0236fc42-70f7-5988-c784-eb59ad21aaed",
 			"responses": []

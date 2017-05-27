@@ -43,8 +43,8 @@ def register_blueprints(app):
     api.add_resource(resource.UserAPI, '/api/user/', '/api/user/<int:user_id>', endpoint='user')
     api.add_resource(resource.EnvironmentAPI, '/api/environment/', '/api/environment/<int:env_id>', endpoint='environment')
     api.add_resource(resource.ServerAPI, '/api/server/', '/api/server/<int:id>', endpoint='server')
-    api.add_resource(resource.TaskAPI, '/api/task/', '/api/task/<int:task_id>', endpoint='task')
     api.add_resource(resource.ProjectAPI, '/api/project/', '/api/project/<int:project_id>', endpoint='project')
+    api.add_resource(resource.TaskAPI, '/api/task/', '/api/task/<int:task_id>', endpoint='task')
 
 
     return None

@@ -21,17 +21,17 @@ from walle.database import Model
 
 
 # 上线单
-class Task(db.Model):
-    # 表的名字:
+class Task(SurrogatePK, Model):
     __tablename__ = 'task'
+    current_time = datetime.now()
 
     # 表的结构:
     id = db.Column(Integer, primary_key=True, autoincrement=True)
+    name = db.Column(String(100))
     user_id = db.Column(Integer)
     project_id = db.Column(Integer)
     action = db.Column(Integer)
     status = db.Column(Integer)
-    title = db.Column(String(100))
     link_id = db.Column(String(100))
     ex_link_id = db.Column(String(100))
     servers = db.Column(Text)
@@ -40,30 +40,93 @@ class Task(db.Model):
     file_transmission_mode = db.Column(Integer)
     file_list = db.Column(Text)
     enable_rollback = db.Column(Integer)
-    created_at = db.Column(DateTime)
-    updated_at = db.Column(DateTime)
+    created_at = db.Column(DateTime, default=current_time)
+    updated_at = db.Column(DateTime, default=current_time, onupdate=current_time)
 
     taskMdl = None
-
-    def __init__(self, task_id=None):
-        if task_id:
-            self.id = task_id
-            self.taskMdl = Task.query.filter_by(id=self.id).one().to_json()
 
     def table_name(self):
         return self.__tablename__
 
-    def __repr__(self):
-        return '<User %r>' % (self.title)
+    #
+    # def list(self, page=0, size=10, kw=''):
+    #     data = Task.query.order_by('id').offset(int(size) * int(page)).limit(size).all()
+    #     return [p.to_json() for p in data]
+    #
+    # def one(self):
+    #     project_info = Project.query.filter_by(id=self.taskMdl.get('project_id')).one().to_json()
+    #     return dict(project_info, **self.taskMdl)
+    #
+
+    def list(self, page=0, size=10, kw=None):
+        """
+        获取分页列表
+        :param page:
+        :param size:
+        :param kw:
+        :return:
+        """
+        query = Task.query
+        if kw:
+            query = query.filter(Task.name.like('%' + kw + '%'))
+        count = query.count()
+
+        data = query.order_by('id desc') \
+            .offset(int(size) * int(page)).limit(size) \
+            .all()
+        server_list = [p.to_json() for p in data]
+        return server_list, count
+
+    def item(self, id=None):
+        """
+        获取单条记录
+        :param role_id:
+        :return:
+        """
+        id = id if id else self.id
+        data = self.query.filter_by(id=id).first()
+        return data.to_json() if data else []
+
+    def add(self, *args, **kwargs):
+        # todo permission_ids need to be formated and checked
+        data = dict(*args)
+        f = open('run.log', 'w')
+        f.write(str(data))
+        project = Task(**data)
+
+        db.session.add(project)
+        db.session.commit()
+
+        if project.id:
+            self.id = project.id
+
+        return project.id
+
+    def update(self, *args, **kwargs):
+        # todo permission_ids need to be formated and checked
+        # a new type to update a model
+
+        update_data = dict(*args)
+        return super(Task, self).update(**update_data)
+
+    def remove(self, id=None):
+        """
+
+        :param role_id:
+        :return:
+        """
+        id = id if id else self.id
+        self.query.filter_by(id=id).delete()
+        return db.session.commit()
 
     def to_json(self):
         return {
             'id': self.id,
+            'name': self.name,
             'user_id': self.user_id,
             'project_id': self.project_id,
             'action': self.action,
             'status': self.status,
-            'title': self.title,
             'link_id': self.link_id,
             'ex_link_id': self.ex_link_id,
             'servers': self.servers,
@@ -75,14 +138,6 @@ class Task(db.Model):
             'created_at': self.created_at.strftime('%Y-%m-%d %H:%M:%S'),
             'updated_at': self.updated_at.strftime('%Y-%m-%d %H:%M:%S'),
         }
-
-    def list(self, page=0, size=10):
-        data = Task.query.order_by('id').offset(int(size) * int(page)).limit(size).all()
-        return [p.to_json() for p in data]
-
-    def one(self):
-        project_info = Project.query.filter_by(id=self.taskMdl.get('project_id')).one().to_json()
-        return dict(project_info, **self.taskMdl)
 
 
 # 上线记录表
@@ -184,6 +239,8 @@ class Environment(db.Model):
             'id': self.id,
             'status': self.status,
             'env_name': self.name,
+            'created_at': self.created_at.strftime('%Y-%m-%d %H:%M:%S'),
+            'updated_at': self.updated_at.strftime('%Y-%m-%d %H:%M:%S'),
         }
 
 
@@ -268,6 +325,8 @@ class Server(SurrogatePK, Model):
             'id': self.id,
             'name': self.name,
             'host': self.host,
+            'created_at': self.created_at.strftime('%Y-%m-%d %H:%M:%S'),
+            'updated_at': self.updated_at.strftime('%Y-%m-%d %H:%M:%S'),
         }
 
 
@@ -351,7 +410,7 @@ class Project(SurrogatePK, Model):
     def add(self, *args, **kwargs):
         # todo permission_ids need to be formated and checked
         data = dict(*args)
-        f=open('run.log', 'w')
+        f = open('run.log', 'w')
         f.write(str(data))
         project = Project(**data)
 
