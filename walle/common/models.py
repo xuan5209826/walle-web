@@ -74,8 +74,15 @@ class Task(SurrogatePK, Model):
         data = query.order_by('id desc') \
             .offset(int(size) * int(page)).limit(size) \
             .all()
-        server_list = [p.to_json() for p in data]
-        return server_list, count
+        task_list = []
+
+        for task in data:
+            task = task.to_json()
+            project = Project().get_by_id(task['project_id']).to_dict()
+            task['project_name'] = project['name'] if project else u'未知项目'
+            task_list.append(task)
+            
+        return task_list, count
 
     def item(self, id=None):
         """
@@ -89,17 +96,15 @@ class Task(SurrogatePK, Model):
             return []
 
         task = data.to_json()
-        f = open('run.log', 'w')
-        t = Project.get_by_id(int(task['project_id']))
-        f.write('\n====item===\n'+str(data))
-        # task['project_name'] = Project().get_by_id(task['project_id'])
+        project = Project().get_by_id(task['project_id']).to_dict()
+        task['project_name'] = project['name'] if project else u'未知项目'
         return task
 
     def add(self, *args, **kwargs):
         # todo permission_ids need to be formated and checked
         data = dict(*args)
         f = open('run.log', 'w')
-        f.write('\n====add===\n'+str(data))
+        f.write('\n====add===\n' + str(data))
         project = Task(**data)
 
         db.session.add(project)
@@ -131,8 +136,8 @@ class Task(SurrogatePK, Model):
         return {
             'id': self.id,
             'name': self.name,
-            'user_id': self.user_id,
-            'project_id': self.project_id,
+            'user_id': int(self.user_id),
+            'project_id': int(self.project_id),
             'action': self.action,
             'status': self.status,
             'link_id': self.link_id,
