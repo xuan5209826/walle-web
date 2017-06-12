@@ -500,34 +500,11 @@ class User(UserMixin, SurrogatePK, Model):
     created_at = db.Column(DateTime, default=current_time)
     updated_at = db.Column(DateTime, default=current_time, onupdate=current_time)
 
-    #
-    # def __init__(self, email=None, password=None):
-    #     from walle.common.tokens import TokenManager
-    #     tokenManage = TokenManager()
-    #     if email and password:
-    #         self.email = email
-    #         self.username = email
-    #         self.password = tokenManage.generate_token(password)
-    #         self.role_id = 0
-    #         self.is_email_verified = 0
-    #         self.status = 0
-    #
-    # @property
-    # def password(self):
-    #     """
-    #     明文密码（只读）
-    #     :return:
-    #     """
-    #     raise AttributeError(u'文明密码不可读')
-    #
-    #
-    # @password_login.setter
-    # def password_login(self, value):
-    #     """
-    #     写入密码，同时计算hash值，保存到模型中
-    #     :return:
-    #     """
-    #     self.password = generate_password_hash(value)
+    status_mapping = {
+        0: '新建',
+        1: '正常',
+        2: '冻结',
+    }
 
     def item(self, user_id=None):
         """
@@ -619,7 +596,7 @@ class User(UserMixin, SurrogatePK, Model):
             'email': self.email,
             'avatar': self.avatar,
             'role_id': self.role_id,
-            'status': self.status,
+            'status': self.status_mapping[self.status],
             'role_name': self.role_info.name,
             'created_at': self.created_at.strftime('%Y-%m-%d %H:%M:%S'),
             'updated_at': self.updated_at.strftime('%Y-%m-%d %H:%M:%S'),
@@ -693,10 +670,10 @@ class Access(db.Model):
         controller = aliased(Access)
         action = aliased(Access)
 
-        data = db.session.query(module.id, module.name_cn, controller.id, controller.name_cn, action.id, action.name_cn)\
-            .outerjoin(controller, controller.pid==module.id)\
-            .outerjoin(action, action.pid==controller.id)\
-            .filter(module.type==self.type_module)\
+        data = db.session.query(module.id, module.name_cn, controller.id, controller.name_cn, action.id, action.name_cn) \
+            .outerjoin(controller, controller.pid == module.id) \
+            .outerjoin(action, action.pid == controller.id) \
+            .filter(module.type == self.type_module) \
             .all()
         for m_id, m_name, c_id, c_name, a_id, a_name in data:
             # module
