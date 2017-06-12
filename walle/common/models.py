@@ -826,6 +826,7 @@ class Role(UserMixin, SurrogatePK, Model):
             'id': self.id,
             'role_name': self.name,
             'access_ids': self.access_ids,
+            'users': len(self.users),
             'created_at': self.created_at.strftime('%Y-%m-%d %H:%M:%S'),
             'updated_at': self.updated_at.strftime('%Y-%m-%d %H:%M:%S'),
         }
