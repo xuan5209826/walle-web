@@ -493,10 +493,10 @@ class User(UserMixin, SurrogatePK, Model):
     is_email_verified = db.Column(Integer, default=0)
     email = db.Column(String(50), unique=True, nullable=False)
     password = db.Column(String(50), nullable=False)
-    # password_hash = db.Column(String(50), nullable=False)
     avatar = db.Column(String(100))
-    role_id = db.Column(Integer, default=0)
+    role_id = db.Column(Integer, db.ForeignKey('role.id'), default=0)
     status = db.Column(Integer, default=0)
+    role_info = relationship("Role", back_populates="users")
     created_at = db.Column(DateTime, default=current_time)
     updated_at = db.Column(DateTime, default=current_time, onupdate=current_time)
 
@@ -620,6 +620,7 @@ class User(UserMixin, SurrogatePK, Model):
             'avatar': self.avatar,
             'role_id': self.role_id,
             'status': self.status,
+            'role_name': self.role_info.name,
             'created_at': self.created_at.strftime('%Y-%m-%d %H:%M:%S'),
             'updated_at': self.updated_at.strftime('%Y-%m-%d %H:%M:%S'),
         }
@@ -762,6 +763,8 @@ class Role(UserMixin, SurrogatePK, Model):
     id = db.Column(Integer, primary_key=True, autoincrement=True)
     name = db.Column(String(30))
     access_ids = db.Column(Text, default='')
+    users = relationship("User", back_populates="role_info")
+
     created_at = db.Column(DateTime, default=current_time)
     updated_at = db.Column(DateTime, default=current_time, onupdate=current_time)
 
