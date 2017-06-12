@@ -17,6 +17,8 @@ from walle.user.forms import RegistrationForm, LoginForm, ProjectForm
 from flask import request
 from flask_restful import Resource
 
+from walle.rbac.access import Access
+
 from walle.common.models import db
 from werkzeug.security import generate_password_hash
 from datetime import datetime
@@ -32,21 +34,120 @@ class Base(Resource):
         """
         return 'walle-web 2.0'
 
-    def post(self):
+class PublicAPI(Resource):
+    def get(self):
         """
-        新增角色
-        /role/
+        fetch role list or one role
 
         :return:
         """
-        foo = models.Foo()
-        ins = datetime.now()
-        ret = foo.create(username='wushuiyongddd', email='xxx@yyy.zzz', inserted_at=ins)
+        user = models.User(id=1).item()
+        menu = Access().get_menu()
+        data = {
+            'user': user,
+            'menu': menu,
+        }
+        return Controller.render_json(data=data)
 
-        return Controller.render_json(data=1)
+
+class AccessAPI(Resource):
+    """
+    权限是以resource + method作为一个access
+
+    """
+    def get(self, access_id=None):
+        """
+        fetch access list or one access
+
+        :return:
+        """
+        return self.item(access_id) if access_id else self.list()
+
+    def list(self):
+        """
+        fetch access list
+        /access/
+
+        :return:
+        """
+
+        access_model = models.Access()
+        access_list = access_model.list()
+        return Controller.render_json(data=access_list)
+
+    def item(self, access_id):
+        """
+        fetch one access
+        /access/<int:access_id>
+
+        :param access_id:
+        :return:
+        """
+        access_model = models.Role(id=access_id)
+        access_info = access_model.item()
+        if not access_info:
+            return Controller.render_json(code=-1)
+        return Controller.render_json(data=access_info)
+
+    def post(self):
+        """
+        新增角色
+        /access/
+
+        :return:
+        """
+        access_name = request.form.get('access_name', None)
+        access_permissions_ids = request.form.get('access_ids', '')
+        access_model = models.Role()
+        access_id = access_model.add(name=access_name, access_ids=access_permissions_ids)
+
+        if not access_id:
+            Controller.render_json(code=-1)
+        return Controller.render_json(data=access_model.item())
+
+    def put(self, access_id):
+        """
+        修改角色
+        /access/<int:access_id>
+
+        :param access_id:
+        :return:
+        """
+        access_name = request.form.get('access_name', None)
+        access_ids = request.form.get('access_ids', '')
+
+        if not access_name:
+            return Controller.render_json(code=-1, message='access_name can not be empty')
+
+        access_model = models.Role(id=access_id)
+        ret = access_model.update(name=access_name, access_ids=access_ids)
+        return Controller.render_json(data=access_model.item())
+
+    def delete(self, access_id):
+        """
+        删除一个角色
+        /access/<int:access_id>
+
+        :return:
+        """
+        access_model = models.Role(id=access_id)
+        ret = access_model.remove()
+
+        return Controller.render_json(code=0)
 
 
 class RoleAPI(Resource):
+    """
+    角色没有上下级, 一个角色的用户可以看到
+    1.超管
+    2.研发总监, 产品总监
+    3.FE Leader, QA Leader, RD Leader
+    4.FE 1, FE 2, FE 3
+
+    场景：
+    1.项目管理:下级角色建立的项目,上级是否可见可写
+    2.上线单管理：下级角色提交的上线单，上级是否可以操作
+    """
     def get(self, role_id=None):
         """
         fetch role list or one role
@@ -93,9 +194,9 @@ class RoleAPI(Resource):
         :return:
         """
         role_name = request.form.get('role_name', None)
-        role_permissions_ids = request.form.get('permission_ids', '')
+        role_permissions_ids = request.form.get('access_ids', '')
         role_model = models.Role()
-        role_id = role_model.add(name=role_name, permission_ids=role_permissions_ids)
+        role_id = role_model.add(name=role_name, access_ids=role_permissions_ids)
 
         if not role_id:
             Controller.render_json(code=-1)
@@ -110,13 +211,13 @@ class RoleAPI(Resource):
         :return:
         """
         role_name = request.form.get('role_name', None)
-        role_permission_ids = request.form.get('permission_ids', '')
+        role_access_ids = request.form.get('access_ids', '')
 
         if not role_name:
             return Controller.render_json(code=-1, message='role_name can not be empty')
 
         role_model = models.Role(id=role_id)
-        ret = role_model.update(name=role_name, permission_ids=role_permission_ids)
+        ret = role_model.update(name=role_name, access_ids=role_access_ids)
         return Controller.render_json(data=role_model.item())
 
     def delete(self, role_id):

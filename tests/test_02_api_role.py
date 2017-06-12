@@ -14,14 +14,14 @@ class TestApiRole:
 
     role_data = {
         'role_name': u'研发组',
-        'permission_ids': '1,3',
+        'access_ids': '1,3',
     }
 
     role_name_2 = u'Test Leader'
 
     role_data_2 = {
         'role_name': u'Test Leader',
-        'permission_ids': '1,2',
+        'access_ids': '1,2',
     }
 
     def test_create(self, user, testapp, client, db):
