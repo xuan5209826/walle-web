@@ -726,6 +726,7 @@ class Access(db.Model):
             for c_id, c_info in m_info['sub_menu'].items():
                 m_info['sub_menu'][c_id]['sub_menu'] = menus_controller[c_id]
             menus.append({
+                'id': m_id,
                 'title': m_info['title'],
                 'sub_menu': m_info['sub_menu'].values(),
             })
