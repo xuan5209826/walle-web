@@ -23,6 +23,8 @@ from walle.common.models import db
 from werkzeug.security import generate_password_hash
 from datetime import datetime
 import time
+from werkzeug.utils import secure_filename
+import os
 
 
 class Base(Resource):
@@ -34,13 +36,27 @@ class Base(Resource):
         """
         return 'walle-web 2.0'
 
+
 class PublicAPI(Resource):
-    def get(self):
+    def get(self, method):
         """
         fetch role list or one role
 
         :return:
         """
+        if method == 'menu':
+            return self.menu()
+
+    def post(self, method):
+        """
+        fetch role list or one role
+
+        :return:
+        """
+        if method == 'avater':
+            return self.avater()
+
+    def menu(self):
         user = models.User(id=1).item()
         menu = Access().get_menu()
         data = {
@@ -49,12 +65,25 @@ class PublicAPI(Resource):
         }
         return Controller.render_json(data=data)
 
+    def avater(self):
+        UPLOAD_FOLDER = 'fe/public/avater'
+        f = request.files['avater']
+        fname = secure_filename(f.filename)
+        # todo rename to uid relation
+        fname = secure_filename(f.filename)
+        ret = f.save(os.path.join(UPLOAD_FOLDER, fname))
+
+        return Controller.render_json(data={
+            'avarter': fname,
+        })
+
 
 class AccessAPI(Resource):
     """
     权限是以resource + method作为一个access
 
     """
+
     def get(self, access_id=None):
         """
         fetch access list or one access
@@ -148,6 +177,7 @@ class RoleAPI(Resource):
     1.项目管理:下级角色建立的项目,上级是否可见可写
     2.上线单管理：下级角色提交的上线单，上级是否可以操作
     """
+
     def get(self, role_id=None):
         """
         fetch role list or one role
@@ -894,7 +924,7 @@ class TaskAPI(Resource):
         if form.validate_on_submit():
             task = models.Task().get_by_id(task_id)
             data = form.form2dict()
-            f.write('\n====form2dict===\n'+str(data))
+            f.write('\n====form2dict===\n' + str(data))
             # a new type to update a model
             ret = task.update(data)
             return Controller.render_json(data=task.item())

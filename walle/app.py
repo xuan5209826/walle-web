@@ -37,7 +37,7 @@ def register_blueprints(app):
     """Register Flask blueprints."""
     api = Api(app)
     api.add_resource(resource.Base, '/', endpoint='root')
-    api.add_resource(resource.PublicAPI, '/api/public/menu', endpoint='public')
+    api.add_resource(resource.PublicAPI, '/api/public/<string:method>', endpoint='public')
     api.add_resource(resource.AccessAPI, '/api/access/', '/api/access/<int:access_id>', endpoint='access')
     api.add_resource(resource.RoleAPI, '/api/role/', '/api/role/<int:role_id>', endpoint='role')
     api.add_resource(resource.GroupAPI, '/api/group/', '/api/group/<int:group_id>', endpoint='group')

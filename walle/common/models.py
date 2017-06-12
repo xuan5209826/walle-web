@@ -494,7 +494,7 @@ class User(UserMixin, SurrogatePK, Model):
     email = db.Column(String(50), unique=True, nullable=False)
     password = db.Column(String(50), nullable=False)
     avatar = db.Column(String(100))
-    role_id = db.Column(Integer, db.ForeignKey('role.id'), default=0)
+    role_id = db.Column(Integer, db.ForeignKey('role.id'), default=1)
     status = db.Column(Integer, default=0)
     role_info = relationship("Role", back_populates="users")
     created_at = db.Column(DateTime, default=current_time)
