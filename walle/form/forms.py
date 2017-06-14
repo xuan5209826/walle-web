@@ -16,7 +16,7 @@ from wtforms import BooleanField, HiddenField, PasswordField, SubmitField, Strin
     TextAreaField
 from wtforms import validators, ValidationError
 from wtforms.validators import DataRequired, Regexp
-from walle.common.models import User, Role, Environment, Tag, Server, Project
+from walle.model.models import User, Role, Environment, Tag, Server, Project
 
 
 class UserForm(FlaskForm):

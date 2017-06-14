@@ -4,8 +4,8 @@ from factory import PostGenerationMethodCall, Sequence
 from factory.alchemy import SQLAlchemyModelFactory
 from werkzeug.security import generate_password_hash
 
-from walle.database import db
-from walle.common.models import User
+from walle.model.database import db
+from walle.model.models import User
 
 
 class BaseFactory(SQLAlchemyModelFactory):

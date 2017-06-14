@@ -4,7 +4,7 @@ import datetime as dt
 
 import pytest
 
-from walle.common.models import Role, User, Foo
+from walle.model.models import Role, User, Foo
 
 from .factories import UserFactory
 

@@ -6,7 +6,7 @@ from sqlalchemy import desc, or_
 from sqlalchemy.sql.sqltypes import Date, DateTime
 from sqlalchemy.orm import relationship
 from werkzeug import cached_property
-from walle.compat import basestring
+from walle.utils import basestring
 
 from walle.extensions import db
 from walle.utils import datetime_str_to_obj, date_str_to_obj

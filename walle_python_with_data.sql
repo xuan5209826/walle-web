@@ -11,11 +11,38 @@
  Target Server Version : 50704
  File Encoding         : utf-8
 
- Date: 05/26/2017 22:23:51 PM
+ Date: 06/12/2017 19:35:33 PM
 */
 
 SET NAMES utf8;
 SET FOREIGN_KEY_CHECKS = 0;
+
+-- ----------------------------
+--  Table structure for `access`
+-- ----------------------------
+DROP TABLE IF EXISTS `access`;
+CREATE TABLE `access` (
+  `id` int(15) NOT NULL AUTO_INCREMENT,
+  `name_cn` varchar(30) NOT NULL COMMENT '模块中文名称',
+  `name_en` varchar(30) NOT NULL COMMENT '模块英文名称',
+  `pid` int(6) NOT NULL COMMENT '父模块id，顶级pid为0',
+  `type` enum('action','controller','module') DEFAULT 'action' COMMENT '类型',
+  `sequence` int(11) DEFAULT '0' COMMENT '排序序号sprintf("%2d%2d%2d", module_id, controller_id, 自增两位数)',
+  `archive` tinyint(1) DEFAULT '0' COMMENT '归档：0有效，1无效',
+  `icon` varchar(30) DEFAULT '' COMMENT '模块',
+  `fe_url` varchar(100) DEFAULT '' COMMENT '前端url',
+  `fe_visible` tinyint(1) DEFAULT '1' COMMENT '前端是否展示该模块 0不展示，1展示',
+  `created_at` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  `updated_at` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '修改时间',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=105 DEFAULT CHARSET=utf8 COMMENT='权限表';
+
+-- ----------------------------
+--  Records of `access`
+-- ----------------------------
+BEGIN;
+INSERT INTO `access` VALUES ('1', '用户中心', '', '0', 'module', '10001', '0', 'leaf', 'xx.yy.zz', '1', '2017-06-11 23:11:38', '2017-06-12 00:15:29'), ('2', '配置中心', '', '0', 'module', '10002', '0', 'leaf', 'xx.yy.zz', '1', '2017-06-11 23:11:52', '2017-06-12 00:15:29'), ('3', '上线单', '', '0', 'module', '10003', '0', 'leaf', 'xx.yy.zz', '1', '2017-06-11 23:12:45', '2017-06-12 00:15:29'), ('11', '用户管理', '', '1', 'controller', '10101', '0', 'leaf', 'xx.yy.zz', '1', '2017-06-11 23:13:51', '2017-06-12 00:15:29'), ('12', '用户组', '', '1', 'controller', '10102', '0', 'leaf', 'xx.yy.zz', '1', '2017-06-11 23:14:11', '2017-06-12 00:15:29'), ('13', '角色', '', '1', 'controller', '10103', '0', 'leaf', 'xx.yy.zz', '1', '2017-06-11 23:14:44', '2017-06-12 00:15:29'), ('14', '环境管理', '', '2', 'controller', '10201', '0', 'leaf', 'xx.yy.zz', '1', '2017-06-11 23:15:30', '2017-06-12 00:15:29'), ('15', '服务器管理', '', '2', 'controller', '10202', '0', 'leaf', 'xx.yy.zz', '1', '2017-06-11 23:15:51', '2017-06-12 00:15:29'), ('16', '项目管理', '', '2', 'controller', '10203', '0', 'leaf', 'xx.yy.zz', '1', '2017-06-11 23:16:18', '2017-06-12 00:15:29'), ('101', '查看', '', '11', 'action', '11101', '0', 'leaf', 'xx.yy.zz', '1', '2017-06-11 23:17:12', '2017-06-12 00:15:29'), ('102', '修改', '', '11', 'action', '11102', '0', 'leaf', 'xx.yy.zz', '1', '2017-06-11 23:17:26', '2017-06-12 00:15:29'), ('103', '新增', '', '11', 'action', '11103', '0', 'leaf', 'xx.yy.zz', '1', '2017-06-11 23:17:59', '2017-06-12 00:15:29'), ('104', '删除', '', '11', 'action', '11104', '0', 'leaf', 'xx.yy.zz', '1', '2017-06-11 23:18:16', '2017-06-12 00:15:29');
+COMMIT;
 
 -- ----------------------------
 --  Table structure for `alembic_version`
@@ -69,43 +96,6 @@ INSERT INTO `foo` VALUES ('1', '中test005', 'wushuiyong0095@walle-web.io', '201
 COMMIT;
 
 -- ----------------------------
---  Table structure for `my`
--- ----------------------------
-DROP TABLE IF EXISTS `my`;
-CREATE TABLE `my` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `title` int(1) NOT NULL DEFAULT '0' COMMENT '成交的所有收',
-  `created_at` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
-  `updated_at` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '修改时间',
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8;
-
--- ----------------------------
---  Records of `my`
--- ----------------------------
-BEGIN;
-INSERT INTO `my` VALUES ('1', '9', '2017-04-18 09:35:45', '2017-04-18 09:35:45'), ('2', '19', '2017-04-18 09:35:57', '2017-04-18 09:35:57'), ('3', '199999', '2017-04-18 09:36:54', '2017-04-18 09:36:54'), ('4', '99999999', '2017-04-18 09:37:07', '2017-04-18 09:37:07');
-COMMIT;
-
--- ----------------------------
---  Table structure for `permission`
--- ----------------------------
-DROP TABLE IF EXISTS `permission`;
-CREATE TABLE `permission` (
-  `id` int(15) NOT NULL AUTO_INCREMENT,
-  `name_cn` varchar(30) NOT NULL COMMENT '模块中文名称',
-  `name_en` varchar(30) NOT NULL COMMENT '模块英文名称',
-  `pid` int(6) NOT NULL COMMENT '父模块id，顶级pid为0',
-  `type` enum('action','controller','module') DEFAULT 'action' COMMENT '类型',
-  `sequence` int(11) DEFAULT '0' COMMENT '排序序号sprintf("%2d%2d%2d", module_id, controller_id, 自增两位数)',
-  `archive` tinyint(1) NOT NULL DEFAULT '0' COMMENT '归档：0有效，1无效',
-  `icon` varchar(30) DEFAULT '' COMMENT '模块',
-  `created_at` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
-  `updated_at` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '修改时间',
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='权限表';
-
--- ----------------------------
 --  Table structure for `project`
 -- ----------------------------
 DROP TABLE IF EXISTS `project`;
@@ -141,7 +131,7 @@ CREATE TABLE `project` (
 --  Records of `project`
 -- ----------------------------
 BEGIN;
-INSERT INTO `project` VALUES ('1', '1', '瓦力自部署', '1', '1', '12121', '.log', 'wushuiyong', '/home/wushuiyong/walle/webroot', '/home/wushuiyong/walle/release', null, null, null, null, null, null, '20', 'git@bitbucket.org:wushuiyong/walle-web.git', '', '', 'branch', 'git', '2017-03-11 23:30:53', '2017-03-11 23:31:48'), ('2', '1', '瓦力自部署05', '1', null, null, '*.log', 'work', '/tmp/walle/root', '/tmp/walle/library', '1,3,2', 'debug=1;\\napp=auotapp.py', 'echo prev_deploy; pwd', 'echo post_deploy; pwd', 'echo prev_release; pwd', 'echo post_release; pwd', '15', 'git@github.com:meolu/walden.git', '', '', 'branch', null, '2017-05-25 14:53:21', '2017-05-26 21:59:21'), ('3', '1', 'walden-瓦尔登02', '1', null, null, '*.log', 'work', '/tmp/walle/root', '/tmp/walle/library', '1,3,2', 'debug=1;\\napp=auotapp.py', 'echo prev_deploy', 'echo post_deploy', 'echo prev_release', 'echo post_release', '10', 'git@github.com:meolu/walle-web.git', '', '', 'branch', null, '2017-05-25 15:02:18', '2017-05-25 15:02:18'), ('4', '1', '瓦力自部署01', '1', null, null, '*.log', 'work', '/tmp/walle/root', '/tmp/walle/library', '1,3,2', 'debug=1;\\napp=auotapp.py', 'echo prev_deploy', 'echo post_deploy', 'echo prev_release', 'echo post_release', '10', 'git@github.com:meolu/walle-web.git', '', '', 'branch', null, '2017-05-25 23:48:06', '2017-05-25 23:48:06');
+INSERT INTO `project` VALUES ('1', '1', '瓦力自部署', '1', '1', '12121', '*.log', 'work', '/tmp/walle/root', '/tmp/walle/library', '1,3,2', 'debug=1;\\napp=auotapp.py', 'echo prev_deploy; pwd', 'echo post_deploy; pwd', 'echo prev_release; pwd', 'echo post_release; pwd', '13', 'git@github.com:meolu/walden.git', '', '', 'branch', 'git', '2017-03-11 23:30:53', '2017-05-27 14:40:57'), ('2', '1', '瓦力自部署05', '1', null, null, '*.log', 'work', '/tmp/walle/root', '/tmp/walle/library', '1,3,2', 'debug=1;\\napp=auotapp.py', 'echo prev_deploy; pwd', 'echo post_deploy; pwd', 'echo prev_release; pwd', 'echo post_release; pwd', '15', 'git@github.com:meolu/walden.git', '', '', 'branch', null, '2017-05-25 14:53:21', '2017-05-26 21:59:21'), ('3', '1', 'walden-瓦尔登02', '1', null, null, '*.log', 'work', '/tmp/walle/root', '/tmp/walle/library', '1,3,2', 'debug=1;\\napp=auotapp.py', 'echo prev_deploy', 'echo post_deploy', 'echo prev_release', 'echo post_release', '10', 'git@github.com:meolu/walle-web.git', '', '', 'branch', null, '2017-05-25 15:02:18', '2017-05-25 15:02:18'), ('4', '1', '瓦力自部署01', '1', null, null, '*.log', 'work', '/tmp/walle/root', '/tmp/walle/library', '1,3,2', 'debug=1;\\napp=auotapp.py', 'echo prev_deploy', 'echo post_deploy', 'echo prev_release', 'echo post_release', '10', 'git@github.com:meolu/walle-web.git', '', '', 'branch', null, '2017-05-25 23:48:06', '2017-05-25 23:48:06');
 COMMIT;
 
 -- ----------------------------
@@ -171,7 +161,7 @@ DROP TABLE IF EXISTS `role`;
 CREATE TABLE `role` (
   `id` int(10) NOT NULL AUTO_INCREMENT,
   `name` varchar(30) NOT NULL COMMENT '角色名称',
-  `permission_ids` text COMMENT '权限id列表,逗号分隔',
+  `access_ids` text COMMENT '权限id列表,逗号分隔',
   `created_at` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
   `updated_at` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '修改时间',
   PRIMARY KEY (`id`)
@@ -181,7 +171,7 @@ CREATE TABLE `role` (
 --  Records of `role`
 -- ----------------------------
 BEGIN;
-INSERT INTO `role` VALUES ('1', '技术人员', '1,2,3,5', '2017-03-24 13:52:09', '2017-03-24 13:52:09'), ('2', '测试同学2', '', '2017-03-26 13:23:44', '2017-05-14 16:38:25'), ('5', '业务端', '', '2017-05-11 09:41:58', '2017-05-11 09:41:58'), ('6', '没用的', '', '2017-05-14 16:44:41', '2017-05-14 16:44:41'), ('7', '业务端ss', '', '2017-05-14 16:50:02', '2017-05-14 16:50:02'), ('8', '业务端ss', '', '2017-05-14 16:51:06', '2017-05-14 16:51:06'), ('9', '业务端sss', '', '2017-05-14 16:51:06', '2017-05-14 16:51:06'), ('10', '业务端sss大', '', '2017-05-14 16:52:29', '2017-05-14 16:52:29'), ('11', '业务端', '', '2017-05-14 16:53:06', '2017-05-14 16:53:06');
+INSERT INTO `role` VALUES ('1', '测试同学', '1,2,3,11,12,13,15,16,101,102,103,104,', '2017-03-24 13:52:09', '2017-06-12 19:25:51'), ('2', '测试同学2', '', '2017-03-26 13:23:44', '2017-05-14 16:38:25'), ('5', '业务端', '', '2017-05-11 09:41:58', '2017-05-11 09:41:58'), ('6', '没用的', '', '2017-05-14 16:44:41', '2017-05-14 16:44:41'), ('7', '业务端ss', '', '2017-05-14 16:50:02', '2017-05-14 16:50:02'), ('8', '业务端ss', '', '2017-05-14 16:51:06', '2017-05-14 16:51:06'), ('9', '业务端sss', '', '2017-05-14 16:51:06', '2017-05-14 16:51:06'), ('10', '业务端sss大', '', '2017-05-14 16:52:29', '2017-05-14 16:52:29'), ('11', '业务端', '', '2017-05-14 16:53:06', '2017-05-14 16:53:06');
 COMMIT;
 
 -- ----------------------------
@@ -196,7 +186,7 @@ CREATE TABLE `server` (
   `created_at` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
   `updated_at` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '修改时间',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8 COMMENT='服务器记录表';
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8 COMMENT='服务器记录表';
 
 -- ----------------------------
 --  Records of `server`
@@ -232,11 +222,11 @@ COMMIT;
 DROP TABLE IF EXISTS `task`;
 CREATE TABLE `task` (
   `id` int(10) NOT NULL AUTO_INCREMENT COMMENT '记录id',
+  `name` varchar(100) NOT NULL COMMENT '上线单标题',
   `user_id` bigint(21) unsigned NOT NULL COMMENT '用户id',
   `project_id` int(11) NOT NULL COMMENT '项目id',
   `action` int(1) DEFAULT '0' COMMENT '0全新上线，2回滚',
   `status` tinyint(1) NOT NULL COMMENT '状态0：新建提交，1审核通过，2审核拒绝，3上线完成，4上线失败',
-  `title` varchar(100) NOT NULL COMMENT '上线单标题',
   `link_id` varchar(100) DEFAULT '' COMMENT '上线的软链号',
   `ex_link_id` varchar(100) DEFAULT '' COMMENT '被替换的上次上线的软链号',
   `servers` text COMMENT '上线的机器',
@@ -248,13 +238,13 @@ CREATE TABLE `task` (
   `created_at` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
   `updated_at` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '修改时间',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8 COMMENT='上线单记录表';
+) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8 COMMENT='上线单记录表';
 
 -- ----------------------------
 --  Records of `task`
 -- ----------------------------
 BEGIN;
-INSERT INTO `task` VALUES ('1', '1', '1', '0', '1', 'Demo 测试上线单', 'prev_link_id_test', 'prev_link_id_test', '172.16.0.231,172.16.0.177', '5bf82db', 'master', '1', null, '1', '2017-03-11 23:41:24', '2017-03-11 23:45:10'), ('2', '1', '1', '0', '1', '测试使用 vue 2.0', 'vue_import', 'prev_link_id_test', '172.16.0.231,172.16.0.177', '5bf82db', 'master', '1', null, '1', '2017-03-12 17:31:55', '2017-03-12 17:32:11'), ('3', '1', '1', '0', '1', '到底 vue2 与 jinja 2 会产生什么样的火花呢？', 'vue_jinja', 'vue_import', '172.16.0.231,172.16.0.177', '5bf82db', 'master', '1', null, '1', '2017-03-12 17:32:59', '2017-03-12 17:33:29');
+INSERT INTO `task` VALUES ('1', 'Demo 测试上线单', '1', '1', '0', '1', 'prev_link_id_test', 'prev_link_id_test', '172.16.0.231,172.16.0.177', '5bf82db', 'master', '1', null, '1', '2017-03-11 23:41:24', '2017-03-11 23:45:10'), ('2', '测试使用 vue 2.0', '1', '1', '0', '1', 'vue_import', 'prev_link_id_test', '172.16.0.231,172.16.0.177', '5bf82db', 'master', '1', null, '1', '2017-03-12 17:31:55', '2017-03-12 17:32:11'), ('3', '到底 vue2 与 jinja 2 会产生什么样的火花呢？', '1', '1', '0', '1', 'vue_jinja', 'vue_import', '172.16.0.231,172.16.0.177', '5bf82db', 'master', '1', null, '1', '2017-03-12 17:32:59', '2017-03-12 17:33:29'), ('6', '提交一个测试上线单', '1', '1', '0', '0', '', '', '127.0.0.1,192.168.0.1', 'a89eb23c', 'master', '0', '*.log', '1', '2017-05-27 14:50:37', '2017-05-27 14:50:37'), ('7', '提交一个测试上线单', '1', '1', '0', '0', '', '', '127.0.0.1,192.168.0.1', 'a89eb23c', 'master', '0', '*.log', '1', '2017-05-27 14:53:42', '2017-05-27 14:53:42'), ('8', '提交一个测试上线单', '1', '1', '0', '0', '', '', '127.0.0.1,192.168.0.1', 'a89eb23c', 'master', '0', '*.log', '1', '2017-05-27 15:37:39', '2017-05-27 15:37:39'), ('9', '提交一个测试上线单', '1', '1', '0', '0', '', '', '127.0.0.1,192.168.0.1', 'a89eb23c', 'master', '0', '*.log', '1', '2017-05-27 15:38:56', '2017-05-27 15:38:56'), ('10', '提交一个测试上线单', '1', '1', '0', '0', '', '', '127.0.0.1,192.168.0.1', 'a89eb23c', 'master', '0', '*.log', '1', '2017-05-27 15:40:04', '2017-05-27 15:40:04'), ('11', '提交一个测试上线单', '1', '1', '0', '0', '', '', '127.0.0.1,192.168.0.1', 'a89eb23c', 'master', '0', '*.log', '1', '2017-05-27 16:48:38', '2017-05-27 16:48:38');
 COMMIT;
 
 -- ----------------------------
@@ -300,7 +290,7 @@ CREATE TABLE `user` (
   `created_at` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
   `updated_at` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '修改时间',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=22 DEFAULT CHARSET=utf8 COMMENT='用户表';
+) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8 COMMENT='用户表';
 
 -- ----------------------------
 --  Records of `user`

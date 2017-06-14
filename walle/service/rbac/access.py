@@ -6,7 +6,7 @@
     :created time: 2017-06-11 15:40:38
     :author: wushuiyong@walle-web.io
 """
-from walle.common import models
+from walle.model import models
 
 
 class Access:
@@ -20,3 +20,7 @@ class Access:
 
     def is_allow(self, resource, method):
         return True
+
+    @staticmethod
+    def resource(action, controller, module = None):
+        return "{}_{}_{}".format(module, controller, action)

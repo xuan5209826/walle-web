@@ -11,11 +11,31 @@
  Target Server Version : 50704
  File Encoding         : utf-8
 
- Date: 05/26/2017 22:27:01 PM
+ Date: 06/12/2017 19:33:08 PM
 */
 
 SET NAMES utf8;
 SET FOREIGN_KEY_CHECKS = 0;
+
+-- ----------------------------
+--  Table structure for `access`
+-- ----------------------------
+DROP TABLE IF EXISTS `access`;
+CREATE TABLE `access` (
+  `id` int(15) NOT NULL AUTO_INCREMENT,
+  `name_cn` varchar(30) NOT NULL COMMENT '模块中文名称',
+  `name_en` varchar(30) NOT NULL COMMENT '模块英文名称',
+  `pid` int(6) NOT NULL COMMENT '父模块id，顶级pid为0',
+  `type` enum('action','controller','module') DEFAULT 'action' COMMENT '类型',
+  `sequence` int(11) DEFAULT '0' COMMENT '排序序号sprintf("%2d%2d%2d", module_id, controller_id, 自增两位数)',
+  `archive` tinyint(1) DEFAULT '0' COMMENT '归档：0有效，1无效',
+  `icon` varchar(30) DEFAULT '' COMMENT '模块',
+  `fe_url` varchar(100) DEFAULT '' COMMENT '前端url',
+  `fe_visible` tinyint(1) DEFAULT '1' COMMENT '前端是否展示该模块 0不展示，1展示',
+  `created_at` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  `updated_at` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '修改时间',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=105 DEFAULT CHARSET=utf8 COMMENT='权限表';
 
 -- ----------------------------
 --  Table structure for `alembic_version`
@@ -53,36 +73,6 @@ CREATE TABLE `foo` (
   UNIQUE KEY `username` (`username`),
   UNIQUE KEY `email` (`email`)
 ) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8;
-
--- ----------------------------
---  Table structure for `my`
--- ----------------------------
-DROP TABLE IF EXISTS `my`;
-CREATE TABLE `my` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `title` int(1) NOT NULL DEFAULT '0' COMMENT '成交的所有收',
-  `created_at` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
-  `updated_at` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '修改时间',
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8;
-
--- ----------------------------
---  Table structure for `permission`
--- ----------------------------
-DROP TABLE IF EXISTS `permission`;
-CREATE TABLE `permission` (
-  `id` int(15) NOT NULL AUTO_INCREMENT,
-  `name_cn` varchar(30) NOT NULL COMMENT '模块中文名称',
-  `name_en` varchar(30) NOT NULL COMMENT '模块英文名称',
-  `pid` int(6) NOT NULL COMMENT '父模块id，顶级pid为0',
-  `type` enum('action','controller','module') DEFAULT 'action' COMMENT '类型',
-  `sequence` int(11) DEFAULT '0' COMMENT '排序序号sprintf("%2d%2d%2d", module_id, controller_id, 自增两位数)',
-  `archive` tinyint(1) NOT NULL DEFAULT '0' COMMENT '归档：0有效，1无效',
-  `icon` varchar(30) DEFAULT '' COMMENT '模块',
-  `created_at` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
-  `updated_at` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '修改时间',
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='权限表';
 
 -- ----------------------------
 --  Table structure for `project`
@@ -136,7 +126,7 @@ DROP TABLE IF EXISTS `role`;
 CREATE TABLE `role` (
   `id` int(10) NOT NULL AUTO_INCREMENT,
   `name` varchar(30) NOT NULL COMMENT '角色名称',
-  `permission_ids` text COMMENT '权限id列表,逗号分隔',
+  `access_ids` text COMMENT '权限id列表,逗号分隔',
   `created_at` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
   `updated_at` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '修改时间',
   PRIMARY KEY (`id`)
@@ -154,7 +144,7 @@ CREATE TABLE `server` (
   `created_at` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
   `updated_at` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '修改时间',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8 COMMENT='服务器记录表';
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8 COMMENT='服务器记录表';
 
 -- ----------------------------
 --  Table structure for `tag`
@@ -176,11 +166,11 @@ CREATE TABLE `tag` (
 DROP TABLE IF EXISTS `task`;
 CREATE TABLE `task` (
   `id` int(10) NOT NULL AUTO_INCREMENT COMMENT '记录id',
+  `name` varchar(100) NOT NULL COMMENT '上线单标题',
   `user_id` bigint(21) unsigned NOT NULL COMMENT '用户id',
   `project_id` int(11) NOT NULL COMMENT '项目id',
   `action` int(1) DEFAULT '0' COMMENT '0全新上线，2回滚',
   `status` tinyint(1) NOT NULL COMMENT '状态0：新建提交，1审核通过，2审核拒绝，3上线完成，4上线失败',
-  `title` varchar(100) NOT NULL COMMENT '上线单标题',
   `link_id` varchar(100) DEFAULT '' COMMENT '上线的软链号',
   `ex_link_id` varchar(100) DEFAULT '' COMMENT '被替换的上次上线的软链号',
   `servers` text COMMENT '上线的机器',
@@ -192,7 +182,7 @@ CREATE TABLE `task` (
   `created_at` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
   `updated_at` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '修改时间',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8 COMMENT='上线单记录表';
+) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8 COMMENT='上线单记录表';
 
 -- ----------------------------
 --  Table structure for `task_record`
@@ -230,7 +220,7 @@ CREATE TABLE `user` (
   `created_at` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
   `updated_at` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '修改时间',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=22 DEFAULT CHARSET=utf8 COMMENT='用户表';
+) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8 COMMENT='用户表';
 
 -- ----------------------------
 --  Table structure for `user_group`

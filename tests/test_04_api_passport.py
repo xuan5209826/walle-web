@@ -36,7 +36,7 @@ class TestApiPassport:
         response_success(resp)
         compare_req_resp(response, resp)
 
-        resp = client.post('%s/' % (self.uri_prefix), data=self.user_data)
+        resp = client.post('%s/login' % (self.uri_prefix), data=self.user_data)
 
         response_success(resp)
 

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """Test forms."""
 
-from walle.user.forms import LoginForm
+from walle.form.forms import LoginForm
 
 #
 # class TestRegisterForm:

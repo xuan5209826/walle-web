@@ -2,11 +2,25 @@
 """The app module, containing the app factory function."""
 from flask import Flask, render_template
 
-from walle import commands, user
+from walle import commands
+from walle.model import models
 from walle.extensions import bcrypt, csrf_protect, db, login_manager, migrate
-from walle.settings import ProdConfig
-from walle.common import api as resource
+from walle.config.settings import ProdConfig
+from walle.api import api as BaseAPI
+from walle.api import access as AccessAPI
+from walle.api import environment as EnvironmentAPI
+from walle.api import group as GroupAPI
+from walle.api import passport as PassportAPI
+from walle.api import project as ProjectAPI
+from walle.api import public as PublicAPI
+from walle.api import role as RoleAPI
+from walle.api import server as ServerAPI
+from walle.api import task as TaskAPI
+from walle.api import user as UserAPI
 from flask_restful import Api
+from walle.extensions import login_manager
+import sys
+
 
 def create_app(config_object=ProdConfig):
     """An application factory, as explained here: http://flask.pocoo.org/docs/patterns/appfactories/.
@@ -20,6 +34,10 @@ def create_app(config_object=ProdConfig):
     register_errorhandlers(app)
     register_shellcontext(app)
     register_commands(app)
+
+
+    reload(sys)
+    sys.setdefaultencoding('utf-8')
     return app
 
 
@@ -36,29 +54,31 @@ def register_extensions(app):
 def register_blueprints(app):
     """Register Flask blueprints."""
     api = Api(app)
-    api.add_resource(resource.Base, '/', endpoint='root')
-    api.add_resource(resource.PublicAPI, '/api/public/<string:method>', endpoint='public')
-    api.add_resource(resource.AccessAPI, '/api/access/', '/api/access/<int:access_id>', endpoint='access')
-    api.add_resource(resource.RoleAPI, '/api/role/', '/api/role/<int:role_id>', endpoint='role')
-    api.add_resource(resource.GroupAPI, '/api/group/', '/api/group/<int:group_id>', endpoint='group')
-    api.add_resource(resource.PassportAPI, '/api/passport/', '/api/passport/', endpoint='passport')
-    api.add_resource(resource.UserAPI, '/api/user/', '/api/user/<int:user_id>', endpoint='user')
-    api.add_resource(resource.EnvironmentAPI, '/api/environment/', '/api/environment/<int:env_id>', endpoint='environment')
-    api.add_resource(resource.ServerAPI, '/api/server/', '/api/server/<int:id>', endpoint='server')
-    api.add_resource(resource.ProjectAPI, '/api/project/', '/api/project/<int:project_id>', endpoint='project')
-    api.add_resource(resource.TaskAPI, '/api/task/', '/api/task/<int:task_id>', endpoint='task')
-
+    api.add_resource(BaseAPI.Base, '/', endpoint='root')
+    api.add_resource(PublicAPI.PublicAPI, '/api/public/<string:method>', endpoint='public')
+    api.add_resource(AccessAPI.AccessAPI, '/api/access/', '/api/access/<int:access_id>', endpoint='access')
+    api.add_resource(RoleAPI.RoleAPI, '/api/role/', '/api/role/<int:role_id>', endpoint='role')
+    api.add_resource(GroupAPI.GroupAPI, '/api/group/', '/api/group/<int:group_id>', endpoint='group')
+    api.add_resource(PassportAPI.PassportAPI, '/api/passport/', '/api/passport/<string:method>', endpoint='passport')
+    api.add_resource(UserAPI.UserAPI, '/api/user/', '/api/user/<int:user_id>', endpoint='user')
+    api.add_resource(ServerAPI.ServerAPI, '/api/server/', '/api/server/<int:id>', endpoint='server')
+    api.add_resource(ProjectAPI.ProjectAPI, '/api/project/', '/api/project/<int:project_id>', endpoint='project')
+    api.add_resource(TaskAPI.TaskAPI, '/api/task/', '/api/task/<int:task_id>', endpoint='task')
+    api.add_resource(EnvironmentAPI.EnvironmentAPI, '/api/environment/', '/api/environment/<int:env_id>',
+                     endpoint='environment')
 
     return None
 
 
 def register_errorhandlers(app):
     """Register error handlers."""
+
     def render_error(error):
         """Render error template."""
         # If a HTTPException, pull the `code` attribute; default to 500
         error_code = getattr(error, 'code', 500)
         return render_template('{0}.html'.format(error_code)), error_code
+
     for errcode in [401, 404, 500]:
         app.errorhandler(errcode)(render_error)
     return None
@@ -66,11 +86,12 @@ def register_errorhandlers(app):
 
 def register_shellcontext(app):
     """Register shell context objects."""
+
     def shell_context():
         """Shell context objects."""
         return {
             'db': db,
-            'User': user.models.User,
+            'User': models.User,
         }
 
     app.shell_context_processor(shell_context)

@@ -5,8 +5,8 @@ import pytest
 from webtest import TestApp
 
 from walle.app import create_app
-from walle.database import db as _db
-from walle.settings import TestConfig
+from walle.model.database import db as _db
+from walle.config.settings import TestConfig
 
 from .factories import UserFactory
 

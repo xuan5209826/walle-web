@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """Test configs."""
 from walle.app import create_app
-from walle.settings import DevConfig, ProdConfig
+from walle.config.settings import DevConfig, ProdConfig
 
 
 def test_production_config():

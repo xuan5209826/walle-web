@@ -17,6 +17,17 @@
 SET NAMES utf8;
 SET FOREIGN_KEY_CHECKS = 0;
 
+DROP TABLE IF EXISTS `access`;
+CREATE TABLE `access` (
+  `id` int(10) NOT NULL AUTO_INCREMENT COMMENT 'id',
+  `name` varchar(100) DEFAULT 'master' COMMENT '环境名称',
+  `uri` varchar(100) DEFAULT '1' COMMENT '状态：0无效，1有效',
+  `method` varchar(10) DEFAULT '1' COMMENT '状态：0无效，1有效',
+  `created_at` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  `updated_at` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '修改时间',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8 COMMENT='项目环境配置表';
+
 -- ----------------------------
 --  Table structure for `environment`
 -- ----------------------------

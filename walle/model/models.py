@@ -15,9 +15,9 @@ from pickle import dump
 # from flask_cache import Cache
 from datetime import datetime
 
-from walle.database import Column, SurrogatePK, db, reference_col, relationship
+from walle.model.database import Column, SurrogatePK, db, reference_col, relationship, Model
 
-from walle.database import Model
+# from walle.service.rbac import access as rbac
 from sqlalchemy.orm import aliased
 import logging
 
@@ -710,6 +710,24 @@ class Access(db.Model):
             })
 
         return menus
+
+    def fetch_access_list_by_role_id(self, role_id):
+        module = aliased(Access)
+        controller = aliased(Access)
+        action = aliased(Access)
+        role = Role.query.get(role_id)
+        access_ids = role.access_ids.split(',')
+
+        data = db.session\
+            .query(controller.name_en, controller.name_cn,
+                   action.name_cn, action.name_cn) \
+            .outerjoin(action, action.pid == controller.id) \
+            .filter(module.type == self.type_module) \
+            .filter(controller.id.in_(access_ids)) \
+            .filter(action.id.in_(access_ids)) \
+            .all()
+        return []
+        # return [rbac.Access.resource(a_en, c_en) for c_en, c_cn, a_en, a_cn in data if c_en and a_en]
 
     def to_json(self):
         return {
