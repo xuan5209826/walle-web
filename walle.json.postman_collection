@@ -1,0 +1,1313 @@
+{
+	"id": "0236fc42-70f7-5988-c784-eb59ad21aaed",
+	"name": "walle",
+	"description": "",
+	"order": [],
+	"folders": [
+		{
+			"id": "9a5e21c7-17fa-b2b7-db3a-4016c9c45bd9",
+			"name": "1-environment",
+			"description": "",
+			"order": [
+				"e6e1db3c-db4c-3ef8-1ae5-3db922e466f3",
+				"04c0a3c5-3df4-83e6-a1df-ac1b822265f5",
+				"f113e436-1586-225d-37e2-d8907d3f46a6",
+				"e1c90dcd-3a34-3e24-9b7b-81f22cc26b1c",
+				"ba583f47-cdc6-a07c-15e4-ec1ff5577657"
+			],
+			"owner": "1040245",
+			"collectionId": "0236fc42-70f7-5988-c784-eb59ad21aaed"
+		},
+		{
+			"id": "2065b0d8-15b9-1c25-3be0-01fe5f9d0402",
+			"name": "2-access",
+			"description": "",
+			"order": [
+				"40a39e4e-6b4c-0e35-b64b-da2238c2ab5f"
+			],
+			"owner": "1040245",
+			"collectionId": "0236fc42-70f7-5988-c784-eb59ad21aaed"
+		},
+		{
+			"id": "76e1cf6c-c91c-4b18-0ba4-ed21ed61c6ea",
+			"name": "2-role",
+			"description": "",
+			"order": [
+				"dff0dffb-1d75-e3e5-9280-31b22eca6478",
+				"6f779e28-03da-6f2f-a141-2e844115c1d2",
+				"e87ce3df-23c7-0833-81c2-cf9d4728bc4e",
+				"3341d8e7-6b5b-3ec6-3a9d-2ebb467ab147",
+				"3309a7e4-8a02-070c-7520-15b091d90735"
+			],
+			"owner": "1040245",
+			"collectionId": "0236fc42-70f7-5988-c784-eb59ad21aaed"
+		},
+		{
+			"id": "4be9645e-e946-7bb0-85cd-ae1de345b58c",
+			"name": "3-public",
+			"description": "",
+			"order": [
+				"89463e12-bd80-7e13-924c-c75799a14005",
+				"74e0bd14-d6bf-b416-a088-5bfb54044b06"
+			],
+			"owner": "1040245",
+			"collectionId": "0236fc42-70f7-5988-c784-eb59ad21aaed"
+		},
+		{
+			"id": "5c064797-2633-6f9c-a78a-d800fe17b34e",
+			"name": "3-user",
+			"description": "",
+			"order": [
+				"9d0d3407-7037-4ff2-a4db-ce184baa37bf",
+				"a56b874e-a506-b1cd-a17c-7c3235e90249",
+				"0033088b-adc8-5e49-a92d-19462e9f8946",
+				"2ce79b06-4cee-4cea-1db6-9d5d14221de7",
+				"08cc97e2-1187-9bcb-780c-0804aabf9a46"
+			],
+			"owner": "1040245",
+			"collectionId": "0236fc42-70f7-5988-c784-eb59ad21aaed"
+		},
+		{
+			"id": "0f987d46-fc5e-46da-531a-e4aad3e8bc98",
+			"name": "4-passport",
+			"description": "",
+			"order": [
+				"396aabef-4a7d-5f03-b9c8-9e1351463b91"
+			],
+			"owner": "1040245",
+			"collectionId": "0236fc42-70f7-5988-c784-eb59ad21aaed"
+		},
+		{
+			"id": "a1e3ae9e-686d-dce0-44fa-3c300f9ae0bb",
+			"name": "5-group",
+			"description": "",
+			"order": [
+				"8afe368f-b1af-4234-db3a-2122c4ec2e85",
+				"b6a4904b-b479-c9b0-fb46-53908d01f36b",
+				"e228498b-d9f2-e637-3197-d83845b466d4",
+				"00c42f30-66d6-c0ef-5cfc-115cb71da13c",
+				"3a4503f0-6128-b045-b660-cdbe8dd007fa"
+			],
+			"owner": "1040245",
+			"collectionId": "0236fc42-70f7-5988-c784-eb59ad21aaed"
+		},
+		{
+			"id": "7c0c9d7f-88b2-93d0-88fb-a684ca675011",
+			"name": "6-server",
+			"description": "",
+			"order": [
+				"44fde8bd-c230-d0a7-872e-e32b83aa4d8b",
+				"77f311bf-fb12-d29d-b288-2061a0cce890",
+				"7a1c6003-34e2-9f86-3e20-9da35f21118c",
+				"ec5488eb-57fe-68cf-bb27-3197cc5fd876",
+				"7eed9363-8975-36d2-200d-62ab304b5d5f"
+			],
+			"owner": "1040245",
+			"collectionId": "0236fc42-70f7-5988-c784-eb59ad21aaed"
+		},
+		{
+			"id": "5667516f-6f77-8589-f588-d52ce4741c7d",
+			"name": "7-project",
+			"description": "",
+			"order": [
+				"aa90b1b6-4f20-f0a4-543c-dbfc85744c5d",
+				"62adc958-aef5-62aa-112e-10e9fed89576",
+				"c2d0be7e-83bc-3730-fade-8e9273c063b9",
+				"70348d4f-70d0-8040-ba89-c02627a55bc3",
+				"9e11d2db-a796-4076-24cf-7cae30e47c45"
+			],
+			"owner": "1040245",
+			"collectionId": "0236fc42-70f7-5988-c784-eb59ad21aaed"
+		},
+		{
+			"id": "3d46b6fd-df91-e8a5-5267-d243c175581e",
+			"name": "8-task",
+			"description": "",
+			"order": [
+				"461d26b4-eca2-0441-db08-4e9b64dc9428",
+				"b4ef4174-099f-ae54-e2bd-4b2b4cdbfcc8",
+				"63145023-1c4c-06b4-2121-4406e7b106c4",
+				"d9018a83-91fd-0ed1-abf8-b8a31759910a",
+				"3c386e15-1b97-432b-a611-13c85da00031"
+			],
+			"owner": "1040245",
+			"collectionId": "0236fc42-70f7-5988-c784-eb59ad21aaed"
+		}
+	],
+	"timestamp": 1490505893287,
+	"owner": "1040245",
+	"remoteLink": "",
+	"public": false,
+	"requests": [
+		{
+			"id": "0033088b-adc8-5e49-a92d-19462e9f8946",
+			"headers": "",
+			"url": "http://api.walle-web.io/api/user/1",
+			"preRequestScript": null,
+			"pathVariables": {},
+			"method": "GET",
+			"data": null,
+			"dataMode": "params",
+			"tests": null,
+			"currentHelper": "normal",
+			"helperAttributes": {},
+			"time": 1495550507018,
+			"name": "api_user_get",
+			"description": "",
+			"collectionId": "0236fc42-70f7-5988-c784-eb59ad21aaed",
+			"responses": []
+		},
+		{
+			"id": "00c42f30-66d6-c0ef-5cfc-115cb71da13c",
+			"headers": "",
+			"url": "http://api.walle-web.io/api/group/3",
+			"preRequestScript": null,
+			"pathVariables": {},
+			"method": "GET",
+			"data": null,
+			"dataMode": "params",
+			"tests": null,
+			"currentHelper": "normal",
+			"helperAttributes": {},
+			"time": 1495522758272,
+			"name": "api_group_get",
+			"description": "",
+			"collectionId": "0236fc42-70f7-5988-c784-eb59ad21aaed",
+			"responses": []
+		},
+		{
+			"id": "04c0a3c5-3df4-83e6-a1df-ac1b822265f5",
+			"headers": "",
+			"url": "http://api.walle-web.io/api/environment",
+			"preRequestScript": null,
+			"pathVariables": {},
+			"method": "GET",
+			"data": null,
+			"dataMode": "params",
+			"tests": null,
+			"currentHelper": "normal",
+			"helperAttributes": {},
+			"time": 1494777865771,
+			"name": "api_environment_list",
+			"description": "",
+			"collectionId": "0236fc42-70f7-5988-c784-eb59ad21aaed",
+			"responses": []
+		},
+		{
+			"id": "08cc97e2-1187-9bcb-780c-0804aabf9a46",
+			"headers": "",
+			"url": "http://api.walle-web.io/api/user/2",
+			"preRequestScript": null,
+			"pathVariables": {},
+			"method": "DELETE",
+			"data": null,
+			"dataMode": "params",
+			"tests": null,
+			"currentHelper": "normal",
+			"helperAttributes": {},
+			"time": 1495092097107,
+			"name": "api_user_remove",
+			"description": "",
+			"collectionId": "0236fc42-70f7-5988-c784-eb59ad21aaed",
+			"responses": []
+		},
+		{
+			"id": "2ce79b06-4cee-4cea-1db6-9d5d14221de7",
+			"headers": "",
+			"url": "http://api.walle-web.io/api/user/1",
+			"preRequestScript": null,
+			"pathVariables": {},
+			"method": "PUT",
+			"data": [
+				{
+					"key": "username",
+					"value": "x吴水永的新组x",
+					"type": "text",
+					"enabled": true
+				},
+				{
+					"key": "role_id",
+					"value": "1",
+					"type": "text",
+					"enabled": true
+				},
+				{
+					"key": "",
+					"value": "",
+					"type": "text",
+					"enabled": true
+				}
+			],
+			"dataMode": "params",
+			"tests": null,
+			"currentHelper": "normal",
+			"helperAttributes": {},
+			"time": 1495550527732,
+			"name": "api_user_update",
+			"description": "",
+			"collectionId": "0236fc42-70f7-5988-c784-eb59ad21aaed",
+			"responses": []
+		},
+		{
+			"id": "3309a7e4-8a02-070c-7520-15b091d90735",
+			"headers": "",
+			"url": "http://api.walle-web.io/api/role/4",
+			"preRequestScript": null,
+			"pathVariables": {},
+			"method": "DELETE",
+			"data": null,
+			"dataMode": "params",
+			"tests": null,
+			"currentHelper": "normal",
+			"helperAttributes": {},
+			"time": 1494639901413,
+			"name": "api_role_remove",
+			"description": "",
+			"collectionId": "0236fc42-70f7-5988-c784-eb59ad21aaed",
+			"responses": []
+		},
+		{
+			"id": "3341d8e7-6b5b-3ec6-3a9d-2ebb467ab147",
+			"headers": "",
+			"url": "http://api.walle-web.io/api/role/1",
+			"preRequestScript": null,
+			"pathVariables": {},
+			"method": "GET",
+			"data": null,
+			"dataMode": "params",
+			"tests": null,
+			"currentHelper": "normal",
+			"helperAttributes": {},
+			"time": 1497263966151,
+			"name": "api_role_get",
+			"description": "",
+			"collectionId": "0236fc42-70f7-5988-c784-eb59ad21aaed",
+			"responses": []
+		},
+		{
+			"id": "396aabef-4a7d-5f03-b9c8-9e1351463b91",
+			"headers": "",
+			"url": "http://api.walle-web.io/api/passport/",
+			"preRequestScript": null,
+			"pathVariables": {},
+			"method": "POST",
+			"data": [
+				{
+					"key": "email",
+					"value": "wushuiyong@walle-web.io",
+					"type": "text",
+					"enabled": true
+				},
+				{
+					"key": "password",
+					"value": "wushuiyong0",
+					"type": "text",
+					"enabled": true
+				}
+			],
+			"dataMode": "params",
+			"tests": null,
+			"currentHelper": "normal",
+			"helperAttributes": {},
+			"time": 1495337256755,
+			"name": "api_passport_login",
+			"description": "",
+			"collectionId": "0236fc42-70f7-5988-c784-eb59ad21aaed",
+			"responses": []
+		},
+		{
+			"id": "3a4503f0-6128-b045-b660-cdbe8dd007fa",
+			"headers": "",
+			"url": "http://api.walle-web.io/api/group/1",
+			"preRequestScript": null,
+			"pathVariables": {},
+			"method": "DELETE",
+			"data": null,
+			"dataMode": "params",
+			"tests": null,
+			"currentHelper": "normal",
+			"helperAttributes": {},
+			"time": 1495090956869,
+			"name": "api_group_remove",
+			"description": "",
+			"collectionId": "0236fc42-70f7-5988-c784-eb59ad21aaed",
+			"responses": []
+		},
+		{
+			"id": "3c386e15-1b97-432b-a611-13c85da00031",
+			"headers": "",
+			"url": "http://api.walle-web.io/api/task/5",
+			"preRequestScript": null,
+			"pathVariables": {},
+			"method": "PUT",
+			"data": [
+				{
+					"key": "name",
+					"value": "walle上线单01",
+					"type": "text",
+					"enabled": true
+				},
+				{
+					"key": "project_id",
+					"value": "1",
+					"type": "text",
+					"enabled": true
+				},
+				{
+					"key": "servers",
+					"value": "127.0.0.1,192.168.0.1",
+					"type": "text",
+					"enabled": true
+				},
+				{
+					"key": "commit_id",
+					"value": "a89eb23c",
+					"type": "text",
+					"enabled": true
+				},
+				{
+					"key": "branch",
+					"value": "master",
+					"type": "text",
+					"enabled": true
+				},
+				{
+					"key": "file_transmission_mode",
+					"value": "0",
+					"type": "text",
+					"enabled": true
+				},
+				{
+					"key": "file_list",
+					"value": "*.log",
+					"type": "text",
+					"enabled": true
+				}
+			],
+			"dataMode": "params",
+			"tests": null,
+			"currentHelper": "normal",
+			"helperAttributes": {},
+			"time": 1495865872222,
+			"name": "api_task_update",
+			"description": "",
+			"collectionId": "0236fc42-70f7-5988-c784-eb59ad21aaed",
+			"responses": []
+		},
+		{
+			"id": "40a39e4e-6b4c-0e35-b64b-da2238c2ab5f",
+			"headers": "",
+			"url": "http://api.walle-web.io/api/access/",
+			"preRequestScript": null,
+			"pathVariables": {},
+			"method": "GET",
+			"data": null,
+			"dataMode": "params",
+			"tests": null,
+			"currentHelper": "normal",
+			"helperAttributes": {},
+			"time": 1497108571583,
+			"name": "api_access_list",
+			"description": "",
+			"collectionId": "0236fc42-70f7-5988-c784-eb59ad21aaed",
+			"responses": []
+		},
+		{
+			"id": "44fde8bd-c230-d0a7-872e-e32b83aa4d8b",
+			"headers": "",
+			"url": "http://api.walle-web.io/api/server/",
+			"preRequestScript": null,
+			"pathVariables": {},
+			"method": "POST",
+			"data": [
+				{
+					"key": "name",
+					"value": "测试环境",
+					"type": "text",
+					"enabled": true
+				},
+				{
+					"key": "host",
+					"value": "192.168.0.1",
+					"type": "text",
+					"enabled": true
+				},
+				{
+					"key": "",
+					"value": "",
+					"type": "text",
+					"enabled": true
+				}
+			],
+			"dataMode": "params",
+			"tests": null,
+			"currentHelper": "normal",
+			"helperAttributes": {},
+			"time": 1495604726729,
+			"name": "api_server_create",
+			"description": "",
+			"collectionId": "0236fc42-70f7-5988-c784-eb59ad21aaed",
+			"responses": []
+		},
+		{
+			"id": "461d26b4-eca2-0441-db08-4e9b64dc9428",
+			"headers": "",
+			"url": "http://api.walle-web.io/api/task/",
+			"preRequestScript": null,
+			"pathVariables": {},
+			"method": "POST",
+			"data": [
+				{
+					"key": "name",
+					"value": "提交一个测试上线单",
+					"type": "text",
+					"enabled": true
+				},
+				{
+					"key": "project_id",
+					"value": "1",
+					"type": "text",
+					"enabled": true
+				},
+				{
+					"key": "servers",
+					"value": "127.0.0.1,192.168.0.1",
+					"type": "text",
+					"enabled": true
+				},
+				{
+					"key": "commit_id",
+					"value": "a89eb23c",
+					"type": "text",
+					"enabled": true
+				},
+				{
+					"key": "branch",
+					"value": "master",
+					"type": "text",
+					"enabled": true
+				},
+				{
+					"key": "file_transmission_mode",
+					"value": "0",
+					"type": "text",
+					"enabled": true
+				},
+				{
+					"key": "file_list",
+					"value": "*.log",
+					"type": "text",
+					"enabled": true
+				}
+			],
+			"dataMode": "params",
+			"tests": null,
+			"currentHelper": "normal",
+			"helperAttributes": {},
+			"time": 1495852608890,
+			"name": "api_task_create",
+			"description": "",
+			"collectionId": "0236fc42-70f7-5988-c784-eb59ad21aaed",
+			"responses": []
+		},
+		{
+			"id": "62adc958-aef5-62aa-112e-10e9fed89576",
+			"headers": "",
+			"url": "http://api.walle-web.io/api/project/",
+			"preRequestScript": null,
+			"pathVariables": {},
+			"method": "GET",
+			"data": null,
+			"dataMode": "params",
+			"tests": null,
+			"currentHelper": "normal",
+			"helperAttributes": {},
+			"time": 1495681098911,
+			"name": "api_project_list",
+			"description": "",
+			"collectionId": "0236fc42-70f7-5988-c784-eb59ad21aaed",
+			"responses": []
+		},
+		{
+			"id": "63145023-1c4c-06b4-2121-4406e7b106c4",
+			"headers": "",
+			"url": "http://api.walle-web.io/api/task/1",
+			"preRequestScript": null,
+			"pathVariables": {},
+			"method": "GET",
+			"data": null,
+			"dataMode": "params",
+			"tests": null,
+			"currentHelper": "normal",
+			"helperAttributes": {},
+			"time": 1495841516991,
+			"name": "api_task_get",
+			"description": "",
+			"collectionId": "0236fc42-70f7-5988-c784-eb59ad21aaed",
+			"responses": []
+		},
+		{
+			"id": "6f779e28-03da-6f2f-a141-2e844115c1d2",
+			"headers": "",
+			"url": "http://api.walle-web.io/api/role/",
+			"preRequestScript": null,
+			"pathVariables": {},
+			"method": "GET",
+			"data": null,
+			"dataMode": "params",
+			"tests": null,
+			"currentHelper": "normal",
+			"helperAttributes": {},
+			"time": 1495119436700,
+			"name": "api_role_list",
+			"description": "",
+			"collectionId": "0236fc42-70f7-5988-c784-eb59ad21aaed",
+			"responses": []
+		},
+		{
+			"id": "70348d4f-70d0-8040-ba89-c02627a55bc3",
+			"headers": "",
+			"url": "http://api.walle-web.io/api/project/1",
+			"preRequestScript": null,
+			"pathVariables": {},
+			"method": "PUT",
+			"data": [
+				{
+					"key": "name",
+					"value": "瓦力自部署",
+					"type": "text",
+					"enabled": true
+				},
+				{
+					"key": "environment_id",
+					"value": "1",
+					"type": "text",
+					"enabled": true
+				},
+				{
+					"key": "excludes",
+					"value": "*.log",
+					"type": "text",
+					"enabled": true
+				},
+				{
+					"key": "server_ids",
+					"value": "1,3,2",
+					"type": "text",
+					"enabled": true
+				},
+				{
+					"key": "keep_version_num",
+					"value": "13",
+					"type": "text",
+					"enabled": true
+				},
+				{
+					"key": "target_user",
+					"value": "work",
+					"type": "text",
+					"enabled": true
+				},
+				{
+					"key": "target_root",
+					"value": "/tmp/walle/root",
+					"type": "text",
+					"enabled": true
+				},
+				{
+					"key": "target_library",
+					"value": "/tmp/walle/library",
+					"type": "text",
+					"enabled": true
+				},
+				{
+					"key": "task_vars",
+					"value": "debug=1;\\napp=auotapp.py",
+					"type": "text",
+					"enabled": true
+				},
+				{
+					"key": "prev_deploy",
+					"value": "echo prev_deploy; pwd",
+					"type": "text",
+					"enabled": true
+				},
+				{
+					"key": "post_deploy",
+					"value": "echo post_deploy; pwd",
+					"type": "text",
+					"enabled": true
+				},
+				{
+					"key": "prev_release",
+					"value": "echo prev_release; pwd",
+					"type": "text",
+					"enabled": true
+				},
+				{
+					"key": "post_release",
+					"value": "echo post_release; pwd",
+					"type": "text",
+					"enabled": true
+				},
+				{
+					"key": "repo_url",
+					"value": "git@github.com:meolu/walden.git",
+					"type": "text",
+					"enabled": true
+				},
+				{
+					"key": "repo_username",
+					"value": "",
+					"type": "text",
+					"enabled": true
+				},
+				{
+					"key": "repo_password",
+					"value": "",
+					"type": "text",
+					"enabled": true
+				},
+				{
+					"key": "repo_mode",
+					"value": "branch",
+					"type": "text",
+					"enabled": true
+				}
+			],
+			"dataMode": "params",
+			"tests": null,
+			"currentHelper": "normal",
+			"helperAttributes": {},
+			"time": 1495867416533,
+			"name": "api_project_update",
+			"description": "",
+			"collectionId": "0236fc42-70f7-5988-c784-eb59ad21aaed",
+			"responses": []
+		},
+		{
+			"id": "74e0bd14-d6bf-b416-a088-5bfb54044b06",
+			"headers": "",
+			"url": "http://api.walle-web.io/api/public/avater",
+			"preRequestScript": null,
+			"pathVariables": {},
+			"method": "POST",
+			"data": [
+				{
+					"key": "avater",
+					"value": {
+						"0": {}
+					},
+					"type": "file",
+					"enabled": true
+				}
+			],
+			"dataMode": "params",
+			"tests": null,
+			"currentHelper": "normal",
+			"helperAttributes": {},
+			"time": 1497283807761,
+			"name": "api_public_avater",
+			"description": "",
+			"collectionId": "0236fc42-70f7-5988-c784-eb59ad21aaed",
+			"responses": []
+		},
+		{
+			"id": "77f311bf-fb12-d29d-b288-2061a0cce890",
+			"headers": "",
+			"url": "http://api.walle-web.io/api/server",
+			"preRequestScript": null,
+			"pathVariables": {},
+			"method": "GET",
+			"data": null,
+			"dataMode": "params",
+			"tests": null,
+			"currentHelper": "normal",
+			"helperAttributes": {},
+			"time": 1495605033837,
+			"name": "api_server_list",
+			"description": "",
+			"collectionId": "0236fc42-70f7-5988-c784-eb59ad21aaed",
+			"responses": []
+		},
+		{
+			"id": "7a1c6003-34e2-9f86-3e20-9da35f21118c",
+			"headers": "",
+			"url": "http://api.walle-web.io/api/server/1",
+			"preRequestScript": null,
+			"pathVariables": {},
+			"method": "GET",
+			"data": null,
+			"dataMode": "params",
+			"tests": null,
+			"currentHelper": "normal",
+			"helperAttributes": {},
+			"time": 1495605052423,
+			"name": "api_server_get",
+			"description": "",
+			"collectionId": "0236fc42-70f7-5988-c784-eb59ad21aaed",
+			"responses": []
+		},
+		{
+			"id": "7eed9363-8975-36d2-200d-62ab304b5d5f",
+			"headers": "",
+			"url": "http://api.walle-web.io/api/server/4",
+			"preRequestScript": null,
+			"pathVariables": {},
+			"method": "DELETE",
+			"data": null,
+			"dataMode": "params",
+			"tests": null,
+			"currentHelper": "normal",
+			"helperAttributes": {},
+			"time": 1495605351108,
+			"name": "api_server_remove",
+			"description": "",
+			"collectionId": "0236fc42-70f7-5988-c784-eb59ad21aaed",
+			"responses": []
+		},
+		{
+			"id": "89463e12-bd80-7e13-924c-c75799a14005",
+			"headers": "",
+			"url": "http://api.walle-web.io/api/public/menu",
+			"preRequestScript": null,
+			"pathVariables": {},
+			"method": "GET",
+			"data": null,
+			"dataMode": "params",
+			"tests": null,
+			"currentHelper": "normal",
+			"helperAttributes": {},
+			"time": 1497266998204,
+			"name": "api_public_menu_get",
+			"description": "",
+			"collectionId": "0236fc42-70f7-5988-c784-eb59ad21aaed",
+			"responses": []
+		},
+		{
+			"id": "8afe368f-b1af-4234-db3a-2122c4ec2e85",
+			"headers": "",
+			"url": "http://api.walle-web.io/api/group/",
+			"preRequestScript": null,
+			"pathVariables": {},
+			"method": "POST",
+			"data": [
+				{
+					"key": "group_name",
+					"value": "新增用户组",
+					"type": "text",
+					"enabled": true
+				},
+				{
+					"key": "user_ids",
+					"value": "1",
+					"type": "text",
+					"enabled": true
+				}
+			],
+			"dataMode": "params",
+			"tests": null,
+			"currentHelper": "normal",
+			"helperAttributes": {},
+			"time": 1495550543761,
+			"name": "api_group_create",
+			"description": "",
+			"collectionId": "0236fc42-70f7-5988-c784-eb59ad21aaed",
+			"responses": []
+		},
+		{
+			"id": "9d0d3407-7037-4ff2-a4db-ce184baa37bf",
+			"headers": "",
+			"url": "http://api.walle-web.io/api/user/",
+			"preRequestScript": null,
+			"pathVariables": {},
+			"method": "POST",
+			"data": [
+				{
+					"key": "email",
+					"value": "test12@walle.com",
+					"type": "text",
+					"enabled": true
+				},
+				{
+					"key": "password",
+					"value": "test1pwd",
+					"type": "text",
+					"enabled": true
+				},
+				{
+					"key": "role_id",
+					"value": "2",
+					"type": "text",
+					"enabled": true
+				},
+				{
+					"key": "username",
+					"value": "中文啦",
+					"type": "text",
+					"enabled": true
+				}
+			],
+			"dataMode": "params",
+			"tests": null,
+			"currentHelper": "normal",
+			"helperAttributes": {},
+			"time": 1495337482945,
+			"name": "api_user_create",
+			"description": "",
+			"collectionId": "0236fc42-70f7-5988-c784-eb59ad21aaed",
+			"responses": []
+		},
+		{
+			"id": "9e11d2db-a796-4076-24cf-7cae30e47c45",
+			"headers": "",
+			"url": "http://api.walle-web.io/api/project/4",
+			"preRequestScript": null,
+			"pathVariables": {},
+			"method": "DELETE",
+			"data": null,
+			"dataMode": "params",
+			"tests": null,
+			"currentHelper": "normal",
+			"helperAttributes": {},
+			"time": 1495681091305,
+			"name": "api_project_remove",
+			"description": "",
+			"collectionId": "0236fc42-70f7-5988-c784-eb59ad21aaed",
+			"responses": []
+		},
+		{
+			"id": "a56b874e-a506-b1cd-a17c-7c3235e90249",
+			"headers": "",
+			"url": "http://api.walle-web.io/api/user/?kw=demo",
+			"preRequestScript": null,
+			"pathVariables": {},
+			"method": "GET",
+			"data": null,
+			"dataMode": "params",
+			"tests": null,
+			"currentHelper": "normal",
+			"helperAttributes": {},
+			"time": 1494688550711,
+			"name": "api_user_list",
+			"description": "",
+			"collectionId": "0236fc42-70f7-5988-c784-eb59ad21aaed",
+			"responses": []
+		},
+		{
+			"id": "aa90b1b6-4f20-f0a4-543c-dbfc85744c5d",
+			"headers": "",
+			"url": "http://api.walle-web.io/api/project/",
+			"preRequestScript": null,
+			"pathVariables": {},
+			"method": "POST",
+			"data": [
+				{
+					"key": "name",
+					"value": "瓦力自部署01",
+					"type": "text",
+					"enabled": true
+				},
+				{
+					"key": "environment_id",
+					"value": "1",
+					"type": "text",
+					"enabled": true
+				},
+				{
+					"key": "excludes",
+					"value": "*.log",
+					"type": "text",
+					"enabled": true
+				},
+				{
+					"key": "server_ids",
+					"value": "1,3,2",
+					"type": "text",
+					"enabled": true
+				},
+				{
+					"key": "keep_version_num",
+					"value": "10",
+					"type": "text",
+					"enabled": true
+				},
+				{
+					"key": "target_user",
+					"value": "work",
+					"type": "text",
+					"enabled": true
+				},
+				{
+					"key": "target_root",
+					"value": "/tmp/walle/root",
+					"type": "text",
+					"enabled": true
+				},
+				{
+					"key": "target_library",
+					"value": "/tmp/walle/library",
+					"type": "text",
+					"enabled": true
+				},
+				{
+					"key": "task_vars",
+					"value": "debug=1;\\napp=auotapp.py",
+					"type": "text",
+					"enabled": true
+				},
+				{
+					"key": "prev_deploy",
+					"value": "echo prev_deploy",
+					"type": "text",
+					"enabled": true
+				},
+				{
+					"key": "post_deploy",
+					"value": "echo post_deploy",
+					"type": "text",
+					"enabled": true
+				},
+				{
+					"key": "prev_release",
+					"value": "echo prev_release",
+					"type": "text",
+					"enabled": true
+				},
+				{
+					"key": "post_release",
+					"value": "echo post_release",
+					"type": "text",
+					"enabled": true
+				},
+				{
+					"key": "repo_url",
+					"value": "git@github.com:meolu/walle-web.git",
+					"type": "text",
+					"enabled": true
+				},
+				{
+					"key": "repo_username",
+					"value": "",
+					"type": "text",
+					"enabled": true
+				},
+				{
+					"key": "repo_password",
+					"value": "",
+					"type": "text",
+					"enabled": true
+				},
+				{
+					"key": "repo_mode",
+					"value": "branch",
+					"type": "text",
+					"enabled": true
+				}
+			],
+			"dataMode": "params",
+			"tests": null,
+			"currentHelper": "normal",
+			"helperAttributes": {},
+			"time": 1495809004181,
+			"name": "api_project_create",
+			"description": "",
+			"collectionId": "0236fc42-70f7-5988-c784-eb59ad21aaed",
+			"responses": []
+		},
+		{
+			"id": "b4ef4174-099f-ae54-e2bd-4b2b4cdbfcc8",
+			"headers": "",
+			"url": "http://api.walle-web.io/api/task/",
+			"preRequestScript": null,
+			"pathVariables": {},
+			"method": "GET",
+			"data": null,
+			"dataMode": "params",
+			"tests": null,
+			"currentHelper": "normal",
+			"helperAttributes": {},
+			"time": 1495864989865,
+			"name": "api_task_list",
+			"description": "",
+			"collectionId": "0236fc42-70f7-5988-c784-eb59ad21aaed",
+			"responses": []
+		},
+		{
+			"id": "b6a4904b-b479-c9b0-fb46-53908d01f36b",
+			"headers": "",
+			"url": "http://api.walle-web.io/api/group/",
+			"preRequestScript": null,
+			"pathVariables": {},
+			"method": "GET",
+			"data": null,
+			"dataMode": "params",
+			"tests": null,
+			"currentHelper": "normal",
+			"helperAttributes": {},
+			"time": 1494639843503,
+			"name": "api_group_list",
+			"description": "",
+			"collectionId": "0236fc42-70f7-5988-c784-eb59ad21aaed",
+			"responses": []
+		},
+		{
+			"id": "ba583f47-cdc6-a07c-15e4-ec1ff5577657",
+			"headers": "",
+			"url": "http://api.walle-web.io/api/environment/1",
+			"preRequestScript": null,
+			"pathVariables": {},
+			"method": "DELETE",
+			"data": null,
+			"dataMode": "params",
+			"tests": null,
+			"currentHelper": "normal",
+			"helperAttributes": {},
+			"time": 1495090854263,
+			"name": "api_environment_remove",
+			"description": "",
+			"collectionId": "0236fc42-70f7-5988-c784-eb59ad21aaed",
+			"responses": []
+		},
+		{
+			"id": "c2d0be7e-83bc-3730-fade-8e9273c063b9",
+			"headers": "",
+			"url": "http://api.walle-web.io/api/project/1",
+			"preRequestScript": null,
+			"pathVariables": {},
+			"method": "GET",
+			"data": null,
+			"dataMode": "params",
+			"tests": null,
+			"currentHelper": "normal",
+			"helperAttributes": {},
+			"time": 1495681085320,
+			"name": "api_project_get",
+			"description": "",
+			"collectionId": "0236fc42-70f7-5988-c784-eb59ad21aaed",
+			"responses": []
+		},
+		{
+			"id": "d9018a83-91fd-0ed1-abf8-b8a31759910a",
+			"headers": "",
+			"url": "http://api.walle-web.io/api/task/5",
+			"preRequestScript": null,
+			"pathVariables": {},
+			"method": "DELETE",
+			"data": null,
+			"dataMode": "params",
+			"tests": null,
+			"currentHelper": "normal",
+			"helperAttributes": {},
+			"time": 1495865949258,
+			"name": "api_task_remove",
+			"description": "",
+			"collectionId": "0236fc42-70f7-5988-c784-eb59ad21aaed",
+			"responses": []
+		},
+		{
+			"id": "dff0dffb-1d75-e3e5-9280-31b22eca6478",
+			"headers": "",
+			"url": "http://api.walle-web.io/api/role/",
+			"preRequestScript": null,
+			"pathVariables": {},
+			"method": "POST",
+			"data": [
+				{
+					"key": "role_name",
+					"value": "业务端",
+					"type": "text",
+					"enabled": true
+				},
+				{
+					"key": "permission_ids",
+					"value": "1,3",
+					"type": "text",
+					"enabled": true
+				}
+			],
+			"dataMode": "params",
+			"tests": null,
+			"currentHelper": "normal",
+			"helperAttributes": {},
+			"time": 1495090513636,
+			"name": "api_role_create",
+			"description": "",
+			"collectionId": "0236fc42-70f7-5988-c784-eb59ad21aaed",
+			"responses": []
+		},
+		{
+			"id": "e1c90dcd-3a34-3e24-9b7b-81f22cc26b1c",
+			"headers": "",
+			"url": "http://api.walle-web.io/api/environment/1",
+			"preRequestScript": null,
+			"pathVariables": {},
+			"method": "PUT",
+			"data": [
+				{
+					"key": "env_name",
+					"value": "开发环境",
+					"type": "text",
+					"enabled": true
+				},
+				{
+					"key": "status",
+					"value": "1",
+					"type": "text",
+					"enabled": true
+				}
+			],
+			"dataMode": "params",
+			"tests": null,
+			"currentHelper": "normal",
+			"helperAttributes": {},
+			"time": 1495090856723,
+			"name": "api_environment_update",
+			"description": "",
+			"collectionId": "0236fc42-70f7-5988-c784-eb59ad21aaed",
+			"responses": []
+		},
+		{
+			"id": "e228498b-d9f2-e637-3197-d83845b466d4",
+			"headers": "",
+			"url": "http://api.walle-web.io/api/group/3",
+			"preRequestScript": null,
+			"pathVariables": {},
+			"method": "PUT",
+			"data": [
+				{
+					"key": "group_name",
+					"value": "xx吴水永的新组xx",
+					"type": "text",
+					"enabled": true
+				},
+				{
+					"key": "user_ids",
+					"value": "1",
+					"type": "text",
+					"enabled": true
+				}
+			],
+			"dataMode": "params",
+			"tests": null,
+			"currentHelper": "normal",
+			"helperAttributes": {},
+			"time": 1495090946654,
+			"name": "api_group_update",
+			"description": "",
+			"collectionId": "0236fc42-70f7-5988-c784-eb59ad21aaed",
+			"responses": []
+		},
+		{
+			"id": "e6e1db3c-db4c-3ef8-1ae5-3db922e466f3",
+			"headers": "",
+			"url": "http://api.walle-web.io/api/environment/",
+			"preRequestScript": null,
+			"pathVariables": {},
+			"method": "POST",
+			"data": [
+				{
+					"key": "env_name",
+					"value": "测试环境",
+					"type": "text",
+					"enabled": true
+				},
+				{
+					"key": "",
+					"value": "",
+					"type": "text",
+					"enabled": true
+				}
+			],
+			"dataMode": "params",
+			"tests": null,
+			"currentHelper": "normal",
+			"helperAttributes": {},
+			"time": 1494777879041,
+			"name": "api_environment_create",
+			"description": "",
+			"collectionId": "0236fc42-70f7-5988-c784-eb59ad21aaed",
+			"responses": []
+		},
+		{
+			"id": "e87ce3df-23c7-0833-81c2-cf9d4728bc4e",
+			"headers": "",
+			"url": "http://api.walle-web.io/api/role/1",
+			"preRequestScript": null,
+			"pathVariables": {},
+			"method": "PUT",
+			"data": [
+				{
+					"key": "role_name",
+					"value": "测试同学",
+					"type": "text",
+					"enabled": true
+				},
+				{
+					"key": "access_ids",
+					"value": "1,2,3,11,12,13,15,16,101,102,103,104,",
+					"type": "text",
+					"enabled": true
+				}
+			],
+			"dataMode": "params",
+			"tests": null,
+			"currentHelper": "normal",
+			"helperAttributes": {},
+			"time": 1497266828349,
+			"name": "api_role_update",
+			"description": "",
+			"collectionId": "0236fc42-70f7-5988-c784-eb59ad21aaed",
+			"responses": []
+		},
+		{
+			"id": "ec5488eb-57fe-68cf-bb27-3197cc5fd876",
+			"headers": "",
+			"url": "http://api.walle-web.io/api/server/1",
+			"preRequestScript": null,
+			"pathVariables": {},
+			"method": "PUT",
+			"data": [
+				{
+					"key": "name",
+					"value": "dev-wushuiyong",
+					"type": "text",
+					"enabled": true
+				},
+				{
+					"key": "host",
+					"value": "172.16.0.231",
+					"type": "text",
+					"enabled": true
+				}
+			],
+			"dataMode": "params",
+			"tests": null,
+			"currentHelper": "normal",
+			"helperAttributes": {},
+			"time": 1495605105614,
+			"name": "api_server_update",
+			"description": "",
+			"collectionId": "0236fc42-70f7-5988-c784-eb59ad21aaed",
+			"responses": []
+		},
+		{
+			"id": "f113e436-1586-225d-37e2-d8907d3f46a6",
+			"headers": "",
+			"url": "http://api.walle-web.io/api/environment/1",
+			"preRequestScript": null,
+			"pathVariables": {},
+			"method": "GET",
+			"data": null,
+			"dataMode": "params",
+			"tests": null,
+			"currentHelper": "normal",
+			"helperAttributes": {},
+			"time": 1495090836055,
+			"name": "api_environment_get",
+			"description": "",
+			"collectionId": "0236fc42-70f7-5988-c784-eb59ad21aaed",
+			"responses": []
+		}
+	]
+}

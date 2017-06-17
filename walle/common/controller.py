@@ -8,20 +8,25 @@
 """
 from flask import jsonify
 
+
 class Controller:
-    def render_json(self, code=0, message='', data=[], count=0):
+
+    @staticmethod
+    def render_json(code=0, message='', data=[]):
         return jsonify({
             'code': code,
             'message': message,
             'data': data,
-            'count': count,
         })
 
-    def json(self, code=0, message=None, data=[], count=0):
+    @staticmethod
+    def json(code=0, message=None, data=[]):
         return jsonify({
             'code': code,
             'message': message,
             'data': data,
-            'count': count,
         })
 
+    @staticmethod
+    def list_json(list, count, code=0, message=''):
+        return Controller.render_json(data={'list': list, 'count': count}, code=code, message=message)
