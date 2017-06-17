@@ -26,12 +26,8 @@ class UserListPage extends Component {
             key: 'username',
         }, {
             title: '角色',
-            dataIndex: 'rolename',
-            key: 'rolename',
-            render: () => {
-                const roles = ['业务端', '测试', '用户组', '运营'];
-                return roles[Math.floor(roles.length * Math.random())];
-            },
+            dataIndex: 'role_name',
+            key: 'role_name',
         }, {
             title: '邮箱',
             dataIndex: 'email',
@@ -40,17 +36,6 @@ class UserListPage extends Component {
             title: '状态',
             dataIndex: 'status',
             key: 'status',
-            render: (text) => {
-                if (text === 0) {
-                    return (
-                      <span style={{ color: 'green' }}>正常</span>
-                    );
-                }
-
-                return (
-                  <span style={{ color: 'red' }}>冻结</span>
-                );
-            },
         }, {
             title: '操作',
             key: 'action',

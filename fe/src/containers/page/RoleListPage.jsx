@@ -26,8 +26,8 @@ class RoleListPage extends Component {
             key: 'role_name',
         }, {
             title: '用户数',
-            dataIndex: 'user_count',
-            key: 'user_count',
+            dataIndex: 'users',
+            key: 'users',
         }, {
             title: '操作',
             key: 'action',
