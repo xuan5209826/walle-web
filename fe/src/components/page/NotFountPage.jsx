@@ -2,6 +2,6 @@ import React from 'react';
 
 export default () => (
   <div>
-    user-details
+    404 Not Found
   </div>
 );
