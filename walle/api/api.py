@@ -6,11 +6,15 @@
     :created time: 2017-06-14 16:00:23
     :author: wushuiyong@walle-web.io
 """
-from flask.ext.login import LoginManager, login_required
+import logging
+
+from flask.ext.login import login_required
 from flask_restful import Resource
 
-class SecurityResource(Resource):
+from walle.service.rbac.access import Access as AccessRbac
 
+
+class SecurityResource(Resource):
     module = None
     controller = None
     action = None
@@ -18,6 +22,8 @@ class SecurityResource(Resource):
     @login_required
     def get(self, *args, **kwargs):
         self.action = 'get'
+        resource = AccessRbac.resource(action=self.action, controller=self.controller)
+        logging.error(resource)
         pass
 
     @login_required

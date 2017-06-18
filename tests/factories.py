@@ -5,7 +5,7 @@ from factory.alchemy import SQLAlchemyModelFactory
 from werkzeug.security import generate_password_hash
 
 from walle.model.database import db
-from walle.model.models import User
+from walle.model.user import UserModel
 
 
 class BaseFactory(SQLAlchemyModelFactory):
@@ -28,4 +28,4 @@ class UserFactory(BaseFactory):
     class Meta:
         """Factory configuration."""
 
-        model = User
+        model = UserModel

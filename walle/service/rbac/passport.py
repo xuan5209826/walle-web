@@ -7,11 +7,11 @@
     :author: wushuiyong@walle-web.io
 """
 
-from flask.ext.login import LoginManager, login_required
+import logging
+
 from walle.extensions import login_manager
 from walle.model import models
 
-import logging
 
 @login_manager.user_loader
 def load_user(user_id):

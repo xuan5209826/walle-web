@@ -8,25 +8,14 @@
     :author: wushuiyong@walle-web.io
 """
 
-from walle.model import models
-from walle.common.controller import Controller
-from walle.form.forms import UserUpdateForm, GroupForm, EnvironmentForm, ServerForm, TaskForm, RegistrationForm, LoginForm, ProjectForm
-from flask_login import current_user
-from flask_login import login_user, logout_user
-from flask import request, abort
+from flask import request
 from flask_restful import Resource
 
-from walle.service.rbac.access import Access
+from walle.common.controller import Controller
+from walle.form.group import GroupForm
+from walle.model.user import GroupModel
+from walle.model.tag import TagModel
 
-from walle.model.models import db
-from werkzeug.security import generate_password_hash
-from datetime import datetime
-import time
-from werkzeug.utils import secure_filename
-import os
-from flask.ext.login import LoginManager, login_required
-from walle.extensions import login_manager
-import logging
 
 class GroupAPI(Resource):
     def get(self, group_id=None):
@@ -53,10 +42,10 @@ class GroupAPI(Resource):
         # f = open('run.log', 'w')
         # f.write(str(filter))
 
-        group_model, count = models.Tag().query_paginate(page=page, limit=size, filter_name_dict=filter)
+        group_model, count = TagModel().query_paginate(page=page, limit=size, filter_name_dict=filter)
         groups = []
         for group_info in group_model:
-            group_sub = models.Group.query \
+            group_sub = GroupModel.query \
                 .filter_by(group_id=group_info.id) \
                 .count()
 
@@ -76,14 +65,14 @@ class GroupAPI(Resource):
         :return:
         """
         ## sqlalchemy版本
-        group_model = models.Group()
+        group_model = GroupModel()
         group = group_model.item(group_id=group_id)
         if group:
             return Controller.render_json(data=group)
         return Controller.render_json(code=-1)
 
         ## mixin 版本
-        group_model = models.Tag().get_by_id(group_id)
+        group_model = TagModel().get_by_id(group_id)
         if not group_model:
             return Controller.render_json(code=-1)
 
@@ -111,7 +100,7 @@ class GroupAPI(Resource):
         if form.validate_on_submit():
             user_ids = [int(uid) for uid in form.user_ids.data.split(',')]
 
-            group_new = models.Group()
+            group_new = GroupModel()
             group_id = group_new.add(group_name=form.group_name.data, user_ids=user_ids)
             if not group_id:
                 return Controller.render_json(code=-1)
@@ -131,7 +120,7 @@ class GroupAPI(Resource):
         if form.validate_on_submit():
             user_ids = [int(uid) for uid in form.user_ids.data.split(',')]
 
-            group_model = models.Group(group_id=group_id)
+            group_model = GroupModel(group_id=group_id)
             group_model.update(group_id=group_id,
                                group_name=form.group_name.data,
                                user_ids=user_ids)
@@ -145,10 +134,9 @@ class GroupAPI(Resource):
 
         :return:
         """
-        group_model = models.Group()
-        tag_model = models.Tag()
+        group_model = GroupModel()
+        tag_model = TagModel()
         tag_model.remove(group_id)
         group_model.remove(group_id)
 
         return Controller.render_json(message='')
-

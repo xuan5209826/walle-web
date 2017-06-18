@@ -8,25 +8,12 @@
     :author: wushuiyong@walle-web.io
 """
 
-from walle.model import models
-from walle.common.controller import Controller
-from walle.form.forms import UserUpdateForm, GroupForm, EnvironmentForm, ServerForm, TaskForm, RegistrationForm, LoginForm, ProjectForm
-from flask_login import current_user
-from flask_login import login_user, logout_user
-from flask import request, abort
+from flask import request
 from flask_restful import Resource
 
-from walle.service.rbac.access import Access
-
-from walle.model.models import db
-from werkzeug.security import generate_password_hash
-from datetime import datetime
-import time
-from werkzeug.utils import secure_filename
-import os
-from flask.ext.login import LoginManager, login_required
-from walle.extensions import login_manager
-import logging
+from walle.common.controller import Controller
+from walle.form.environment import EnvironmentForm
+from walle.model.deploy import EnvironmentModel
 
 
 class EnvironmentAPI(Resource):
@@ -50,7 +37,7 @@ class EnvironmentAPI(Resource):
         size = float(request.args.get('size', 10))
         kw = request.values.get('kw', '')
 
-        env_model = models.Environment()
+        env_model = EnvironmentModel()
         env_list, count = env_model.list(page=page, size=size, kw=kw)
         return Controller.list_json(list=env_list, count=count)
 
@@ -62,7 +49,7 @@ class EnvironmentAPI(Resource):
         :return:
         """
 
-        env_model = models.Environment(id=env_id)
+        env_model = EnvironmentModel(id=env_id)
         env_info = env_model.item()
         if not env_info:
             return Controller.render_json(code=-1)
@@ -78,7 +65,7 @@ class EnvironmentAPI(Resource):
 
         form = EnvironmentForm(request.form, csrf_enabled=False)
         if form.validate_on_submit():
-            env_new = models.Environment()
+            env_new = EnvironmentModel()
             env_id = env_new.add(env_name=form.env_name.data)
             if not env_id:
                 return Controller.render_json(code=-1)
@@ -97,7 +84,7 @@ class EnvironmentAPI(Resource):
         form = EnvironmentForm(request.form, csrf_enabled=False)
         form.set_env_id(env_id)
         if form.validate_on_submit():
-            env = models.Environment(id=env_id)
+            env = EnvironmentModel(id=env_id)
             ret = env.update(env_name=form.env_name.data, status=form.status.data)
             return Controller.render_json(data=env.item())
         else:
@@ -110,7 +97,7 @@ class EnvironmentAPI(Resource):
 
         :return:
         """
-        env_model = models.Environment(id=env_id)
+        env_model = EnvironmentModel(id=env_id)
         env_model.remove(env_id)
 
         return Controller.render_json(message='')

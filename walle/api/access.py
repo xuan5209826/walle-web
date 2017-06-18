@@ -8,18 +8,13 @@
     :author: wushuiyong@walle-web.io
 """
 
-from walle.model import models
-from walle.common.controller import Controller
-from walle.form.forms import UserUpdateForm, GroupForm, EnvironmentForm, ServerForm, TaskForm, RegistrationForm, LoginForm, ProjectForm
-from flask_login import current_user
-from flask_login import login_user, logout_user
-from flask import request, abort
-from walle.api.base import SecurityResource
+from flask import request
 
-import os
-from flask.ext.login import LoginManager, login_required
-from walle.extensions import login_manager
-import logging
+from walle.api.api import SecurityResource
+from walle.common.controller import Controller
+from walle.model.user import AccessModel
+from walle.model.user import RoleModel
+
 
 class AccessAPI(SecurityResource):
     controller = 'access'
@@ -28,9 +23,9 @@ class AccessAPI(SecurityResource):
     权限是以resource + method作为一个access
 
     """
-    # @login_required
+
     def get(self, access_id=None):
-        # super(AccessAPI, self).get()
+        super(AccessAPI, self).get()
         """
         fetch access list or one access
 
@@ -46,7 +41,7 @@ class AccessAPI(SecurityResource):
         :return:
         """
 
-        access_model = models.Access()
+        access_model = AccessModel()
         access_list = access_model.list()
         return Controller.render_json(data=access_list)
 
@@ -58,7 +53,7 @@ class AccessAPI(SecurityResource):
         :param access_id:
         :return:
         """
-        access_model = models.Role(id=access_id)
+        access_model = RoleModel(id=access_id)
         access_info = access_model.item()
         if not access_info:
             return Controller.render_json(code=-1)
@@ -73,7 +68,7 @@ class AccessAPI(SecurityResource):
         """
         access_name = request.form.get('access_name', None)
         access_permissions_ids = request.form.get('access_ids', '')
-        access_model = models.Role()
+        access_model = RoleModel()
         access_id = access_model.add(name=access_name, access_ids=access_permissions_ids)
 
         if not access_id:
@@ -94,7 +89,7 @@ class AccessAPI(SecurityResource):
         if not access_name:
             return Controller.render_json(code=-1, message='access_name can not be empty')
 
-        access_model = models.Role(id=access_id)
+        access_model = RoleModel(id=access_id)
         ret = access_model.update(name=access_name, access_ids=access_ids)
         return Controller.render_json(data=access_model.item())
 
@@ -105,7 +100,7 @@ class AccessAPI(SecurityResource):
 
         :return:
         """
-        access_model = models.Role(id=access_id)
+        access_model = RoleModel(id=access_id)
         ret = access_model.remove()
 
         return Controller.render_json(code=0)

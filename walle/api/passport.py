@@ -8,25 +8,16 @@
     :author: wushuiyong@walle-web.io
 """
 
-from walle.model import models
-from walle.common.controller import Controller
-from walle.form.forms import UserUpdateForm, GroupForm, EnvironmentForm, ServerForm, TaskForm, RegistrationForm, LoginForm, ProjectForm
+import logging
+
+from flask import request, abort
 from flask_login import current_user
 from flask_login import login_user, logout_user
-from flask import request, abort
 from flask_restful import Resource
 
-from walle.service.rbac.access import Access
-
-from walle.model.models import db
-from werkzeug.security import generate_password_hash
-from datetime import datetime
-import time
-from werkzeug.utils import secure_filename
-import os
-from flask.ext.login import LoginManager, login_required
-from walle.extensions import login_manager
-import logging
+from walle.common.controller import Controller
+from walle.form.user import LoginForm
+from walle.model.user import UserModel
 
 
 class PassportAPI(Resource):
@@ -47,7 +38,6 @@ class PassportAPI(Resource):
         else:
             abort(404)
 
-
     def login(self):
         """
         user login
@@ -57,7 +47,7 @@ class PassportAPI(Resource):
         """
         form = LoginForm(request.form, csrf_enabled=False)
         if form.validate_on_submit():
-            user = models.User.query.filter_by(email=form.email.data).first()
+            user = UserModel.query.filter_by(email=form.email.data).first()
 
             if user is not None and user.verify_password(form.password.data):
                 login_user(user)
@@ -69,4 +59,3 @@ class PassportAPI(Resource):
         logging.error('======== logout ========')
         logout_user()
         return Controller.render_json()
-

@@ -8,25 +8,16 @@
     :author: wushuiyong@walle-web.io
 """
 
-from walle.model import models
-from walle.common.controller import Controller
-from walle.form.forms import UserUpdateForm, GroupForm, EnvironmentForm, ServerForm, TaskForm, RegistrationForm, LoginForm, ProjectForm
-from flask_login import current_user
-from flask_login import login_user, logout_user
-from flask import request, abort
+from flask import request
 from flask_restful import Resource
-
-from walle.service.rbac.access import Access
-
-from walle.model.models import db
 from werkzeug.security import generate_password_hash
-from datetime import datetime
-import time
-from werkzeug.utils import secure_filename
-import os
-from flask.ext.login import LoginManager, login_required
-from walle.extensions import login_manager
-import logging
+
+from walle.common.controller import Controller
+from walle.form.user import UserUpdateForm, RegistrationForm
+from walle.model.database import db
+from walle.model.user import UserModel
+from walle.model.user import GroupModel
+from walle.model.tag import TagModel
 
 
 class UserAPI(Resource):
@@ -50,7 +41,7 @@ class UserAPI(Resource):
         size = float(request.args.get('size', 10))
         kw = request.values.get('kw', '')
 
-        user_model = models.User()
+        user_model = UserModel()
         user_list, count = user_model.list(page=page, size=size, kw=kw)
         return Controller.list_json(list=user_list, count=count)
 
@@ -62,7 +53,7 @@ class UserAPI(Resource):
         :return:
         """
 
-        user_info = models.User(id=user_id).item()
+        user_info = UserModel(id=user_id).item()
         if not user_info:
             return Controller.render_json(code=-1)
         return Controller.render_json(data=user_info)
@@ -77,11 +68,11 @@ class UserAPI(Resource):
         form = RegistrationForm(request.form, csrf_enabled=False)
         if form.validate_on_submit():
             password = generate_password_hash(form.password.data)
-            user = models.User(email=form.email.data,
-                               username=form.username.data,
-                               password=password,
-                               role_id=form.role_id.data
-                               )
+            user = UserModel(email=form.email.data,
+                             username=form.username.data,
+                             password=password,
+                             role_id=form.role_id.data
+                             )
             db.session.add(user)
             db.session.commit()
             return Controller.render_json(data=user.item(user_id=user.id))
@@ -96,7 +87,7 @@ class UserAPI(Resource):
         """
         form = UserUpdateForm(request.form, csrf_enabled=False)
         if form.validate_on_submit():
-            user = models.User(id=user_id)
+            user = UserModel(id=user_id)
             user.update(username=form.username.data, role_id=form.role_id.data, password=form.password.data)
             return Controller.render_json(data=user.item())
 
@@ -110,6 +101,6 @@ class UserAPI(Resource):
         :param user_id:
         :return:
         """
-        models.User(id=user_id).remove()
-        models.Group().remove(user_id=user_id)
+        UserModel(id=user_id).remove()
+        GroupModel().remove(user_id=user_id)
         return Controller.render_json(message='')

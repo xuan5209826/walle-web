@@ -8,25 +8,14 @@
     :author: wushuiyong@walle-web.io
 """
 
-from walle.model import models
-from walle.common.controller import Controller
-from walle.form.forms import UserUpdateForm, GroupForm, EnvironmentForm, ServerForm, TaskForm, RegistrationForm, LoginForm, ProjectForm
-from flask_login import current_user
-from flask_login import login_user, logout_user
-from flask import request, abort
+from flask import request
 from flask_restful import Resource
 
-from walle.service.rbac.access import Access
+from walle.common.controller import Controller
+from walle.form.task import TaskForm
+from walle.model.deploy import TaskModel
 
-from walle.model.models import db
-from werkzeug.security import generate_password_hash
-from datetime import datetime
-import time
-from werkzeug.utils import secure_filename
-import os
-from flask.ext.login import LoginManager, login_required
-from walle.extensions import login_manager
-import logging
+
 class TaskAPI(Resource):
     def get(self, task_id=None):
         """
@@ -46,7 +35,7 @@ class TaskAPI(Resource):
         size = float(request.args.get('size', 10))
         kw = request.values.get('kw', '')
 
-        task_model = models.Task()
+        task_model = TaskModel()
         task_list, count = task_model.list(page=page, size=size, kw=kw)
         return Controller.list_json(list=task_list, count=count)
 
@@ -57,7 +46,7 @@ class TaskAPI(Resource):
         :return:
         """
 
-        task_model = models.Task(id=task_id)
+        task_model = TaskModel(id=task_id)
         task_info = task_model.item()
         if not task_info:
             return Controller.render_json(code=-1)
@@ -72,7 +61,7 @@ class TaskAPI(Resource):
         form = TaskForm(request.form, csrf_enabled=False)
         # return Controller.render_json(code=-1, data = form.form2dict())
         if form.validate_on_submit():
-            task_new = models.Task()
+            task_new = TaskModel()
             data = form.form2dict()
             id = task_new.add(data)
             if not id:
@@ -93,7 +82,7 @@ class TaskAPI(Resource):
         f = open('run.log', 'w')
         form.set_id(task_id)
         if form.validate_on_submit():
-            task = models.Task().get_by_id(task_id)
+            task = TaskModel().get_by_id(task_id)
             data = form.form2dict()
             f.write('\n====form2dict===\n' + str(data))
             # a new type to update a model
@@ -108,7 +97,7 @@ class TaskAPI(Resource):
         /environment/<int:id>
         :return:
         """
-        task_model = models.Task(id=task_id)
+        task_model = TaskModel(id=task_id)
         task_model.remove(task_id)
 
         return Controller.render_json(message='')

@@ -8,25 +8,11 @@
     :author: wushuiyong@walle-web.io
 """
 
-from walle.model import models
-from walle.common.controller import Controller
-from walle.form.forms import UserUpdateForm, GroupForm, EnvironmentForm, ServerForm, TaskForm, RegistrationForm, LoginForm, ProjectForm
-from flask_login import current_user
-from flask_login import login_user, logout_user
-from flask import request, abort
+from flask import request
 from flask_restful import Resource
 
-from walle.service.rbac.access import Access
-
-from walle.model.models import db
-from werkzeug.security import generate_password_hash
-from datetime import datetime
-import time
-from werkzeug.utils import secure_filename
-import os
-from flask.ext.login import LoginManager, login_required
-from walle.extensions import login_manager
-import logging
+from walle.common.controller import Controller
+from walle.model.user import RoleModel
 
 
 class RoleAPI(Resource):
@@ -62,7 +48,7 @@ class RoleAPI(Resource):
         size = float(request.args.get('size', 10))
         kw = request.values.get('kw', '')
 
-        role_model = models.Role()
+        role_model = RoleModel()
         role_list, count = role_model.list(page=page, size=size, kw=kw)
         return Controller.list_json(list=role_list, count=count)
 
@@ -74,7 +60,7 @@ class RoleAPI(Resource):
         :param role_id:
         :return:
         """
-        role_model = models.Role(id=role_id)
+        role_model = RoleModel(id=role_id)
         role_info = role_model.item()
         if not role_info:
             return Controller.render_json(code=-1)
@@ -89,7 +75,7 @@ class RoleAPI(Resource):
         """
         role_name = request.form.get('role_name', None)
         role_permissions_ids = request.form.get('access_ids', '')
-        role_model = models.Role()
+        role_model = RoleModel()
         role_id = role_model.add(name=role_name, access_ids=role_permissions_ids)
 
         if not role_id:
@@ -110,7 +96,7 @@ class RoleAPI(Resource):
         if not role_name:
             return Controller.render_json(code=-1, message='role_name can not be empty')
 
-        role_model = models.Role(id=role_id)
+        role_model = RoleModel(id=role_id)
         ret = role_model.update(name=role_name, access_ids=role_access_ids)
         return Controller.render_json(data=role_model.item())
 
@@ -121,8 +107,7 @@ class RoleAPI(Resource):
 
         :return:
         """
-        role_model = models.Role(id=role_id)
+        role_model = RoleModel(id=role_id)
         ret = role_model.remove()
 
         return Controller.render_json(code=0)
-

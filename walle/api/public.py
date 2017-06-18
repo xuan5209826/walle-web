@@ -8,26 +8,16 @@
     :author: wushuiyong@walle-web.io
 """
 
-from walle.model import models
-from walle.common.controller import Controller
-from walle.form.forms import UserUpdateForm, GroupForm, EnvironmentForm, ServerForm, TaskForm, RegistrationForm, LoginForm, ProjectForm
-from flask_login import current_user
-from flask_login import login_user, logout_user
-from flask import request, abort
-from flask_restful import Resource
-
-from walle.service.rbac.access import Access
-
-from walle.model.models import db
-from werkzeug.security import generate_password_hash
-from datetime import datetime
-import time
-from werkzeug.utils import secure_filename
 import os
-from flask.ext.login import LoginManager, login_required
-from walle.extensions import login_manager
-import logging
 
+from flask import request
+from flask_restful import Resource
+from werkzeug.utils import secure_filename
+
+from walle.common.controller import Controller
+from walle.model.user import UserModel
+from walle.model.user import AccessModel
+from walle.service.rbac.access import Access
 
 
 class PublicAPI(Resource):
@@ -50,8 +40,8 @@ class PublicAPI(Resource):
             return self.avater()
 
     def menu(self):
-        user = models.User(id=1).item()
-        menu = Access().get_menu()
+        user = UserModel(id=1).item()
+        menu = AccessModel().menu('x')
         data = {
             'user': user,
             'menu': menu,
@@ -69,4 +59,3 @@ class PublicAPI(Resource):
         return Controller.render_json(data={
             'avarter': fname,
         })
-
