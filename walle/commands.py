@@ -80,8 +80,8 @@ def urls(url, order):
         try:
             rule, arguments = (
                 current_app.url_map
-                           .bind('localhost')
-                           .match(url, return_rule=True))
+                    .bind('localhost')
+                    .match(url, return_rule=True))
             rows.append((rule.rule, rule.endpoint, arguments))
             column_length = 3
         except (NotFound, MethodNotAllowed) as e:
@@ -89,8 +89,8 @@ def urls(url, order):
             column_length = 1
     else:
         rules = sorted(
-            current_app.url_map.iter_rules(),
-            key=lambda rule: getattr(rule, order))
+                current_app.url_map.iter_rules(),
+                key=lambda rule: getattr(rule, order))
         for rule in rules:
             rows.append((rule.rule, rule.endpoint, None))
         column_length = 2

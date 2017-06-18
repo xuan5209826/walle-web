@@ -9,14 +9,12 @@
 """
 
 from flask import request
-from flask_restful import Resource
-
-from walle.common.controller import Controller
+from walle.api.api import ApiResource
 from walle.form.task import TaskForm
 from walle.model.deploy import TaskModel
 
 
-class TaskAPI(Resource):
+class TaskAPI(ApiResource):
     def get(self, task_id=None):
         """
         fetch project list or one item
@@ -37,7 +35,7 @@ class TaskAPI(Resource):
 
         task_model = TaskModel()
         task_list, count = task_model.list(page=page, size=size, kw=kw)
-        return Controller.list_json(list=task_list, count=count)
+        return self.list_json(list=task_list, count=count)
 
     def item(self, task_id):
         """
@@ -49,8 +47,8 @@ class TaskAPI(Resource):
         task_model = TaskModel(id=task_id)
         task_info = task_model.item()
         if not task_info:
-            return Controller.render_json(code=-1)
-        return Controller.render_json(data=task_info)
+            return self.render_json(code=-1)
+        return self.render_json(data=task_info)
 
     def post(self):
         """
@@ -59,17 +57,17 @@ class TaskAPI(Resource):
         :return:
         """
         form = TaskForm(request.form, csrf_enabled=False)
-        # return Controller.render_json(code=-1, data = form.form2dict())
+        # return self.render_json(code=-1, data = form.form2dict())
         if form.validate_on_submit():
             task_new = TaskModel()
             data = form.form2dict()
             id = task_new.add(data)
             if not id:
-                return Controller.render_json(code=-1)
+                return self.render_json(code=-1)
 
-            return Controller.render_json(data=task_new.item())
+            return self.render_json(data=task_new.item())
         else:
-            return Controller.render_json(code=-1, message=form.errors)
+            return self.render_json(code=-1, message=form.errors)
 
     def put(self, task_id):
         """
@@ -87,9 +85,9 @@ class TaskAPI(Resource):
             f.write('\n====form2dict===\n' + str(data))
             # a new type to update a model
             ret = task.update(data)
-            return Controller.render_json(data=task.item())
+            return self.render_json(data=task.item())
         else:
-            return Controller.render_json(code=-1, message=form.errors)
+            return self.render_json(code=-1, message=form.errors)
 
     def delete(self, task_id):
         """
@@ -100,4 +98,4 @@ class TaskAPI(Resource):
         task_model = TaskModel(id=task_id)
         task_model.remove(task_id)
 
-        return Controller.render_json(message='')
+        return self.render_json(message='')

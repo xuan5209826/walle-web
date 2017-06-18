@@ -9,14 +9,12 @@
 """
 
 from flask import request
-from flask_restful import Resource
-
-from walle.common.controller import Controller
 from walle.form.environment import EnvironmentForm
 from walle.model.deploy import EnvironmentModel
+from walle.api.api import ApiResource
 
 
-class EnvironmentAPI(Resource):
+class EnvironmentAPI(ApiResource):
     def get(self, env_id=None):
         """
         fetch environment list or one item
@@ -39,7 +37,7 @@ class EnvironmentAPI(Resource):
 
         env_model = EnvironmentModel()
         env_list, count = env_model.list(page=page, size=size, kw=kw)
-        return Controller.list_json(list=env_list, count=count)
+        return self.list_json(list=env_list, count=count)
 
     def item(self, env_id):
         """
@@ -52,8 +50,8 @@ class EnvironmentAPI(Resource):
         env_model = EnvironmentModel(id=env_id)
         env_info = env_model.item()
         if not env_info:
-            return Controller.render_json(code=-1)
-        return Controller.render_json(data=env_info)
+            return self.render_json(code=-1)
+        return self.render_json(data=env_info)
 
     def post(self):
         """
@@ -68,10 +66,10 @@ class EnvironmentAPI(Resource):
             env_new = EnvironmentModel()
             env_id = env_new.add(env_name=form.env_name.data)
             if not env_id:
-                return Controller.render_json(code=-1)
-            return Controller.render_json(data=env_new.item())
+                return self.render_json(code=-1)
+            return self.render_json(data=env_new.item())
         else:
-            return Controller.render_json(code=-1, message=form.errors)
+            return self.render_json(code=-1, message=form.errors)
 
     def put(self, env_id):
         """
@@ -86,9 +84,9 @@ class EnvironmentAPI(Resource):
         if form.validate_on_submit():
             env = EnvironmentModel(id=env_id)
             ret = env.update(env_name=form.env_name.data, status=form.status.data)
-            return Controller.render_json(data=env.item())
+            return self.render_json(data=env.item())
         else:
-            return Controller.render_json(code=-1, message=form.errors)
+            return self.render_json(code=-1, message=form.errors)
 
     def delete(self, env_id):
         """
@@ -100,4 +98,4 @@ class EnvironmentAPI(Resource):
         env_model = EnvironmentModel(id=env_id)
         env_model.remove(env_id)
 
-        return Controller.render_json(message='')
+        return self.render_json(message='')

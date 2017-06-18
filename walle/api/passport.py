@@ -13,14 +13,12 @@ import logging
 from flask import request, abort
 from flask_login import current_user
 from flask_login import login_user, logout_user
-from flask_restful import Resource
-
-from walle.common.controller import Controller
+from walle.api.api import ApiResource
 from walle.form.user import LoginForm
 from walle.model.user import UserModel
 
 
-class PassportAPI(Resource):
+class PassportAPI(ApiResource):
     action = ['login', 'logout']
 
     def post(self, method=None):
@@ -51,11 +49,11 @@ class PassportAPI(Resource):
 
             if user is not None and user.verify_password(form.password.data):
                 login_user(user)
-                return Controller.render_json(data=current_user.to_json())
+                return self.render_json(data=current_user.to_json())
 
-        return Controller.render_json(code=-1, data=form.errors)
+        return self.render_json(code=-1, data=form.errors)
 
     def logout(self):
         logging.error('======== logout ========')
         logout_user()
-        return Controller.render_json()
+        return self.render_json()

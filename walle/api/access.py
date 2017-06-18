@@ -11,7 +11,6 @@
 from flask import request
 
 from walle.api.api import SecurityResource
-from walle.common.controller import Controller
 from walle.model.user import AccessModel
 from walle.model.user import RoleModel
 
@@ -43,7 +42,7 @@ class AccessAPI(SecurityResource):
 
         access_model = AccessModel()
         access_list = access_model.list()
-        return Controller.render_json(data=access_list)
+        return self.render_json(data=access_list)
 
     def item(self, access_id):
         """
@@ -56,8 +55,8 @@ class AccessAPI(SecurityResource):
         access_model = RoleModel(id=access_id)
         access_info = access_model.item()
         if not access_info:
-            return Controller.render_json(code=-1)
-        return Controller.render_json(data=access_info)
+            return self.render_json(code=-1)
+        return self.render_json(data=access_info)
 
     def post(self):
         """
@@ -72,8 +71,8 @@ class AccessAPI(SecurityResource):
         access_id = access_model.add(name=access_name, access_ids=access_permissions_ids)
 
         if not access_id:
-            Controller.render_json(code=-1)
-        return Controller.render_json(data=access_model.item())
+            self.render_json(code=-1)
+        return self.render_json(data=access_model.item())
 
     def put(self, access_id):
         """
@@ -87,11 +86,11 @@ class AccessAPI(SecurityResource):
         access_ids = request.form.get('access_ids', '')
 
         if not access_name:
-            return Controller.render_json(code=-1, message='access_name can not be empty')
+            return self.render_json(code=-1, message='access_name can not be empty')
 
         access_model = RoleModel(id=access_id)
         ret = access_model.update(name=access_name, access_ids=access_ids)
-        return Controller.render_json(data=access_model.item())
+        return self.render_json(data=access_model.item())
 
     def delete(self, access_id):
         """
@@ -103,4 +102,4 @@ class AccessAPI(SecurityResource):
         access_model = RoleModel(id=access_id)
         ret = access_model.remove()
 
-        return Controller.render_json(code=0)
+        return self.render_json(code=0)

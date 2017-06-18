@@ -11,16 +11,13 @@
 import os
 
 from flask import request
-from flask_restful import Resource
 from werkzeug.utils import secure_filename
-
-from walle.common.controller import Controller
 from walle.model.user import UserModel
 from walle.model.user import AccessModel
-from walle.service.rbac.access import Access
+from walle.api.api import ApiResource
 
 
-class PublicAPI(Resource):
+class PublicAPI(ApiResource):
     def get(self, method):
         """
         fetch role list or one role
@@ -46,7 +43,7 @@ class PublicAPI(Resource):
             'user': user,
             'menu': menu,
         }
-        return Controller.render_json(data=data)
+        return self.render_json(data=data)
 
     def avater(self):
         UPLOAD_FOLDER = 'fe/public/avater'
@@ -56,6 +53,6 @@ class PublicAPI(Resource):
         fname = secure_filename(f.filename)
         ret = f.save(os.path.join(UPLOAD_FOLDER, fname))
 
-        return Controller.render_json(data={
+        return self.render_json(data={
             'avarter': fname,
         })

@@ -7,6 +7,7 @@
     :license: Simplified BSD License, see LICENSE.txt for more details."""
 
 import base64
+
 from Crypto.Cipher import AES
 from itsdangerous import BadSignature, SignatureExpired, TimestampSigner
 
@@ -46,14 +47,14 @@ class TokenManager(object):
             encrypted_id = encrypted_id.encode('ascii', 'ignore')
 
         try:
-            str3 = encrypted_id + b'=='             # --> base64 string with '=='
-            #print('str3=', str3)
-            str2 = base64.urlsafe_b64decode(str3)   # --> encrypted data
-            #print('str2=', str2)
-            str1 = self.cipher.decrypt(str2)        # --> 16 byte integer string
-            #print('str1=', str1)
-            return int(str1)                        # --> integer id
-        except Exception as e:                      # pragma: no cover
+            str3 = encrypted_id + b'=='  # --> base64 string with '=='
+            # print('str3=', str3)
+            str2 = base64.urlsafe_b64decode(str3)  # --> encrypted data
+            # print('str2=', str2)
+            str1 = self.cipher.decrypt(str2)  # --> 16 byte integer string
+            # print('str1=', str1)
+            return int(str1)  # --> integer id
+        except Exception as e:  # pragma: no cover
             print('!!!Exception in decrypt_id!!!:', e)
             return 0
 

@@ -9,13 +9,11 @@
 """
 
 from flask import request
-from flask_restful import Resource
-
-from walle.common.controller import Controller
+from walle.api.api import ApiResource
 from walle.model.user import RoleModel
 
 
-class RoleAPI(Resource):
+class RoleAPI(ApiResource):
     """
     角色没有上下级, 一个角色的用户可以看到
     1.超管
@@ -50,7 +48,7 @@ class RoleAPI(Resource):
 
         role_model = RoleModel()
         role_list, count = role_model.list(page=page, size=size, kw=kw)
-        return Controller.list_json(list=role_list, count=count)
+        return self.list_json(list=role_list, count=count)
 
     def item(self, role_id):
         """
@@ -63,8 +61,8 @@ class RoleAPI(Resource):
         role_model = RoleModel(id=role_id)
         role_info = role_model.item()
         if not role_info:
-            return Controller.render_json(code=-1)
-        return Controller.render_json(data=role_info)
+            return self.render_json(code=-1)
+        return self.render_json(data=role_info)
 
     def post(self):
         """
@@ -79,8 +77,8 @@ class RoleAPI(Resource):
         role_id = role_model.add(name=role_name, access_ids=role_permissions_ids)
 
         if not role_id:
-            Controller.render_json(code=-1)
-        return Controller.render_json(data=role_model.item())
+            self.render_json(code=-1)
+        return self.render_json(data=role_model.item())
 
     def put(self, role_id):
         """
@@ -94,11 +92,11 @@ class RoleAPI(Resource):
         role_access_ids = request.form.get('access_ids', '')
 
         if not role_name:
-            return Controller.render_json(code=-1, message='role_name can not be empty')
+            return self.render_json(code=-1, message='role_name can not be empty')
 
         role_model = RoleModel(id=role_id)
         ret = role_model.update(name=role_name, access_ids=role_access_ids)
-        return Controller.render_json(data=role_model.item())
+        return self.render_json(data=role_model.item())
 
     def delete(self, role_id):
         """
@@ -110,4 +108,4 @@ class RoleAPI(Resource):
         role_model = RoleModel(id=role_id)
         ret = role_model.remove()
 
-        return Controller.render_json(code=0)
+        return self.render_json(code=0)

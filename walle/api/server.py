@@ -9,14 +9,12 @@
 """
 
 from flask import request
-from flask_restful import Resource
-
-from walle.common.controller import Controller
+from walle.api.api import ApiResource
 from walle.form.server import ServerForm
 from walle.model.deploy import ServerModel
 
 
-class ServerAPI(Resource):
+class ServerAPI(ApiResource):
     def get(self, id=None):
         """
         fetch environment list or one item
@@ -39,7 +37,7 @@ class ServerAPI(Resource):
 
         server_model = ServerModel()
         server_list, count = server_model.list(page=page, size=size, kw=kw)
-        return Controller.list_json(list=server_list, count=count)
+        return self.list_json(list=server_list, count=count)
 
     def item(self, id):
         """
@@ -52,8 +50,8 @@ class ServerAPI(Resource):
         server_model = ServerModel(id=id)
         server_info = server_model.item()
         if not server_info:
-            return Controller.render_json(code=-1)
-        return Controller.render_json(data=server_info)
+            return self.render_json(code=-1)
+        return self.render_json(data=server_info)
 
     def post(self):
         """
@@ -68,11 +66,11 @@ class ServerAPI(Resource):
             server_new = ServerModel()
             id = server_new.add(name=form.name.data, host=form.host.data)
             if not id:
-                return Controller.render_json(code=-1)
+                return self.render_json(code=-1)
 
-            return Controller.render_json(data=server_new.item())
+            return self.render_json(data=server_new.item())
         else:
-            return Controller.render_json(code=-1, message=form.errors)
+            return self.render_json(code=-1, message=form.errors)
 
     def put(self, id):
         """
@@ -87,9 +85,9 @@ class ServerAPI(Resource):
         if form.validate_on_submit():
             server = ServerModel(id=id)
             ret = server.update(name=form.name.data, host=form.host.data)
-            return Controller.render_json(data=server.item())
+            return self.render_json(data=server.item())
         else:
-            return Controller.render_json(code=-1, message=form.errors)
+            return self.render_json(code=-1, message=form.errors)
 
     def delete(self, id):
         """
@@ -101,4 +99,4 @@ class ServerAPI(Resource):
         server_model = ServerModel(id=id)
         server_model.remove(id)
 
-        return Controller.render_json(message='')
+        return self.render_json(message='')

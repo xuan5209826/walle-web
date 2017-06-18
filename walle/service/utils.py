@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
 """Helper utilities and decorators."""
-from flask import flash
-from datetime import datetime
-import time
 import sys
+import time
+from datetime import datetime
+
+from flask import flash
 
 
 def flash_errors(form, category='warning'):
@@ -19,6 +20,7 @@ def date_str_to_obj(ymd):
 
 def datetime_str_to_obj(ymd_his):
     return datetime.strptime(ymd_his, "%Y-%m-%d %H:%i:%s")
+
 
 PY2 = int(sys.version[0]) == 2
 

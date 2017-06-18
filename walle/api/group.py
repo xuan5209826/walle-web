@@ -9,15 +9,12 @@
 """
 
 from flask import request
-from flask_restful import Resource
-
-from walle.common.controller import Controller
 from walle.form.group import GroupForm
 from walle.model.user import GroupModel
 from walle.model.tag import TagModel
+from walle.api.api import ApiResource
 
-
-class GroupAPI(Resource):
+class GroupAPI(ApiResource):
     def get(self, group_id=None):
         """
         用户组列表
@@ -54,7 +51,7 @@ class GroupAPI(Resource):
             group_info['group_id'] = group_info['id']
             group_info['group_name'] = group_info['name']
             groups.append(group_info)
-        return Controller.list_json(list=groups, count=count)
+        return self.list_json(list=groups, count=count)
 
     def item(self, group_id):
         """
@@ -68,13 +65,13 @@ class GroupAPI(Resource):
         group_model = GroupModel()
         group = group_model.item(group_id=group_id)
         if group:
-            return Controller.render_json(data=group)
-        return Controller.render_json(code=-1)
+            return self.render_json(data=group)
+        return self.render_json(code=-1)
 
         ## mixin 版本
         group_model = TagModel().get_by_id(group_id)
         if not group_model:
-            return Controller.render_json(code=-1)
+            return self.render_json(code=-1)
 
         f = open('run.log', 'w')
         # f.write(str(group_model) + '\n')
@@ -86,7 +83,7 @@ class GroupAPI(Resource):
         group_info['users'] = len(user_ids)
         group_info['group_name'] = group_info['name']
         group_info['group_id'] = group_info['id']
-        return Controller.render_json(data=group_info)
+        return self.render_json(data=group_info)
 
     def post(self):
         """
@@ -103,10 +100,10 @@ class GroupAPI(Resource):
             group_new = GroupModel()
             group_id = group_new.add(group_name=form.group_name.data, user_ids=user_ids)
             if not group_id:
-                return Controller.render_json(code=-1)
-            return Controller.render_json(data=group_new.item())
+                return self.render_json(code=-1)
+            return self.render_json(data=group_new.item())
         else:
-            return Controller.render_json(code=-1, message=form.errors)
+            return self.render_json(code=-1, message=form.errors)
 
     def put(self, group_id):
         """
@@ -124,9 +121,9 @@ class GroupAPI(Resource):
             group_model.update(group_id=group_id,
                                group_name=form.group_name.data,
                                user_ids=user_ids)
-            return Controller.render_json(data=group_model.item())
+            return self.render_json(data=group_model.item())
 
-        return Controller.render_json(code=-1, message=form.errors)
+        return self.render_json(code=-1, message=form.errors)
 
     def delete(self, group_id):
         """
@@ -139,4 +136,4 @@ class GroupAPI(Resource):
         tag_model.remove(group_id)
         group_model.remove(group_id)
 
-        return Controller.render_json(message='')
+        return self.render_json(message='')

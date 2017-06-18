@@ -8,13 +8,39 @@
 """
 import logging
 
+from flask import jsonify
 from flask.ext.login import login_required
 from flask_restful import Resource
-
 from walle.service.rbac.access import Access as AccessRbac
 
 
-class SecurityResource(Resource):
+class ApiResource(Resource):
+    module = None
+    controller = None
+    action = None
+
+    @staticmethod
+    def render_json(code=0, message='', data=[]):
+        return jsonify({
+            'code': code,
+            'message': message,
+            'data': data,
+        })
+
+    @staticmethod
+    def json(code=0, message=None, data=[]):
+        return jsonify({
+            'code': code,
+            'message': message,
+            'data': data,
+        })
+
+    @staticmethod
+    def list_json(list, count, code=0, message=''):
+        return ApiResource.render_json(data={'list': list, 'count': count}, code=code, message=message)
+
+
+class SecurityResource(ApiResource):
     module = None
     controller = None
     action = None

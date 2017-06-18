@@ -1,13 +1,13 @@
 # -*- coding: utf-8 -*-
 """The app module, containing the app factory function."""
+import sys
+
 from flask import Flask, render_template
+from flask_restful import Api
 
 from walle import commands
-from walle.model import models
-from walle.extensions import bcrypt, csrf_protect, db, login_manager, migrate
-from walle.config.settings import ProdConfig
-from walle.api import api as BaseAPI
 from walle.api import access as AccessAPI
+from walle.api import api as BaseAPI
 from walle.api import environment as EnvironmentAPI
 from walle.api import group as GroupAPI
 from walle.api import passport as PassportAPI
@@ -17,9 +17,10 @@ from walle.api import role as RoleAPI
 from walle.api import server as ServerAPI
 from walle.api import task as TaskAPI
 from walle.api import user as UserAPI
-from flask_restful import Api
-from walle.extensions import login_manager
-import sys
+from walle.config.settings import ProdConfig
+from walle.service.extensions import bcrypt, csrf_protect, db, migrate
+from walle.service.extensions import login_manager
+from walle.model.user import UserModel
 
 
 def create_app(config_object=ProdConfig):
@@ -34,7 +35,6 @@ def create_app(config_object=ProdConfig):
     register_errorhandlers(app)
     register_shellcontext(app)
     register_commands(app)
-
 
     reload(sys)
     sys.setdefaultencoding('utf-8')
@@ -91,7 +91,7 @@ def register_shellcontext(app):
         """Shell context objects."""
         return {
             'db': db,
-            'User': models.User,
+            'User': UserModel,
         }
 
     app.shell_context_processor(shell_context)

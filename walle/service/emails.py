@@ -5,27 +5,30 @@
     :author: Ling Thio (ling.thio@gmail.com)
     :license: Simplified BSD License, see LICENSE.txt for more details."""
 
-from flask import url_for, flash
 import smtplib
 import socket
+
 from flask import current_app, render_template
-from walle.common import tokens
-from walle import mail
+from flask import url_for
 from flask_mail import Message
+
+from walle import mail
+from walle.common import tokens
 
 
 def _render_email(filename, **kwargs):
     # Render subject
-    subject = render_template(filename+'_subject.txt', **kwargs)
+    subject = render_template(filename + '_subject.txt', **kwargs)
     # Make sure that subject lines do not contain newlines
     subject = subject.replace('\n', ' ')
     subject = subject.replace('\r', ' ')
     # Render HTML message
-    html_message = render_template(filename+'_message.html', **kwargs)
+    html_message = render_template(filename + '_message.html', **kwargs)
     # Render text message
-    text_message = render_template(filename+'_message.txt', **kwargs)
+    text_message = render_template(filename + '_message.txt', **kwargs)
 
     return (subject, html_message, text_message)
+
 
 def send_email(recipient, subject, html_message, text_message):
     """ Send email from default sender to 'recipient' """
@@ -39,9 +42,9 @@ def send_email(recipient, subject, html_message, text_message):
 
         # Construct Flash-Mail message
         message = Message(subject,
-                recipients=[recipient],
-                html = html_message,
-                body = text_message)
+                          recipients=[recipient],
+                          html=html_message,
+                          body=text_message)
         return mail.send(message)
 
     # Print helpful error messages on exceptions
@@ -50,13 +53,14 @@ def send_email(recipient, subject, html_message, text_message):
     except smtplib.SMTPAuthenticationError:
         return 'SMTP Authentication error: Check your MAIL_USERNAME and MAIL_PASSWORD settings.'
 
+
 def get_primary_user_email(user):
-    user_manager =  current_app.user_manager
+    user_manager = current_app.user_manager
     db_adapter = user_manager.db_adapter
     if db_adapter.UserEmailClass:
         user_email = db_adapter.find_first_object(db_adapter.UserEmailClass,
-                user_id=int(user.get_id()),
-                is_primary=True)
+                                                  user_id=int(user.get_id()),
+                                                  is_primary=True)
         return user_email
     else:
         return user
@@ -64,13 +68,13 @@ def get_primary_user_email(user):
 
 def send_confirm_email_email(user, user_email, confirm_email_link):
     # Verify certain conditions
-    user_manager =  current_app.user_manager
+    user_manager = current_app.user_manager
     if not user_manager.enable_email: return
     if not user_manager.send_registered_email and not user_manager.enable_confirm_email: return
 
     # Retrieve email address from User or UserEmail object
     email = user_email.email if user_email else user.email
-    assert(email)
+    assert (email)
 
     # Render subject, html message and text message
     subject, html_message, text_message = _render_email(
@@ -82,7 +86,8 @@ def send_confirm_email_email(user, user_email, confirm_email_link):
     # Send email message using Flask-Mail
     user_manager.send_email_function(email, subject, html_message, text_message)
 
-def send_registered_email(user, confirm_email_link):    # pragma: no cover
+
+def send_registered_email(user, confirm_email_link):  # pragma: no cover
     # Verify certain conditions
     # user_manager =  current_app.user_manager
     # if not user_manager.enable_email: return
@@ -90,7 +95,7 @@ def send_registered_email(user, confirm_email_link):    # pragma: no cover
 
     # Retrieve email address from User or UserEmail object
     email = user.email
-    assert(email)
+    assert (email)
 
     # Render subject, html message and text message
     subject, html_message, text_message = _render_email(
@@ -104,7 +109,6 @@ def send_registered_email(user, confirm_email_link):    # pragma: no cover
 
 
 def public_send_registered_email(user, require_email_confirmation=True):
-
     # Send 'confirm_email' or 'registered' email
     # Generate confirm email link
     token_manager = tokens.TokenManager()

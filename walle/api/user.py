@@ -9,18 +9,17 @@
 """
 
 from flask import request
-from flask_restful import Resource
 from werkzeug.security import generate_password_hash
-
-from walle.common.controller import Controller
+from walle.api.api import ApiResource
 from walle.form.user import UserUpdateForm, RegistrationForm
 from walle.model.database import db
 from walle.model.user import UserModel
 from walle.model.user import GroupModel
 from walle.model.tag import TagModel
+from walle.api.api import ApiResource
 
 
-class UserAPI(Resource):
+class UserAPI(ApiResource):
     def get(self, user_id=None):
         """
         fetch user list or one user
@@ -43,7 +42,7 @@ class UserAPI(Resource):
 
         user_model = UserModel()
         user_list, count = user_model.list(page=page, size=size, kw=kw)
-        return Controller.list_json(list=user_list, count=count)
+        return self.list_json(list=user_list, count=count)
 
     def item(self, user_id):
         """
@@ -55,8 +54,8 @@ class UserAPI(Resource):
 
         user_info = UserModel(id=user_id).item()
         if not user_info:
-            return Controller.render_json(code=-1)
-        return Controller.render_json(data=user_info)
+            return self.render_json(code=-1)
+        return self.render_json(data=user_info)
 
     def post(self):
         """
@@ -75,8 +74,8 @@ class UserAPI(Resource):
                              )
             db.session.add(user)
             db.session.commit()
-            return Controller.render_json(data=user.item(user_id=user.id))
-        return Controller.render_json(code=-1, message=form.errors)
+            return self.render_json(data=user.item(user_id=user.id))
+        return self.render_json(code=-1, message=form.errors)
 
     def put(self, user_id):
         """
@@ -89,9 +88,9 @@ class UserAPI(Resource):
         if form.validate_on_submit():
             user = UserModel(id=user_id)
             user.update(username=form.username.data, role_id=form.role_id.data, password=form.password.data)
-            return Controller.render_json(data=user.item())
+            return self.render_json(data=user.item())
 
-        return Controller.render_json(code=-1, message=form.errors)
+        return self.render_json(code=-1, message=form.errors)
 
     def delete(self, user_id):
         """
@@ -103,4 +102,4 @@ class UserAPI(Resource):
         """
         UserModel(id=user_id).remove()
         GroupModel().remove(user_id=user_id)
-        return Controller.render_json(message='')
+        return self.render_json(message='')

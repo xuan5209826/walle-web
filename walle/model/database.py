@@ -1,15 +1,14 @@
 # -*- coding: utf-8 -*-
 """Database module, including the SQLAlchemy database object and DB-related utilities."""
 from pprint import pformat
-from marshmallow import Schema
+
 from sqlalchemy import desc, or_
 from sqlalchemy.sql.sqltypes import Date, DateTime
-from sqlalchemy.orm import relationship
 from werkzeug import cached_property
-from walle.utils import basestring
 
-from walle.extensions import db
-from walle.utils import datetime_str_to_obj, date_str_to_obj
+from walle.service.extensions import db
+from walle.service.utils import basestring
+from walle.service.utils import datetime_str_to_obj, date_str_to_obj
 
 # Alias common SQLAlchemy names
 Column = db.Column

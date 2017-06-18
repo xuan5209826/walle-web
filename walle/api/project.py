@@ -9,14 +9,12 @@
 """
 
 from flask import request
-from flask_restful import Resource
-
-from walle.common.controller import Controller
+from walle.api.api import ApiResource
 from walle.form.project import ProjectForm
 from walle.model.deploy import ProjectModel
 
 
-class ProjectAPI(Resource):
+class ProjectAPI(ApiResource):
     def get(self, project_id=None):
         """
         fetch project list or one item
@@ -39,7 +37,7 @@ class ProjectAPI(Resource):
 
         project_model = ProjectModel()
         project_list, count = project_model.list(page=page, size=size, kw=kw)
-        return Controller.list_json(list=project_list, count=count)
+        return self.list_json(list=project_list, count=count)
 
     def item(self, project_id):
         """
@@ -52,8 +50,8 @@ class ProjectAPI(Resource):
         project_model = ProjectModel(id=project_id)
         project_info = project_model.item()
         if not project_info:
-            return Controller.render_json(code=-1)
-        return Controller.render_json(data=project_info)
+            return self.render_json(code=-1)
+        return self.render_json(data=project_info)
 
     def post(self):
         """
@@ -63,17 +61,17 @@ class ProjectAPI(Resource):
         :return:
         """
         form = ProjectForm(request.form, csrf_enabled=False)
-        # return Controller.render_json(code=-1, data = form.form2dict())
+        # return self.render_json(code=-1, data = form.form2dict())
         if form.validate_on_submit():
             project_new = ProjectModel()
             data = form.form2dict()
             id = project_new.add(data)
             if not id:
-                return Controller.render_json(code=-1)
+                return self.render_json(code=-1)
 
-            return Controller.render_json(data=project_new.item())
+            return self.render_json(data=project_new.item())
         else:
-            return Controller.render_json(code=-1, message=form.errors)
+            return self.render_json(code=-1, message=form.errors)
 
     def put(self, project_id):
         """
@@ -90,9 +88,9 @@ class ProjectAPI(Resource):
             data = form.form2dict()
             # a new type to update a model
             ret = server.update(data)
-            return Controller.render_json(data=server.item())
+            return self.render_json(data=server.item())
         else:
-            return Controller.render_json(code=-1, message=form.errors)
+            return self.render_json(code=-1, message=form.errors)
 
     def delete(self, project_id):
         """
@@ -104,4 +102,4 @@ class ProjectAPI(Resource):
         project_model = ProjectModel(id=project_id)
         project_model.remove(project_id)
 
-        return Controller.render_json(message='')
+        return self.render_json(message='')
