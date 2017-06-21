@@ -6,7 +6,7 @@ import pytest
 
 from walle.model.user import RoleModel
 from walle.model.user import UserModel
-
+from walle.model.deploy import EnvironmentModel
 from .factories import UserFactory
 
 
@@ -23,6 +23,11 @@ class TestFoo:
         #
         # retrieved = Foo.get_by_id(user.id)
         # assert retrieved == user
+
+class TestEnvironment:
+    def test_add(self):
+        env_new = EnvironmentModel()
+        env_id = env_new.add(env_name=u'开发环境')
 
 # class TestUser:
 #     """User tests."""

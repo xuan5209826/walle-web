@@ -8,19 +8,20 @@
 """
 
 import logging
-
-from walle.extensions import login_manager
-from walle.model import models
+from walle.service.extensions import login_manager
+from walle.model.user import UserModel
+from walle.model.user import RoleModel
+from walle.model.user import AccessModel
 
 
 @login_manager.user_loader
 def load_user(user_id):
     logging.error(user_id)
-    user = models.User.query.get(user_id)
-    role = models.Role().item(user.role_id)
-    access = models.Access().fetch_access_list_by_role_id(user.role_id)
+    user = UserModel.query.get(user_id)
+    role = RoleModel().item(user.role_id)
+    access = AccessModel().fetch_access_list_by_role_id(user.role_id)
     logging.error(access)
-    # logging.error(models.Role.query.get(user.role_id).access_ids)
+    # logging.error(RoleModel.query.get(user.role_id).access_ids)
     # logging.error(role['access_ids'].split(','))
-    # logging.error(models.User.query.get(user_id))
-    return models.User.query.get(user_id)
+    # logging.error(UserModel.query.get(user_id))
+    return UserModel.query.get(user_id)

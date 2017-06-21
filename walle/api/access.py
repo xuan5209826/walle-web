@@ -24,7 +24,6 @@ class AccessAPI(SecurityResource):
     """
 
     def get(self, access_id=None):
-        super(AccessAPI, self).get()
         """
         fetch access list or one access
 
@@ -46,17 +45,15 @@ class AccessAPI(SecurityResource):
 
     def item(self, access_id):
         """
-        fetch one access
         /access/<int:access_id>
 
         :param access_id:
         :return:
         """
-        access_model = RoleModel(id=access_id)
-        access_info = access_model.item()
-        if not access_info:
-            return self.render_json(code=-1)
-        return self.render_json(data=access_info)
+        access_info = RoleModel().list(size=1000)
+        data = AccessModel.query.all()
+        list = [p.to_json() for p in data]
+        return self.render_json(data=list)
 
     def post(self):
         """

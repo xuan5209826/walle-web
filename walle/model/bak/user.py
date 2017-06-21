@@ -4,21 +4,24 @@
 # @Created Time : 日  1/ 1 23:43:12 2017
 # @Description:
 
-from flask_login import UserMixin
-from sqlalchemy import String, Integer, Text, DateTime, or_
+from sqlalchemy import Column, String, Integer, create_engine, Text, DateTime, desc, or_
+
+from flask_sqlalchemy import SQLAlchemy
+from flask_login import current_user
 from werkzeug.security import check_password_hash, generate_password_hash
+from flask_login import UserMixin
+from pickle import dump
 
 # from flask_cache import Cache
 from datetime import datetime
-from walle.service.extensions import login_manager
-from walle.model.database import SurrogatePK, db, relationship, Model
-from walle.model.tag import TagModel
+
+from walle.model.database import Column, SurrogatePK, db, reference_col, relationship, Model
+
 from sqlalchemy.orm import aliased
-from walle.service.rbac.access import Access as AccessRbac
 import logging
 
-
-class UserModel(UserMixin, SurrogatePK, Model):
+# 项目配置表
+class User(UserMixin, SurrogatePK, Model):
     # 表的名字:
     __tablename__ = 'user'
 
@@ -32,8 +35,8 @@ class UserModel(UserMixin, SurrogatePK, Model):
     password = db.Column(String(50), nullable=False)
     avatar = db.Column(String(100))
     role_id = db.Column(Integer, db.ForeignKey('role.id'), default=1)
-    status = db.Column(Integer, default=1)
-    role_info = relationship("walle.model.user.RoleModel", back_populates="users")
+    status = db.Column(Integer, default=0)
+    role_info = relationship("Role", back_populates="users")
     created_at = db.Column(DateTime, default=current_time)
     updated_at = db.Column(DateTime, default=current_time, onupdate=current_time)
 
@@ -95,49 +98,6 @@ class UserModel(UserMixin, SurrogatePK, Model):
         self.password = generate_password_hash(password)
         return generate_password_hash(password)
 
-
-    def fetch_access_list_by_role_id(self, role_id):
-        module = aliased(AccessModel)
-        controller = aliased(AccessModel)
-        action = aliased(AccessModel)
-        role = RoleModel.query.get(role_id)
-        access_ids = role.access_ids.split(',')
-
-        logging.error('=============')
-        # logging.error(AccessModel.query.get(12).name_en)
-        #
-        # logging.error(dir(db.session\
-        #     .query(controller.name_en, controller.name_cn,
-        #            action.name_cn, action.name_cn) \
-        #     .outerjoin(action, action.pid == controller.id) \
-        #     .filter(module.type == AccessModel.type_module) \
-        #     .filter(controller.id.in_(access_ids)) \
-        #     .filter(action.id.in_(access_ids))))
-
-        data = db.session\
-            .query(controller.name_en, controller.name_cn,
-                   action.name_en, action.name_cn) \
-            .outerjoin(action, action.pid == controller.id) \
-            .filter(module.type == AccessModel.type_module) \
-            .filter(controller.id.in_(access_ids)) \
-            .filter(action.id.in_(access_ids)) \
-            .all()
-        # s = []
-        # for c_en, c_cn, a_en, a_cn in data:
-        #     logging.error(type(c_en))
-        #     logging.error(type(c_en.decode()))
-        #     logging.error(c_en)
-        #     logging.error(type(a_en))
-        #     logging.error(a_en)
-        #     s.append(AccessRbac.resource(a_en, str(c_en)))
-        #
-        # return s
-        # s = [AccessRbac.resource(str(a_en), str(c_en)) for c_en, c_cn, a_en, a_cn in data if c_en and a_en]
-        # logging.error(s)
-        # return s
-
-        return [AccessRbac.resource(a_en, c_en) for c_en, c_cn, a_en, a_cn in data if c_en and a_en]
-
     def is_authenticated(self):
         return True
 
@@ -160,9 +120,9 @@ class UserModel(UserMixin, SurrogatePK, Model):
         :param size:
         :return:
         """
-        query = UserModel.query
+        query = User.query
         if kw:
-            query = query.filter(or_(UserModel.username.like('%' + kw + '%'), UserModel.email.like('%' + kw + '%')))
+            query = query.filter(or_(User.username.like('%' + kw + '%'), User.email.like('%' + kw + '%')))
         count = query.count()
         data = query.order_by('id desc').offset(int(size) * int(page)).limit(size).all()
         user_list = [p.to_json() for p in data]
@@ -183,7 +143,7 @@ class UserModel(UserMixin, SurrogatePK, Model):
         }
 
 
-class AccessModel(SurrogatePK, Model):
+class Access(db.Model):
     __tablename__ = 'access'
 
     type_module = 'module'
@@ -210,12 +170,12 @@ class AccessModel(SurrogatePK, Model):
 
     def menu(self, role):
         role_id = 1
-        role = RoleModel(id=role_id).item()
+        role = Role(id=role_id).item()
         data = {}
 
         query = self.query.filter_by(fe_visible=1) \
-            .filter(AccessModel.type.in_((self.type_module, self.type_controller))) \
-            .filter(AccessModel.id.in_(role['access_ids'].split(','))) \
+            .filter(Access.type.in_((self.type_module, self.type_controller))) \
+            .filter(Access.id.in_(role['access_ids'].split(','))) \
             .order_by('sequence asc') \
             .all()
         for item in query:
@@ -246,9 +206,9 @@ class AccessModel(SurrogatePK, Model):
         """
         menus_module = {}
         menus_controller = {}
-        module = aliased(AccessModel)
-        controller = aliased(AccessModel)
-        action = aliased(AccessModel)
+        module = aliased(Access)
+        controller = aliased(Access)
+        action = aliased(Access)
 
         data = db.session.query(module.id, module.name_cn, controller.id, controller.name_cn, action.id, action.name_cn) \
             .outerjoin(controller, controller.pid == module.id) \
@@ -291,6 +251,24 @@ class AccessModel(SurrogatePK, Model):
 
         return menus
 
+    def fetch_access_list_by_role_id(self, role_id):
+        module = aliased(Access)
+        controller = aliased(Access)
+        action = aliased(Access)
+        role = Role.query.get(role_id)
+        access_ids = role.access_ids.split(',')
+
+        data = db.session\
+            .query(controller.name_en, controller.name_cn,
+                   action.name_cn, action.name_cn) \
+            .outerjoin(action, action.pid == controller.id) \
+            .filter(module.type == self.type_module) \
+            .filter(controller.id.in_(access_ids)) \
+            .filter(action.id.in_(access_ids)) \
+            .all()
+        return []
+        # return [rbac.Access.resource(a_en, c_en) for c_en, c_cn, a_en, a_cn in data if c_en and a_en]
+
     def to_json(self):
         return {
             'id': self.id,
@@ -309,7 +287,7 @@ class AccessModel(SurrogatePK, Model):
 
 
 # 项目配置表
-class RoleModel(UserMixin, SurrogatePK, Model):
+class Role(UserMixin, SurrogatePK, Model):
     # 表的名字:
     __tablename__ = 'role'
 
@@ -320,7 +298,7 @@ class RoleModel(UserMixin, SurrogatePK, Model):
     id = db.Column(Integer, primary_key=True, autoincrement=True)
     name = db.Column(String(30))
     access_ids = db.Column(Text, default='')
-    users = relationship("UserModel", back_populates="role_info")
+    users = relationship("User", back_populates="role_info")
 
     created_at = db.Column(DateTime, default=current_time)
     updated_at = db.Column(DateTime, default=current_time, onupdate=current_time)
@@ -332,9 +310,9 @@ class RoleModel(UserMixin, SurrogatePK, Model):
         :param size:
         :return:
         """
-        query = RoleModel.query
+        query = Role.query
         if kw:
-            query = query.filter(RoleModel.name.like('%' + kw + '%'))
+            query = query.filter(Role.name.like('%' + kw + '%'))
         count = query.count()
         data = query.order_by('id desc').offset(int(size) * int(page)).limit(size).all()
         list = [p.to_json() for p in data]
@@ -347,12 +325,12 @@ class RoleModel(UserMixin, SurrogatePK, Model):
         :return:
         """
         role_id = role_id if role_id else self.id
-        data = RoleModel.query.filter_by(id=role_id).first()
+        data = Role.query.filter_by(id=role_id).first()
         return data.to_json() if data else []
 
     def add(self, name, access_ids):
         # todo access_ids need to be formated and checked
-        role = RoleModel(name=name, access_ids=access_ids)
+        role = Role(name=name, access_ids=access_ids)
 
         db.session.add(role)
         db.session.commit()
@@ -362,7 +340,7 @@ class RoleModel(UserMixin, SurrogatePK, Model):
     def update(self, name, access_ids, role_id=None):
         # todo access_ids need to be formated and checked
         role_id = role_id if role_id else self.id
-        role = RoleModel.query.filter_by(id=role_id).first()
+        role = Role.query.filter_by(id=role_id).first()
         role.name = name
         role.access_ids = access_ids
 
@@ -375,7 +353,7 @@ class RoleModel(UserMixin, SurrogatePK, Model):
         :return:
         """
         role_id = role_id if role_id else self.id
-        RoleModel.query.filter_by(id=role_id).delete()
+        Role.query.filter_by(id=role_id).delete()
         return db.session.commit()
 
     def to_json(self):
@@ -390,7 +368,7 @@ class RoleModel(UserMixin, SurrogatePK, Model):
 
 
 # 项目配置表
-class GroupModel(SurrogatePK, Model):
+class Group(SurrogatePK, Model):
     __tablename__ = 'user_group'
 
     current_time = datetime.now()
@@ -398,7 +376,7 @@ class GroupModel(SurrogatePK, Model):
     # 表的结构:
     id = db.Column(Integer, primary_key=True, autoincrement=True)
     user_id = db.Column(Integer, db.ForeignKey('user.id'))
-    user_ids = db.relationship('walle.model.tag.TagModel', backref=db.backref('users'))
+    user_ids = db.relationship('Tag', backref=db.backref('users'))
     group_id = db.Column(Integer, db.ForeignKey('tag.id'))
     created_at = db.Column(DateTime, default=current_time)
     updated_at = db.Column(DateTime, default=current_time, onupdate=current_time)
@@ -411,9 +389,9 @@ class GroupModel(SurrogatePK, Model):
         :param size:
         :return:
         """
-        group = GroupModel.query
+        group = Group.query
         if kw:
-            group = group.filter_by(TagModel.name.like('%' + kw + '%'))
+            group = group.filter_by(Tag.name.like('%' + kw + '%'))
         group = group.offset(int(size) * int(page)).limit(size).all()
         # f = open('run.log', 'w')
         # f.write('==group_id==\n'+str(group_id)+'\n====\n')
@@ -432,21 +410,21 @@ class GroupModel(SurrogatePK, Model):
         # return user_ids
         return group_dict
 
-        query = TagModel.query
+        query = Tag.query
         if kw:
-            query = query.filter(TagModel.name.like('%' + kw + '%'))
+            query = query.filter(Tag.name.like('%' + kw + '%'))
         count = query.count()
         data = query.order_by('id desc').offset(int(size) * int(page)).limit(size).all()
         list = [p.to_json() for p in data]
         return list, count
 
     def add(self, group_name, user_ids):
-        tag = TagModel(name=group_name, label='user_group')
+        tag = Tag(name=group_name, label='user_group')
         db.session.add(tag)
         db.session.commit()
 
         for user_id in user_ids:
-            user_group = GroupModel(group_id=tag.id, user_id=user_id)
+            user_group = Group(group_id=tag.id, user_id=user_id)
             db.session.add(user_group)
 
         db.session.commit()
@@ -457,24 +435,24 @@ class GroupModel(SurrogatePK, Model):
 
     def update(self, group_id, group_name, user_ids):
         # 修改tag信息
-        tag_model = TagModel.query.filter_by(label='user_group').filter_by(id=group_id).first()
+        tag_model = Tag.query.filter_by(label='user_group').filter_by(id=group_id).first()
         if tag_model.name != group_name:
             tag_model.name = group_name
 
         # 修改用户组成员
-        group_model = GroupModel.query.filter_by(group_id=group_id).all()
+        group_model = Group.query.filter_by(group_id=group_id).all()
         user_exists = []
         for group in group_model:
             # 用户组的用户id
             user_exists.append(group.user_id)
             # 表里的不在提交中,删除之
             if group.user_id not in user_ids:
-                GroupModel.query.filter_by(id=group.id).delete()
+                Group.query.filter_by(id=group.id).delete()
 
         # 提交的不在表中的,添加之
         user_not_in = list(set(user_ids).difference(set(user_exists)))
         for user_new in user_not_in:
-            group_new = GroupModel(group_id=group_id, user_id=user_new)
+            group_new = Group(group_id=group_id, user_id=user_new)
             db.session.add(group_new)
 
         db.session.commit()
@@ -488,13 +466,13 @@ class GroupModel(SurrogatePK, Model):
         """
         #
         group_id = group_id if group_id else self.group_id
-        tag = TagModel.query.filter_by(id=group_id).first()
+        tag = Tag.query.filter_by(id=group_id).first()
         if not tag:
             return None
         tag = tag.to_json()
 
         group_id = group_id if group_id else self.group_id
-        groups = GroupModel.query.filter_by(group_id=group_id).all()
+        groups = Group.query.filter_by(group_id=group_id).all()
 
         user_ids = []
         for group_info in groups:
@@ -510,8 +488,8 @@ class GroupModel(SurrogatePK, Model):
         return group.to_json()
         # group = group.to_json()
 
-        users = UserModel.query \
-            .filter(UserModel.id.in_(group['users'])).all()
+        users = User.query \
+            .filter(User.id.in_(group['users'])).all()
         group['user_ids'] = [user.to_json() for user in users]
 
         return group
@@ -523,11 +501,11 @@ class GroupModel(SurrogatePK, Model):
         :return:
         """
         if group_id:
-            GroupModel.query.filter_by(group_id=group_id).delete()
+            Group.query.filter_by(group_id=group_id).delete()
         elif user_id:
-            GroupModel.query.filter_by(user_id=user_id).delete()
+            Group.query.filter_by(user_id=user_id).delete()
         elif self.group_id:
-            GroupModel.query.filter_by(group_id=self.group_id).delete()
+            Group.query.filter_by(group_id=self.group_id).delete()
 
         return db.session.commit()
 
@@ -541,16 +519,3 @@ class GroupModel(SurrogatePK, Model):
             'updated_at': self.updated_at.strftime('%Y-%m-%d %H:%M:%S'),
         }
 
-
-
-@login_manager.user_loader
-def load_user(user_id):
-    logging.error(user_id)
-    user = UserModel.query.get(user_id)
-    role = RoleModel().item(user.role_id)
-    access = UserModel().fetch_access_list_by_role_id(user.role_id)
-    logging.error(access)
-    # logging.error(RoleModel.query.get(user.role_id).access_ids)
-    # logging.error(role['access_ids'].split(','))
-    # logging.error(UserModel.query.get(user_id))
-    return UserModel.query.get(user_id)

@@ -23,7 +23,7 @@ import logging
 
 
 # 上线单
-class TaskModel(SurrogatePK, Model):
+class Task(SurrogatePK, Model):
     __tablename__ = 'task'
     current_time = datetime.now()
 
@@ -68,9 +68,9 @@ class TaskModel(SurrogatePK, Model):
         :param kw:
         :return:
         """
-        query = TaskModel.query
+        query = Task.query
         if kw:
-            query = query.filter(TaskModel.name.like('%' + kw + '%'))
+            query = query.filter(Task.name.like('%' + kw + '%'))
         count = query.count()
 
         data = query.order_by('id desc') \
@@ -80,7 +80,7 @@ class TaskModel(SurrogatePK, Model):
 
         for task in data:
             task = task.to_json()
-            project = ProjectModel().get_by_id(task['project_id']).to_dict()
+            project = Project().get_by_id(task['project_id']).to_dict()
             task['project_name'] = project['name'] if project else u'未知项目'
             task_list.append(task)
 
@@ -98,7 +98,7 @@ class TaskModel(SurrogatePK, Model):
             return []
 
         task = data.to_json()
-        project = ProjectModel().get_by_id(task['project_id']).to_dict()
+        project = Project().get_by_id(task['project_id']).to_dict()
         task['project_name'] = project['name'] if project else u'未知项目'
         return task
 
@@ -107,7 +107,7 @@ class TaskModel(SurrogatePK, Model):
         data = dict(*args)
         f = open('run.log', 'w')
         f.write('\n====add===\n' + str(data))
-        project = TaskModel(**data)
+        project = Task(**data)
 
         db.session.add(project)
         db.session.commit()
@@ -122,7 +122,7 @@ class TaskModel(SurrogatePK, Model):
         # a new type to update a model
 
         update_data = dict(*args)
-        return super(TaskModel, self).update(**update_data)
+        return super(Task, self).update(**update_data)
 
     def remove(self, id=None):
         """
@@ -156,7 +156,7 @@ class TaskModel(SurrogatePK, Model):
 
 
 # 上线记录表
-class TaskRecordModel(db.Model):
+class TaskRecord(db.Model):
     # 表的名字:
     __tablename__ = 'task_record'
 
@@ -172,7 +172,7 @@ class TaskRecordModel(db.Model):
     error = db.Column(String(2000))
 
     def save_record(self, stage, sequence, user_id, task_id, status, command, success, error):
-        record = TaskRecordModel(stage=stage, sequence=sequence, user_id=user_id,
+        record = TaskRecord(stage=stage, sequence=sequence, user_id=user_id,
                             task_id=task_id, status=status, command=command,
                             success=success, error=error)
         db.session.add(record)
@@ -180,7 +180,7 @@ class TaskRecordModel(db.Model):
 
 
 # 环境级别
-class EnvironmentModel(db.Model):
+class Environment(db.Model):
     # 表的名字:
     __tablename__ = 'environment'
 
@@ -205,7 +205,7 @@ class EnvironmentModel(db.Model):
         """
         query = self.query
         if kw:
-            query = query.filter(EnvironmentModel.name.like('%' + kw + '%'))
+            query = query.filter(Environment.name.like('%' + kw + '%'))
         count = query.count()
 
         data = query.order_by('id desc').offset(int(size) * int(page)).limit(size).all()
@@ -223,7 +223,7 @@ class EnvironmentModel(db.Model):
 
     def add(self, env_name):
         # todo permission_ids need to be formated and checked
-        env = EnvironmentModel(name=env_name, status=self.status_open)
+        env = Environment(name=env_name, status=self.status_open)
 
         db.session.add(env)
         db.session.commit()
@@ -234,8 +234,7 @@ class EnvironmentModel(db.Model):
 
     def update(self, env_name, status, env_id=None):
         # todo permission_ids need to be formated and checked
-        role = EnvironmentModel.query.filter_by(id=self.id).first()
-        logging.error(role)
+        role = Environment.query.filter_by(id=self.id).first()
         role.name = env_name
         role.status = status
 
@@ -261,7 +260,7 @@ class EnvironmentModel(db.Model):
 
 
 # server
-class ServerModel(SurrogatePK, Model):
+class Server(SurrogatePK, Model):
     __tablename__ = 'server'
 
     current_time = datetime.now()
@@ -283,7 +282,7 @@ class ServerModel(SurrogatePK, Model):
         """
         query = self.query
         if kw:
-            query = query.filter(ServerModel.name.like('%' + kw + '%'))
+            query = query.filter(Server.name.like('%' + kw + '%'))
         count = query.count()
 
         data = query.order_by('id desc') \
@@ -304,7 +303,7 @@ class ServerModel(SurrogatePK, Model):
 
     def add(self, name, host):
         # todo permission_ids need to be formated and checked
-        server = ServerModel(name=name, host=host)
+        server = Server(name=name, host=host)
 
         db.session.add(server)
         db.session.commit()
@@ -316,7 +315,7 @@ class ServerModel(SurrogatePK, Model):
     def update(self, name, host, id=None):
         # todo permission_ids need to be formated and checked
         id = id if id else self.id
-        role = ServerModel.query.filter_by(id=id).first()
+        role = Server.query.filter_by(id=id).first()
 
         if not role:
             return False
@@ -347,7 +346,7 @@ class ServerModel(SurrogatePK, Model):
 
 
 # 项目配置表
-class ProjectModel(SurrogatePK, Model):
+class Project(SurrogatePK, Model):
     # 表的名字:
     __tablename__ = 'project'
     current_time = datetime.now()
@@ -390,7 +389,7 @@ class ProjectModel(SurrogatePK, Model):
         """
         query = self.query
         if kw:
-            query = query.filter(ProjectModel.name.like('%' + kw + '%'))
+            query = query.filter(Project.name.like('%' + kw + '%'))
         count = query.count()
         data = query.order_by('id desc').offset(int(size) * int(page)).limit(size).all()
         list = [p.to_json() for p in data]
@@ -413,7 +412,7 @@ class ProjectModel(SurrogatePK, Model):
         server_ids = data['server_ids']
         # return map(int, server_ids.split(','))
         # with_entities('name')
-        servers = ServerModel().query.filter(ServerModel.id.in_(map(int, server_ids.split(',')))).all()
+        servers = Server().query.filter(Server.id.in_(map(int, server_ids.split(',')))).all()
         servers_info = []
         for server in servers:
             servers_info.append({
@@ -428,7 +427,7 @@ class ProjectModel(SurrogatePK, Model):
         data = dict(*args)
         f = open('run.log', 'w')
         f.write(str(data))
-        project = ProjectModel(**data)
+        project = Project(**data)
 
         db.session.add(project)
         db.session.commit()
@@ -440,7 +439,7 @@ class ProjectModel(SurrogatePK, Model):
         # a new type to update a model
 
         update_data = dict(*args)
-        return super(ProjectModel, self).update(**update_data)
+        return super(Project, self).update(**update_data)
 
     def remove(self, role_id=None):
         """
@@ -449,7 +448,7 @@ class ProjectModel(SurrogatePK, Model):
         :return:
         """
         role_id = role_id if role_id else self.id
-        ProjectModel.query.filter_by(id=role_id).delete()
+        Project.query.filter_by(id=role_id).delete()
         return db.session.commit()
 
     def to_json(self):
@@ -479,3 +478,51 @@ class ProjectModel(SurrogatePK, Model):
             'created_at': self.created_at.strftime('%Y-%m-%d %H:%M:%S'),
             'updated_at': self.updated_at.strftime('%Y-%m-%d %H:%M:%S'),
         }
+
+
+# 项目配置表
+class Tag(SurrogatePK, Model):
+    # 表的名字:
+    __tablename__ = 'tag'
+
+    current_time = datetime.now()
+
+    # 表的结构:
+    id = db.Column(Integer, primary_key=True, autoincrement=True)
+    name = db.Column(String(30))
+    label = db.Column(String(30))
+    # users = db.relationship('Group', backref='group', lazy='dynamic')
+    created_at = db.Column(DateTime, default=current_time)
+    updated_at = db.Column(DateTime, default=current_time, onupdate=current_time)
+
+    def list(self):
+        data = Tag.query.filter_by(id=1).first()
+        # # return data.tag.count('*').to_json()
+        # # print(data)
+        # return []
+        return data.to_json() if data else []
+
+    def remove(self, tag_id):
+        """
+
+        :param role_id:
+        :return:
+        """
+        Tag.query.filter_by(id=tag_id).delete()
+        return db.session.commit()
+
+    def to_json(self):
+        # user_ids = []
+        # for user in self.users.all():
+        #     user_ids.append(user.user_id)
+        return {
+            'id': self.id,
+            'group_id': self.id,
+            'group_name': self.name,
+            # 'users': user_ids,
+            # 'user_ids': user_ids,
+            'label': self.label,
+            'created_at': self.created_at.strftime('%Y-%m-%d %H:%M:%S'),
+            'updated_at': self.updated_at.strftime('%Y-%m-%d %H:%M:%S'),
+        }
+

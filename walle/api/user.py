@@ -10,7 +10,6 @@
 
 from flask import request
 from werkzeug.security import generate_password_hash
-from walle.api.api import ApiResource
 from walle.form.user import UserUpdateForm, RegistrationForm
 from walle.model.database import db
 from walle.model.user import UserModel

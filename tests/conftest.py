@@ -2,12 +2,11 @@
 """Defines fixtures available to all tests."""
 
 import pytest
-from webtest import TestApp
 
 from walle.app import create_app
-from walle.model.database import db as _db
 from walle.config.settings import TestConfig
-
+from walle.model.database import db as _db
+from webtest import TestApp
 from .factories import UserFactory
 
 
@@ -15,6 +14,12 @@ from .factories import UserFactory
 def app():
     """An application for the tests."""
     _app = create_app(TestConfig)
+    # _app.config['LOGIN_DISABLED'] = True
+    f = open('run.log', 'w')
+    f.write('==========\n')
+    f.write(str(_app.login_manager._login_disabled) + '\n')
+    f.write('==========\n')
+    _app.login_manager.init_app(_app)
     ctx = _app.test_request_context()
     ctx.push()
 
@@ -35,6 +40,7 @@ def client(app):
 @pytest.fixture(scope='session')
 def testapp(app):
     """A Webtest app."""
+
     return TestApp(app)
 
 

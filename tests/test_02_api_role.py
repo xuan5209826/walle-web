@@ -31,9 +31,12 @@ class TestApiRole:
 
         response_success(resp)
         compare_req_resp(self.role_data, resp)
+        self.role_data['id'] = resp_json(resp)['data']['id']
 
         # 2.create another role
         resp = client.post('%s/' % (self.uri_prefix), data=self.role_data_2)
+        self.role_data_2['id'] = resp_json(resp)['data']['id']
+
 
         response_success(resp)
         compare_req_resp(self.role_data_2, resp)
@@ -41,7 +44,7 @@ class TestApiRole:
     def test_one(self, user, testapp, client, db):
         """item successful."""
         # Goes to homepage
-        resp = client.get('%s/%d' % (self.uri_prefix, 1))
+        resp = client.get('%s/%d' % (self.uri_prefix, self.role_data['id']))
 
         response_success(resp)
         compare_req_resp(self.role_data, resp)
@@ -54,7 +57,7 @@ class TestApiRole:
             'size': 1,
         }
         response = {
-            'count': 2,
+            'count': 3,
         }
         resp = client.get('%s/?%s' % (self.uri_prefix, urllib.urlencode(query)))
         response_success(resp)
@@ -83,36 +86,35 @@ class TestApiRole:
     def test_get_update(self, user, testapp, client):
         """Login successful."""
         # 1.create another role
-        resp = client.post('%s/' % (self.uri_prefix), data=self.role_data)
-        role_id = resp_json(resp)['data']['id']
-
-        response_success(resp)
-        compare_req_resp(self.role_data, resp)
+        # resp = client.post('%s/' % (self.uri_prefix), data=self.role_data)
+        # role_id = resp_json(resp)['data']['id']
+        #
+        # response_success(resp)
+        # compare_req_resp(self.role_data, resp)
 
         # 2.update
-        resp = client.put('%s/%d' % (self.uri_prefix, role_id), data=self.role_data_2)
+        resp = client.put('%s/%d' % (self.uri_prefix, self.role_data_2['id']), data=self.role_data_2)
 
         response_success(resp)
         compare_req_resp(self.role_data_2, resp)
 
         # 3.get it
-        resp = client.get('%s/%d' % (self.uri_prefix, role_id))
+        resp = client.get('%s/%d' % (self.uri_prefix, self.role_data_2['id']))
         response_success(resp)
         compare_req_resp(self.role_data_2, resp)
 
     def test_get_remove(self, user, testapp, client):
         """Login successful."""
         # 1.create another role
-        resp = client.post('%s/' % (self.uri_prefix), data=self.role_data)
+        another_role = self.role_data_2
+        another_role['role_name'] = u'To Be Removed'
+        resp = client.post('%s/' % (self.uri_prefix), data=another_role)
         role_id = resp_json(resp)['data']['id']
 
         response_success(resp)
-        compare_req_resp(self.role_data, resp)
 
         # 2.delete
-        role_data_2 = self.role_data
-        role_data_2['role_name'] = 'Test Leader'
-        resp = client.delete('%s/%d' % (self.uri_prefix, role_id), data=role_data_2)
+        resp = client.delete('%s/%d' % (self.uri_prefix, role_id))
 
         # 3.get it
         resp = client.get('%s/%d' % (self.uri_prefix, role_id))

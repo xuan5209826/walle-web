@@ -11,10 +11,13 @@
 from flask import request
 from walle.form.environment import EnvironmentForm
 from walle.model.deploy import EnvironmentModel
-from walle.api.api import ApiResource
+from walle.api.api import SecurityResource
 
 
-class EnvironmentAPI(ApiResource):
+class EnvironmentAPI(SecurityResource):
+
+    controller = 'environment'
+
     def get(self, env_id=None):
         """
         fetch environment list or one item
@@ -22,6 +25,8 @@ class EnvironmentAPI(ApiResource):
 
         :return:
         """
+        # super(EnvironmentAPI, self).get()
+
         return self.item(env_id) if env_id else self.list()
 
     def list(self):
@@ -30,6 +35,7 @@ class EnvironmentAPI(ApiResource):
 
         :return:
         """
+
         page = int(request.args.get('page', 0))
         page = page - 1 if page else 0
         size = float(request.args.get('size', 10))
@@ -60,6 +66,7 @@ class EnvironmentAPI(ApiResource):
 
         :return:
         """
+        super(EnvironmentAPI, self).post()
 
         form = EnvironmentForm(request.form, csrf_enabled=False)
         if form.validate_on_submit():
@@ -78,6 +85,7 @@ class EnvironmentAPI(ApiResource):
 
         :return:
         """
+        super(EnvironmentAPI, self).put()
 
         form = EnvironmentForm(request.form, csrf_enabled=False)
         form.set_env_id(env_id)
@@ -95,6 +103,8 @@ class EnvironmentAPI(ApiResource):
 
         :return:
         """
+        super(EnvironmentAPI, self).delete()
+
         env_model = EnvironmentModel(id=env_id)
         env_model.remove(env_id)
 

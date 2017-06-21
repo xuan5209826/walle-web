@@ -74,7 +74,7 @@ class TestApiUser:
             'size': 1,
         }
         response = {
-            'count': 3,
+            'count': 4,
         }
         resp = client.get('%s/?%s' % (self.uri_prefix, urllib.urlencode(query)))
         response_success(resp)

@@ -8,11 +8,12 @@
 """
 import logging
 
-from flask import jsonify
+from flask import jsonify, abort
 from flask.ext.login import login_required
+from flask.ext.login import current_user
 from flask_restful import Resource
 from walle.service.rbac.access import Access as AccessRbac
-
+from walle.model.user import load_user
 
 class ApiResource(Resource):
     module = None
@@ -36,8 +37,10 @@ class ApiResource(Resource):
         })
 
     @staticmethod
-    def list_json(list, count, code=0, message=''):
-        return ApiResource.render_json(data={'list': list, 'count': count}, code=code, message=message)
+    def list_json(list, count, table={}, code=0, message=''):
+        return ApiResource.render_json(data={'list': list, 'count': count, 'table': table},
+                                       code=code,
+                                       message=message)
 
 
 class SecurityResource(ApiResource):
@@ -48,13 +51,49 @@ class SecurityResource(ApiResource):
     @login_required
     def get(self, *args, **kwargs):
         self.action = 'get'
-        resource = AccessRbac.resource(action=self.action, controller=self.controller)
-        logging.error(resource)
+        is_allow = AccessRbac.is_allow(action=self.action, controller=self.controller)
+        if not is_allow:
+            self.render_json(code=403, message=u'无操作权限')
+            # abort(403)
+            pass
+        pass
+
+    @login_required
+    def delete(self, *args, **kwargs):
+        self.action = 'delete'
+        is_allow = AccessRbac.is_allow(action=self.action, controller=self.controller)
+        if not is_allow:
+            self.render_json(code=403, message=u'无操作权限')
+            # abort(403)
+            pass
+        pass
+
+    @login_required
+    def put(self, *args, **kwargs):
+        self.action = 'put'
+        is_allow = AccessRbac.is_allow(action=self.action, controller=self.controller)
+        if not is_allow:
+            self.render_json(code=403, message=u'无操作权限')
+            # abort(403)
+            pass
         pass
 
     @login_required
     def post(self, *args, **kwargs):
+        """
+        # @login_required
+        :param args:
+        :param kwargs:
+        :return:
+        """
+        self.action = 'post'
+        is_allow = AccessRbac.is_allow(action=self.action, controller=self.controller)
+        if not is_allow:
+            self.render_json(code=403, message=u'无操作权限')
+            # abort(403)
+            pass
         pass
+
 
 
 class Base(Resource):
