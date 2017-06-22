@@ -29,6 +29,7 @@ class AccessAPI(SecurityResource):
 
         :return:
         """
+        super(AccessAPI, self).get()
         return self.item(access_id) if access_id else self.list()
 
     def list(self):
@@ -62,6 +63,8 @@ class AccessAPI(SecurityResource):
 
         :return:
         """
+        super(AccessAPI, self).post()
+
         access_name = request.form.get('access_name', None)
         access_permissions_ids = request.form.get('access_ids', '')
         access_model = RoleModel()
@@ -79,6 +82,8 @@ class AccessAPI(SecurityResource):
         :param access_id:
         :return:
         """
+        super(AccessAPI, self).put()
+
         access_name = request.form.get('access_name', None)
         access_ids = request.form.get('access_ids', '')
 
@@ -96,6 +101,8 @@ class AccessAPI(SecurityResource):
 
         :return:
         """
+        super(AccessAPI, self).delete()
+
         access_model = RoleModel(id=access_id)
         ret = access_model.remove()
 

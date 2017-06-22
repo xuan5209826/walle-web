@@ -9,11 +9,11 @@
 """
 
 from flask import request
-from walle.api.api import ApiResource
+from walle.api.api import SecurityResource
 from walle.model.user import RoleModel
 
 
-class RoleAPI(ApiResource):
+class RoleAPI(SecurityResource):
     """
     角色没有上下级, 一个角色的用户可以看到
     1.超管
@@ -32,6 +32,8 @@ class RoleAPI(ApiResource):
 
         :return:
         """
+        super(RoleAPI, self).get()
+
         return self.item(role_id) if role_id else self.list()
 
     def list(self):
@@ -71,6 +73,8 @@ class RoleAPI(ApiResource):
 
         :return:
         """
+        super(RoleAPI, self).post()
+
         role_name = request.form.get('role_name', None)
         role_permissions_ids = request.form.get('access_ids', '')
         role_model = RoleModel()
@@ -88,6 +92,8 @@ class RoleAPI(ApiResource):
         :param role_id:
         :return:
         """
+        super(RoleAPI, self).put()
+
         role_name = request.form.get('role_name', None)
         role_access_ids = request.form.get('access_ids', '')
 
@@ -105,6 +111,8 @@ class RoleAPI(ApiResource):
 
         :return:
         """
+        super(RoleAPI, self).delete()
+
         role_model = RoleModel(id=role_id)
         ret = role_model.remove()
 

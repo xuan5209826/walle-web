@@ -9,12 +9,12 @@
 """
 
 from flask import request
-from walle.api.api import ApiResource
+from walle.api.api import SecurityResource
 from walle.form.server import ServerForm
 from walle.model.deploy import ServerModel
 
 
-class ServerAPI(ApiResource):
+class ServerAPI(SecurityResource):
     def get(self, id=None):
         """
         fetch environment list or one item
@@ -22,6 +22,8 @@ class ServerAPI(ApiResource):
 
         :return:
         """
+        super(ServerAPI, self).get()
+
         return self.item(id) if id else self.list()
 
     def list(self):
@@ -60,6 +62,7 @@ class ServerAPI(ApiResource):
 
         :return:
         """
+        super(ServerAPI, self).post()
 
         form = ServerForm(request.form, csrf_enabled=False)
         if form.validate_on_submit():
@@ -79,6 +82,8 @@ class ServerAPI(ApiResource):
 
         :return:
         """
+        super(ServerAPI, self).put()
+
 
         form = ServerForm(request.form, csrf_enabled=False)
         form.set_id(id)
@@ -96,6 +101,8 @@ class ServerAPI(ApiResource):
 
         :return:
         """
+        super(ServerAPI, self).delete()
+
         server_model = ServerModel(id=id)
         server_model.remove(id)
 

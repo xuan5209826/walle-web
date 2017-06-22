@@ -9,18 +9,20 @@
 """
 
 from flask import request
-from walle.api.api import ApiResource
+from walle.api.api import SecurityResource
 from walle.form.task import TaskForm
 from walle.model.deploy import TaskModel
 
 
-class TaskAPI(ApiResource):
+class TaskAPI(SecurityResource):
     def get(self, task_id=None):
         """
         fetch project list or one item
         /project/<int:project_id>
         :return:
         """
+        super(TaskAPI, self).get()
+
         return self.item(task_id) if task_id else self.list()
 
     def list(self):
@@ -56,6 +58,8 @@ class TaskAPI(ApiResource):
         /environment/
         :return:
         """
+        super(TaskAPI, self).post()
+
         form = TaskForm(request.form, csrf_enabled=False)
         # return self.render_json(code=-1, data = form.form2dict())
         if form.validate_on_submit():
@@ -75,6 +79,7 @@ class TaskAPI(ApiResource):
         /environment/<int:id>
         :return:
         """
+        super(TaskAPI, self).put()
 
         form = TaskForm(request.form, csrf_enabled=False)
         f = open('run.log', 'w')
@@ -95,6 +100,8 @@ class TaskAPI(ApiResource):
         /environment/<int:id>
         :return:
         """
+        super(TaskAPI, self).delete()
+
         task_model = TaskModel(id=task_id)
         task_model.remove(task_id)
 

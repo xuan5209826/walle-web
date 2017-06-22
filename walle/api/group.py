@@ -12,9 +12,9 @@ from flask import request
 from walle.form.group import GroupForm
 from walle.model.user import GroupModel
 from walle.model.tag import TagModel
-from walle.api.api import ApiResource
+from walle.api.api import SecurityResource
 
-class GroupAPI(ApiResource):
+class GroupAPI(SecurityResource):
     def get(self, group_id=None):
         """
         用户组列表
@@ -22,6 +22,8 @@ class GroupAPI(ApiResource):
 
         :return:
         """
+        super(GroupAPI, self).get()
+
         return self.item(group_id) if group_id else self.list()
 
     def list(self):
@@ -92,6 +94,7 @@ class GroupAPI(ApiResource):
 
         :return:
         """
+        super(GroupAPI, self).post()
 
         form = GroupForm(request.form, csrf_enabled=False)
         if form.validate_on_submit():
@@ -112,6 +115,8 @@ class GroupAPI(ApiResource):
 
         :return:
         """
+        super(GroupAPI, self).put()
+
         form = GroupForm(request.form, csrf_enabled=False)
         form.set_group_id(group_id)
         if form.validate_on_submit():
@@ -131,6 +136,8 @@ class GroupAPI(ApiResource):
 
         :return:
         """
+        super(GroupAPI, self).delete()
+
         group_model = GroupModel()
         tag_model = TagModel()
         tag_model.remove(group_id)

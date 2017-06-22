@@ -25,7 +25,7 @@ class EnvironmentAPI(SecurityResource):
 
         :return:
         """
-        # super(EnvironmentAPI, self).get()
+        super(EnvironmentAPI, self).get()
 
         return self.item(env_id) if env_id else self.list()
 

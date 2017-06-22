@@ -9,12 +9,12 @@
 """
 
 from flask import request
-from walle.api.api import ApiResource
+from walle.api.api import SecurityResource
 from walle.form.project import ProjectForm
 from walle.model.deploy import ProjectModel
 
 
-class ProjectAPI(ApiResource):
+class ProjectAPI(SecurityResource):
     def get(self, project_id=None):
         """
         fetch project list or one item
@@ -22,6 +22,8 @@ class ProjectAPI(ApiResource):
 
         :return:
         """
+        super(ProjectAPI, self).get()
+
         return self.item(project_id) if project_id else self.list()
 
     def list(self):
@@ -60,6 +62,8 @@ class ProjectAPI(ApiResource):
 
         :return:
         """
+        super(ProjectAPI, self).post()
+
         form = ProjectForm(request.form, csrf_enabled=False)
         # return self.render_json(code=-1, data = form.form2dict())
         if form.validate_on_submit():
@@ -80,6 +84,8 @@ class ProjectAPI(ApiResource):
 
         :return:
         """
+        super(ProjectAPI, self).put()
+
 
         form = ProjectForm(request.form, csrf_enabled=False)
         form.set_id(project_id)
@@ -99,6 +105,8 @@ class ProjectAPI(ApiResource):
 
         :return:
         """
+        super(ProjectAPI, self).delete()
+
         project_model = ProjectModel(id=project_id)
         project_model.remove(project_id)
 

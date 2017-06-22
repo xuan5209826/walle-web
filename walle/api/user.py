@@ -15,10 +15,10 @@ from walle.model.database import db
 from walle.model.user import UserModel
 from walle.model.user import GroupModel
 from walle.model.tag import TagModel
-from walle.api.api import ApiResource
+from walle.api.api import SecurityResource
 
 
-class UserAPI(ApiResource):
+class UserAPI(SecurityResource):
     def get(self, user_id=None):
         """
         fetch user list or one user
@@ -26,6 +26,8 @@ class UserAPI(ApiResource):
 
         :return:
         """
+        super(UserAPI, self).get()
+
         return self.item(user_id) if user_id else self.list()
 
     def list(self):
@@ -63,6 +65,8 @@ class UserAPI(ApiResource):
 
         :return:
         """
+        super(UserAPI, self).post()
+
         form = RegistrationForm(request.form, csrf_enabled=False)
         if form.validate_on_submit():
             password = generate_password_hash(form.password.data)
@@ -83,6 +87,8 @@ class UserAPI(ApiResource):
 
         :return:
         """
+        super(UserAPI, self).put()
+
         form = UserUpdateForm(request.form, csrf_enabled=False)
         if form.validate_on_submit():
             user = UserModel(id=user_id)
@@ -99,6 +105,8 @@ class UserAPI(ApiResource):
         :param user_id:
         :return:
         """
+        super(UserAPI, self).delete()
+
         UserModel(id=user_id).remove()
         GroupModel().remove(user_id=user_id)
         return self.render_json(message='')
