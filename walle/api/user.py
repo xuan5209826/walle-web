@@ -19,6 +19,7 @@ from walle.api.api import SecurityResource
 
 
 class UserAPI(SecurityResource):
+
     def get(self, user_id=None):
         """
         fetch user list or one user
@@ -43,7 +44,11 @@ class UserAPI(SecurityResource):
 
         user_model = UserModel()
         user_list, count = user_model.list(page=page, size=size, kw=kw)
-        return self.list_json(list=user_list, count=count)
+        filter = {
+            'username':['线上','线下'],
+            'status':['正常', '禁用']
+        }
+        return self.list_json(list=user_list, count=count, table=self.table(filter))
 
     def item(self, user_id):
         """
@@ -110,3 +115,28 @@ class UserAPI(SecurityResource):
         UserModel(id=user_id).remove()
         GroupModel().remove(user_id=user_id)
         return self.render_json(message='')
+
+    def table(self, filter={}):
+        table = {
+            'username': {
+                'sort': 0
+            },
+            'email': {
+                'sort': 0
+            },
+            'status': {
+                'sort': 0
+            },
+            'role_name': {
+                'sort': 0
+            },
+        }
+        ret = []
+        for (key, value) in table.items():
+            value['key'] = key
+            if key in filter:
+                value['value'] = filter[key]
+            else:
+                value['value'] = []
+            ret.append(value)
+        return ret
