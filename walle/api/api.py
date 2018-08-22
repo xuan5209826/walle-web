@@ -51,12 +51,8 @@ class SecurityResource(ApiResource):
     @login_required
     def get(self, *args, **kwargs):
         self.action = 'get'
-        is_allow = AccessRbac.is_allow(action=self.action, controller=self.controller)
-        if not is_allow:
-            self.render_json(code=403, message=u'无操作权限')
-            # abort(403)
-            pass
-        pass
+
+        return self.validator()
 
     @login_required
     def delete(self, *args, **kwargs):
@@ -87,13 +83,14 @@ class SecurityResource(ApiResource):
         :return:
         """
         self.action = 'post'
-        is_allow = AccessRbac.is_allow(action=self.action, controller=self.controller)
-        if not is_allow:
-            self.render_json(code=403, message=u'无操作权限')
-            # abort(403)
-            pass
-        pass
+        return self.validator()
 
+    def validator(self):
+        if not AccessRbac.is_login():
+            return self.render_json(code=1000, message=u'请先登录')
+
+        if not AccessRbac.is_allow(action=self.action, controller=self.controller):
+            return self.render_json(code=1001, message=u'无操作权限')
 
 
 class Base(Resource):

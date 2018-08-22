@@ -15,6 +15,7 @@ from walle.model.deploy import TaskModel
 
 
 class TaskAPI(SecurityResource):
+
     def get(self, task_id=None):
         """
         fetch project list or one item

@@ -14,9 +14,18 @@ class Access:
         pass
 
     @staticmethod
+    def is_login():
+        return current_user.is_authenticated
+
+    @staticmethod
     def is_allow(action, controller, module=None):
         current_resource = Access.resource(action, controller, module)
-        user_has_resource = current_user.fetch_access_list_by_role_id(current_user.role_id)
+        # _role_delete
+
+        if current_user.is_authenticated:
+            user_has_resource = current_user.fetch_access_list_by_role_id(current_user.role_id)
+        else:
+            user_has_resource = []
         logging.error(current_resource)
         logging.error(user_has_resource)
         return current_resource in user_has_resource

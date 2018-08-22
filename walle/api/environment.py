@@ -41,9 +41,17 @@ class EnvironmentAPI(SecurityResource):
         size = float(request.args.get('size', 10))
         kw = request.values.get('kw', '')
 
+        table = [
+            {
+                'key': 'tag',
+                'value': ['线上', '测试'],
+                'sort': 0
+            }
+        ]
+
         env_model = EnvironmentModel()
         env_list, count = env_model.list(page=page, size=size, kw=kw)
-        return self.list_json(list=env_list, count=count)
+        return self.list_json(list=env_list, count=count, table=table)
 
     def item(self, env_id):
         """
