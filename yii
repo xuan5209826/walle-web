@@ -1,4 +1,4 @@
-#!/usr/bin/env php
+#!F:/phpstudy/PHPTutorial/php/php-5.4.45-nts/php.exe
 <?php
 
 // fcgi doesn't have STDIN and STDOUT defined by default
