@@ -112,6 +112,3 @@ To Do List
 - [官方文档手册](https://walle-web.io/docs)
 - qq群：482939318
 
-勾搭下
---------
-<img src="https://raw.githubusercontent.com/meolu/walle-web/feature-weixin/docs/weixin.wushuiyong.jpg" width="244" height="314" alt="吴水永微信" align=left />
